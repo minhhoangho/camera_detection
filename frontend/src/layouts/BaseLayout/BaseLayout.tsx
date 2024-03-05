@@ -1,8 +1,9 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { Box } from '@mui/material';
 import Head from 'next/head';
-// import CookiesStorage from 'src/utils/cookie-storage';
+import {useRouter} from "next/router";
 import Spinner from '../../components/Spinner';
+import CookiesStorage from "../../utils/cookie-storage";
 
 
 const getPageTitle = (title: string): string => {
@@ -14,8 +15,12 @@ export function BaseLayout({ children, pageTitle = '', isLoading = false }: {
   pageTitle?: string,
   isLoading?: boolean
 }) {
+  const router = useRouter();
 
-  // const isAuthenticated: boolean = CookiesStorage.isAuthenticated();
+  const isAuthenticated: boolean = CookiesStorage.isAuthenticated();
+  useEffect(() => {
+      isAuthenticated && router.pathname === "/login" && router.replace("/")
+  },[isAuthenticated])
   return (
     <>
       <Head>

@@ -25,7 +25,7 @@ const config = {
         pathname: '/image/upload/**',
       },
     ],
-    domains: ['example.com'],
+    domains: ['localhost'],
   },
   experimental: {
     esmExternals: false,

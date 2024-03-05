@@ -6,8 +6,16 @@ import { WidgetSummary } from './WidgetSummary';
 import styles from './HomePage.module.scss';
 import { WidgetWebsiteVisit } from './WidgetWebsiteVisit';
 import { WidgetCurrentVisit } from './WidgetCurrentVisit';
-
+import { API_BASE_URL } from '../../constants';
+import CardHeader from '@mui/material/CardHeader';
+import Box from '@mui/material/Box';
+import Chart from '../../components/Chart/Chart';
+import Card from '@mui/material/Card';
 export function HomePage() {
+  console.log(
+    '`${API_BASE_URL}/stream/video` ',
+    `${API_BASE_URL}/stream/video`,
+  );
   return (
     <BaseLayout>
       <PrivateLayout>
@@ -133,6 +141,19 @@ export function HomePage() {
                   ],
                 }}
               />
+            </Grid>
+            <Grid item xs={12} md={6} lg={6}>
+              {/*<Image*/}
+              {/*  src={`${API_BASE_URL}/stream/video`}*/}
+              {/*  alt="Video"*/}
+              {/*  width={300}*/}
+              {/*  height={200}*/}
+              {/*/>*/}
+              <Card>
+                <Box sx={{ p: 3, pb: 1 }}>
+                  <img src={`${API_BASE_URL}/stream/video`} alt="video" />
+                </Box>
+              </Card>
             </Grid>
           </Grid>
         </Container>
