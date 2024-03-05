@@ -8,6 +8,8 @@ class DetectionUtil:
     def __init__(self, ckpt: str) -> None:
         ckpt_path = ckpt or os.path.join("./models", "yolov8m.pt")
         self.model = YOLO(ckpt_path)
+        # self.model = YOLO('yolov8m-p2.yaml').load(ckpt_path)
+
         self.class_dict = self.model.names
     
     def predict_obj(self, frame, verbose=False):
