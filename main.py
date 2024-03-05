@@ -20,7 +20,7 @@ def predict_obj(model: YOLO,frame):
         res = handle_box(_box, class_dict)
         draw_bounding_box(frame, res)
 
-    return frame
+    return frame, results
 
 def draw_bounding_box(image, box, threshold=0.4):
     xyxy = box['xyxy']
@@ -68,7 +68,7 @@ def tracking_video(video_id):
         if not ret:
             break
 
-        frame = predict_obj(model=model, frame=frame)
+        frame, results = predict_obj(model=model, frame=frame)
         cv2.imshow("Livestream", frame)
         # Exit the loop when the 'q' key is pressed
         if cv2.waitKey(1) & 0xFF == ord('q'):

@@ -1,12 +1,12 @@
 import React from 'react';
-import { Container, Grid, Typography, Card, Box } from '@mui/material';
+import { Container, Grid, Typography} from '@mui/material';
 import Image from 'next/image';
 import { BaseLayout, PrivateLayout } from 'src/layouts';
 import { WidgetSummary } from './WidgetSummary';
 import styles from './HomePage.module.scss';
 import { WidgetWebsiteVisit } from './WidgetWebsiteVisit';
 import { WidgetCurrentVisit } from './WidgetCurrentVisit';
-import { API_BASE_URL } from '../../constants';
+import {WidgetCarTracking} from "./WidgetCarTracking";
 export function HomePage() {
   return (
     <BaseLayout>
@@ -135,11 +135,7 @@ export function HomePage() {
               />
             </Grid>
             <Grid item xs={12} md={6} lg={6}>
-              <Card>
-                <Box sx={{ p: 3, pb: 1 }}>
-                  <img src={`${API_BASE_URL}/stream/video`} alt="video" />
-                </Box>
-              </Card>
+              <WidgetCarTracking title={"Tracking"} subheader="Result"/>
             </Grid>
           </Grid>
         </Container>

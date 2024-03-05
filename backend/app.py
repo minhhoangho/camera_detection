@@ -1,12 +1,14 @@
 from flask import Flask, render_template, Response
 import cv2
 import time
-
+from flask_sse import sse
 from pytube import YouTube
 
 from main import predict_obj, init_model
 
 app = Flask(__name__)
+app.config["REDIS_URL"] = "redis://localhost:6379"
+app.register_blueprint(sse, url_prefix='/api/sse')
 model = init_model()
 
 
@@ -25,7 +27,8 @@ def generate_frames(video_id="_HcPxEE8OFE"):
         if not ret:
             break
 
-        frame = predict_obj(model=model, frame=frame)
+        frame, results = predict_obj(model=model, frame=frame)
+        # sse.publish({"message": "Hello!"}, type='video_tracking')
         ret, buffer = cv2.imencode('.jpg', frame)
         frame = buffer.tobytes()
         yield (b'--frame\r\n'
@@ -34,7 +37,6 @@ def generate_frames(video_id="_HcPxEE8OFE"):
 
 @app.route('/api/stream/video')
 def video():
-    print("Hehee")
     return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
