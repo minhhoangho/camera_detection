@@ -14,6 +14,7 @@ class DetectionUtil:
         ckpt_path = ckpt or os.path.join("./models", "yolov8.pt")
         # self.model = YOLO(ckpt_path)
         self.model = YOLO(ckpt_path)
+        self.threshold = 0.3
         self.detection_model = AutoDetectionModel.from_pretrained(
             model_type='yolov8',
             model_path=ckpt_path,
@@ -48,22 +49,23 @@ class DetectionUtil:
     def count_objects(self, list_item):
         counter = dict()
         for item in list_item:
-            class_name = item['class']
-            if class_name in counter:
-                counter[class_name] +=1
-            else:
-                counter[class_name] = 1
+            if item["conf"] > self.threshold:
+                class_name = item['class']
+                if class_name in counter:
+                    counter[class_name] +=1
+                else:
+                    counter[class_name] = 1
         return counter
 
 
-    def _draw_bounding_box(self, image, box, threshold=0.4):
+    def _draw_bounding_box(self, image, box):
         xyxy = box['xyxy']
         class_name: str = box['class']
         conf: float = box['conf']
 
         x1, y1, x2, y2 = xyxy
 
-        if conf >= threshold:
+        if conf >= self.threshold:
             # Draw the bounding box rectangle on the image
             cv2.rectangle(image, (int(x1), int(y1)), (int(x2), int(y2)), (255, 0, 0), 2)
 
