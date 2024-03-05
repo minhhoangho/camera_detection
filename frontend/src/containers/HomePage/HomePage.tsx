@@ -134,7 +134,7 @@ export function HomePage() {
                 }}
               />
             </Grid>
-            <Grid item xs={12} md={6} lg={6}>
+            <Grid item xs={12}>
               <WidgetCarTracking title={"Tracking"} subheader="Result"/>
             </Grid>
           </Grid>

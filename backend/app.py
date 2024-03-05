@@ -1,15 +1,19 @@
+import sys
+sys.path.append("./")
+import os
 from flask import Flask, render_template, Response
 import cv2
 import time
 from flask_sse import sse
 from pytube import YouTube
-
-from main import predict_obj, init_model
+from flask_cors import CORS
+from detection_util import DetectionUtil
 
 app = Flask(__name__)
+CORS(app)
 app.config["REDIS_URL"] = "redis://localhost:6379"
 app.register_blueprint(sse, url_prefix='/api/sse')
-model = init_model()
+detector = DetectionUtil(os.path.join("./models", "yolov8m.pt"))
 
 
 def generate_frames(video_id="_HcPxEE8OFE"):
@@ -27,8 +31,9 @@ def generate_frames(video_id="_HcPxEE8OFE"):
         if not ret:
             break
 
-        frame, results = predict_obj(model=model, frame=frame)
-        # sse.publish({"message": "Hello!"}, type='video_tracking')
+        frame, results = detector.predict_obj(frame=frame)
+        with app.app_context():
+            sse.publish({"objects": detector.count_objects(results)}, type='video_tracking')
         ret, buffer = cv2.imencode('.jpg', frame)
         frame = buffer.tobytes()
         yield (b'--frame\r\n'

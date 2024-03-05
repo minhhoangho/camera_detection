@@ -8,12 +8,13 @@ import os
 from ultralytics.engine.results import Results
 
 
+
 def init_model() -> YOLO:
     model = YOLO(os.path.join("./models", "yolov8m.pt"))
     return model
 
 def predict_obj(model: YOLO,frame):
-    results: List[Results] = model.predict(source=frame)
+    results: List[Results] = model.predict(source=frame, verbose=False)
     class_dict = results[0].names
 
     for _box in results[0].boxes:
