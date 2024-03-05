@@ -19,7 +19,7 @@ detector = DetectionUtil(os.path.join("./models", "yolov8m.pt"))
 
 stream = CamGear(source='https://youtu.be/dQw4w9WgXcQ', stream_mode = True, logging=True).start() # YouTube Video URL as input
 
-def generate_frames(video_id="FQ1k_LCa0I4"):
+def generate_frames(video_id="Lc8oxWnjUzI"):
     video_url = f"https://www.youtube.com/watch?v={video_id}"
     # yt = YouTube(video_url)
     # stream = yt.streams.get_highest_resolution()
