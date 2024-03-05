@@ -19,7 +19,7 @@ detector = DetectionUtil(os.path.join("./models", "yolov8m.pt"))
 
 stream = CamGear(source='https://youtu.be/dQw4w9WgXcQ', stream_mode = True, logging=True).start() # YouTube Video URL as input
 
-def generate_frames(video_id="nefxDbLywEI"):
+def generate_frames(video_id="FQ1k_LCa0I4"):
     video_url = f"https://www.youtube.com/watch?v={video_id}"
     # yt = YouTube(video_url)
     # stream = yt.streams.get_highest_resolution()
@@ -37,7 +37,8 @@ def generate_frames(video_id="nefxDbLywEI"):
         # if not ret:
         #     break
 
-        frame, results = detector.predict_obj(frame=frame)
+        # frame, results = detector.predict_obj(frame=frame)
+        frame, results = detector.get_prediction_sahi(frame=frame)
         with app.app_context():
             sse.publish({"objects": detector.count_objects(results)}, type='video_tracking')
         ret, buffer = cv2.imencode('.jpg', frame)
