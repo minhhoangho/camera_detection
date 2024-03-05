@@ -58,7 +58,7 @@ def tracking_video(video_id):
     cap = cv2.VideoCapture(stream.url)
 
     # Define the desired frame rate (frames per second)
-    frame_rate = 60
+    frame_rate = 90
 
     # Calculate the delay between frames
     delay = 1 / frame_rate
