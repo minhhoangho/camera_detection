@@ -8,6 +8,7 @@ from flask_sse import sse
 from pytube import YouTube
 from flask_cors import CORS
 from detection_util import DetectionUtil
+from vidgear.gears import CamGear
 
 app = Flask(__name__)
 CORS(app)
@@ -16,20 +17,25 @@ app.register_blueprint(sse, url_prefix='/api/sse')
 detector = DetectionUtil(os.path.join("./models", "yolov8m.pt"))
 
 
-def generate_frames(video_id="_HcPxEE8OFE"):
+stream = CamGear(source='https://youtu.be/dQw4w9WgXcQ', stream_mode = True, logging=True).start() # YouTube Video URL as input
+
+def generate_frames(video_id="Lc8oxWnjUzI"):
     video_url = f"https://www.youtube.com/watch?v={video_id}"
-    yt = YouTube(video_url)
-    stream = yt.streams.get_highest_resolution()
-    cap = cv2.VideoCapture(stream.url)
+    # yt = YouTube(video_url)
+    # stream = yt.streams.get_highest_resolution()
+    # cap = cv2.VideoCapture(stream.url)
+
+    cap = CamGear(source=video_url, stream_mode = True, logging=True).start() # YouTube Video URL as input
+
     # Define the desired frame rate (frames per second)
     frame_rate = 90
     # Calculate the delay between frames
     delay = 1 / frame_rate
     while True:
-        ret, frame = cap.read()
+        frame = cap.read()
 
-        if not ret:
-            break
+        # if not ret:
+        #     break
 
         frame, results = detector.predict_obj(frame=frame)
         with app.app_context():
