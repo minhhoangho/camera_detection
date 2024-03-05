@@ -1,0 +1,49 @@
+.input {
+  border: 1px solid rgb(224, 224, 224) !important;
+  padding: 12px 15px;
+  height: 43px;
+  border-radius: 10px;
+  &:focus {
+    border-color: #7cb2fe;
+    color: #1b2e4b;
+  }
+  &::placeholder {
+    color: #c0ccda;
+    font-weight: 400;
+  }
+}
+
+.input[type="number"] {
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
+.input-err {
+  border-color: #f5222d !important;
+  &:focus {
+    border-color: #f5222d;
+    box-shadow: none;
+  }
+}
+
+.error {
+  text-transform: lowercase;
+  flex-shrink: 0;
+  color: #f5222d;
+  display: inline-block;
+  font-size: 12px;
+  line-height: 1.3;
+  margin-top: 5px;
+  &::first-letter {
+    text-transform: uppercase;
+  }
+  display: inline-block;
+}
+
+.requiredSymbol {
+  top: -2px;
+  left: -2px;
+}

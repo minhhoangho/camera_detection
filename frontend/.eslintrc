@@ -1,0 +1,146 @@
+{
+  "plugins": ["unused-imports"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "next/core-web-vitals"
+  ],
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "rules": {
+    "react/forbid-component-props": [
+      "warn",
+      {
+        "forbid": [
+          {
+            "propName": "defaultMessage",
+            "message": "Do not use defaultMessage on FormattedMessage"
+          }
+        ]
+      }
+    ],
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "CallExpression[callee.property.name='formatMessage'] Property[key.name='defaultMessage']",
+        "message": "Do not use defaultMessage"
+      }
+    ],
+    "react/forbid-elements": [
+      "warn",
+      {
+        "forbid": [
+          {
+            "element": "FormattedMessage",
+            "message": "prefer using useIntl hook instead"
+          }
+        ]
+      }
+    ],
+    "no-inner-declarations": "off",
+    "eqeqeq": "error",
+    "no-var": "error",
+    "no-await-in-loop": "error",
+    "no-console": "error",
+    "no-promise-executor-return": "error",
+    "no-template-curly-in-string": "error",
+    "no-useless-backreference": "error",
+    "require-atomic-updates": "error",
+    "no-alert": "error",
+    "@typescript-eslint/naming-convention": "off",
+    "@typescript-eslint/no-confusing-non-null-assertion": "error",
+    "@typescript-eslint/no-dynamic-delete": "error",
+    "@typescript-eslint/prefer-optional-chain": "error",
+    "@typescript-eslint/prefer-for-of": "error",
+    "@typescript-eslint/prefer-nullish-coalescing": "error",
+    "@typescript-eslint/prefer-string-starts-ends-with": "error",
+    "@typescript-eslint/require-array-sort-compare": "error",
+    "@typescript-eslint/no-unsafe-member-access": 0,
+    "@typescript-eslint/no-explicit-any": 0,
+    "@typescript-eslint/no-unsafe-assignment": 0,
+    "@typescript-eslint/no-unsafe-return": 0,
+    "@typescript-eslint/no-unsafe-call": 0,
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "varsIgnorePattern": "^_"
+      }
+    ],
+    "react-hooks/exhaustive-deps": [
+      "error",
+      {
+        "additionalHooks": "(useEnhancedLayoutEffect)"
+      }
+    ],
+    "no-empty": [
+      "error",
+      {
+        "allowEmptyCatch": true
+      }
+    ],
+    // this rule is conflicting with sonarqube
+    "@typescript-eslint/no-floating-promises": "off",
+    "@typescript-eslint/no-unsafe-argument": "warn",
+    "no-restricted-imports": [
+      "error",
+      {
+        "name": "querystring",
+        "message": "Please use URLSearchParams instead"
+      }
+    ],
+    "@typescript-eslint/no-misused-promises": [
+      "error",
+      {
+        "checksVoidReturn": false
+      }
+    ],
+    "import/order": [
+      "error",
+      {
+        "groups": [
+          "external",
+          "builtin",
+          "internal",
+          "sibling",
+          "parent",
+          "index"
+        ]
+      }
+    ],
+    "no-unused-vars": "off", // or "@typescript-eslint/no-unused-vars": "off",
+    "unused-imports/no-unused-imports": "error",
+    "unused-imports/no-unused-vars": [
+      "warn",
+      {
+        "vars": "all",
+        "varsIgnorePattern": "^_",
+        "args": "after-used",
+        "argsIgnorePattern": "^_"
+      }
+    ]
+  },
+  "ignorePatterns": [
+    ".next",
+    "coverage",
+    "node_modules",
+    "next.config.js",
+    "jest.config.js",
+    "babel.config.js",
+    "tailwind.config.js",
+    "postcss.config.js"
+  ],
+  "overrides": [
+    {
+      "files": ["**/*.{js,ts,jsx,tsx}", "*.{js,ts,jsx,tsx}"],
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "project": "./tsconfig.json"
+      },
+      "plugins": [
+        "@typescript-eslint"
+      ]
+    }
+  ]
+}

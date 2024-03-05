@@ -1,0 +1,96 @@
+.wrapper {
+  @apply flex flex-col items-center justify-center h-[100vh] w-[100vw];
+
+  .login-box {
+    display: flex;
+    width: 500px;
+    border-radius: 32px;
+    flex-direction: column;
+    align-items: center;
+    padding: 56px;
+    background-color: rgb(255, 255, 255);
+    box-shadow: rgb(0 0 0 / 55%) 0px 10px 25px;
+  }
+
+  .sign-with-google {
+    width: 100% !important;
+    .google-login-button{
+      width: 100% !important;
+      opacity: 1 !important;
+      cursor: pointer;
+      display: flex;
+      position: relative;
+      box-sizing: border-box;
+      outline: none;
+      -webkit-box-align: center;
+      align-items: center;
+      -webkit-box-pack: center;
+      justify-content: center;
+      font-family: inherit;
+      transition: background-color 200ms ease 0s, border-color 200ms ease 0s;
+      cursor: pointer;
+      overflow: hidden;
+      font-weight: 700 !important;
+      background-color: transparent;
+      border: 2px solid rgb(37, 42, 72) !important;
+      height: 48px;
+      border-radius: 16px !important;
+
+      &:hover {
+        border: 2px solid rgb(102, 106, 127) !important;
+        box-shadow: none;
+      }
+      span {
+        font-weight: 700 !important;
+      }
+    }
+  }
+
+  .email-password-block {
+    width: 100%;
+    margin-top: 20px;
+    .input-with-label {
+      margin-top: 10px;
+      .input-wrapper {
+        align-items: center;
+        border: 2px solid rgb(151, 151, 151);
+        display: flex;
+        padding: 0 12px;
+        border-radius: 16px;
+        width: 100%;
+        position: relative;
+        height: 48px;
+      }
+    }
+    .submit-btn {
+      display: flex;
+      position: relative;
+      box-sizing: border-box;
+      outline: none;
+      -webkit-box-align: center;
+      align-items: center;
+      -webkit-box-pack: center;
+      justify-content: center;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 700;
+      transition: background-color 200ms ease 0s, border-color 200ms ease 0s;
+      cursor: pointer;
+      opacity: 1;
+      overflow: hidden;
+      border: 2px solid transparent;
+      padding: 0px 16px;
+      width: 100%;
+      height: 48px;
+      border-radius: 16px;
+      background-color: rgba(9, 132, 227, 0.8);
+      color: #fffaff;
+      &:hover {
+        border-radius: 16px;
+        background-color: rgba(9, 132, 227, 1.6);
+        color: #fffaff;
+        box-shadow: none;
+      }
+    }
+  }
+}

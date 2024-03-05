@@ -1,0 +1,47 @@
+.app-title-wrapper {
+  @apply flex items-center min-h-[4.5rem] w-full
+}
+
+
+.app-title-wrapper-expanded {
+  @apply flex items-center min-h-[4.5rem] w-full px-2 gap-x-6;
+}
+
+.app-title-wrapper-collapsed {
+  @apply flex items-center justify-center min-h-[4.5rem] w-full;
+}
+
+.app-title {
+  @apply flex items-center;
+}
+
+.sider-wrapper {
+  @apply h-screen overflow-auto left-0;
+  @apply fixed #{!important};
+}
+
+.sider-wrapper--expanded {
+  @apply min-w-[20rem] #{!important};
+}
+
+.sider-wrapper__button {
+  @apply text-black border-none bg-transparent;
+}
+
+.layout-expanded {
+  @apply ml-[20rem] h-[100vh] overflow-y-scroll;
+}
+
+.layout-collapsed {
+  @apply ml-[80px] h-[100vh] overflow-y-scroll;
+;
+}
+
+.header-wrapper {
+  @apply flex bg-white p-0 min-h-[4.5rem];
+  @apply sticky top-0 w-full z-10;
+}
+
+.content-wrapper {
+  @apply p-6 overflow-scroll;
+}

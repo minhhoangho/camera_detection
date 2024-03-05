@@ -1,0 +1,47 @@
+/* NotFoundPage.module.scss */
+
+.page_wrapper {
+  @apply flex items-center bg-white min-w-[100vw] min-h-[100vh] overflow-hidden;
+
+  img {
+    width: 100%;
+  }
+
+  span {
+    @apply text-[30px];
+    font-family: 'quicksand', serif;
+  }
+}
+
+.container {
+  @apply w-full;
+}
+
+.wrapper {
+  @apply flex flex-col gap-y-4;
+}
+
+.four_zero_four_bg {
+  background-image: url(https://cdn.dribbble.com/users/285475/screenshots/2083086/dribbble_1.gif);
+  height: 400px;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  h1, h3 {
+    font-size: 80px;
+  }
+}
+
+.home-btn {
+  @apply text-white font-bold bg-[#39ac31] flex items-center justify-center text-[25px] p-6 border-solid border-white;
+  @apply hover:text-white #{!important};
+  @apply hover:border-solid border-white #{!important};
+  @apply hover:bg-[#267121];
+}
+
+.content-box {
+  @apply flex flex-col gap-y-4 items-center justify-center;
+  p {
+    @apply m-0;
+  }
+}

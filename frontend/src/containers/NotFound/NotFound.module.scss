@@ -1,0 +1,16 @@
+.not-found-wrapper {
+  @apply p-4 bg-white h-[100vh] w-[100vw] fixed;
+  .custom-backdrop {
+    background-image: url(https://cdn.dribbble.com/users/285475/screenshots/2083086/dribbble_1.gif);
+    height: 70vh;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+  .content-box {
+    margin-top: -50px;
+    text-align: center;
+    font-size: 40px;
+  }
+}
+

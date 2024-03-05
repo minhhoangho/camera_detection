@@ -1,0 +1,8 @@
+.header {
+  @apply flex justify-between w-full px-4;
+
+}
+
+.collapse-menu-icon {
+  @apply cursor-pointer scale-150 hover:text-primary;
+}

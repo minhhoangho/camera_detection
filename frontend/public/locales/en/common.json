@@ -1,0 +1,105 @@
+{
+  "sider": {
+    "home": "Home",
+    "setting": "Settings"
+  },
+  "not_found": {
+    "title": "Page not found",
+    "description": "Sorry, but the page you were trying to view does not exist."
+  },
+  "no_data": "No data",
+  "fields": {
+    "email": "Email Address",
+    "password": "Password",
+    "family_name": "Family Name",
+    "id": "Id"
+  },
+  "placeholder": {
+    "please_enter_field": "Enter {{field}}",
+    "search": "Search",
+    "email": "example@mail.com",
+    "role": "Role",
+    "family_name": "Family Name",
+    "choose": "Choose",
+    "month": "Month",
+    "day": "Day",
+    "year": "Year"
+  },
+  "buttons": {
+    "ok": "OK",
+    "cancel": "Cancel",
+    "close": "Close",
+    "search": "Search",
+    "select": "Select",
+    "submit": "Submit",
+    "save": "Save",
+    "delete": "Delete",
+    "remove": "Remove",
+    "finish": "Finish",
+    "next_step": "Next",
+    "complete": "Complete",
+    "processing": "Processing",
+    "edit": "Edit",
+    "change": "Change",
+    "connect": "Connect",
+    "config": "Config",
+    "show": "Show",
+    "hide": "Hide",
+    "ignore": "Ignore",
+    "upload_avatar": "Upload Avatar",
+    "reload": "Reload",
+    "disconnect": "Disconnect",
+    "add": "Add",
+    "done": "Done",
+    "reset_default": "Reset to default",
+    "start_using": "ON",
+    "stop_using": "OFF"
+  },
+  "date_time": {
+    "months": {
+      "jan": "January",
+      "feb": "February",
+      "mar": "March",
+      "apr": "April",
+      "may": "May",
+      "jun": "June",
+      "jul": "July",
+      "aug": "August",
+      "sep": "September",
+      "oct": "October",
+      "nov": "November",
+      "dec": "December"
+    }
+  },
+  "environments": {
+    "local": "Development",
+    "dev": "Development",
+    "qa": "QA",
+    "stg": "Staging"
+  },
+  "locale": {
+    "en": "English"
+  },
+  "timezone": {
+    "Asia/Tokyo": "Japan Standard Time - Tokyo (GMT+09:00)",
+    "Asia/Ho_Chi_Minh": "Indochina Time - Ho Chi Minh City (GMT+07:00)"
+  },
+  "action": "Action",
+  "online_status": {
+    "connected": "Connected",
+    "disconnected": "Network Disconnected",
+    "Connecting": "Connecting"
+  },
+  "leave_modal": {
+    "title": "Do you confirm to leave?",
+    "content": "All data in form will be discarded.",
+    "button": "Leave"
+  },
+  "forbidden": {
+    "title": "Access Denied",
+    "description": "",
+    "buttons": {
+      "go_back_home": "Back to Home"
+    }
+  }
+}

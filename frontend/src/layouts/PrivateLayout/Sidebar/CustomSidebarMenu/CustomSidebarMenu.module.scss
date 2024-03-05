@@ -1,0 +1,43 @@
+.menu-list {
+  @apply border-none #{!important};
+}
+
+.side-menu-icon {
+  @apply w-4 #{!important};
+}
+
+.like-boosting-icon {
+  @apply text-primary #{!important};
+}
+
+.fast-fanpage-icon {
+  @apply text-green-500 #{!important};
+}
+
+
+
+.custom-menu-item {
+  margin-top: 5px;
+  border-radius: 6px;
+  overflow: hidden;
+
+  &:hover {
+    background-color: rgba(24, 119, 242, 0.08)!important;
+  }
+  .ps-menu-button {
+    &:hover {
+      background-color: rgba(24, 119, 242, 0.08)!important;
+    }
+  }
+}
+.custom-sub-menu  {
+  //margin-top: 5px;
+  border-radius: 6px;
+  overflow: hidden;
+
+  > .ps-submenu-content-test-id {
+    background-color: #F9FAFB;
+  }
+}
+
+

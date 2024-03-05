@@ -1,0 +1,16 @@
+body {
+  background-color: #F9FAFB;
+  color: #374151;
+  font-weight: 400;
+  margin: 0;
+}
+
+[data-reach-dialog-overlay] {
+  @apply z-50;
+}
+
+button {
+  @apply bg-primary;
+}
+
+
