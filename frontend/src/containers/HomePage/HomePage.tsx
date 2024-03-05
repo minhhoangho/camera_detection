@@ -32,6 +32,7 @@ export function HomePage() {
               />
             </Grid>
 
+
             <Grid item xs={12} sm={6} md={3}>
               <WidgetSummary
                 title="New Users"
@@ -78,6 +79,9 @@ export function HomePage() {
                   />
                 }
               />
+            </Grid>
+             <Grid item xs={12}>
+              <WidgetCarTracking title={"Tracking"} subheader="Result"/>
             </Grid>
 
             <Grid item xs={12} md={6} lg={8}>
@@ -134,9 +138,7 @@ export function HomePage() {
                 }}
               />
             </Grid>
-            <Grid item xs={12}>
-              <WidgetCarTracking title={"Tracking"} subheader="Result"/>
-            </Grid>
+
           </Grid>
         </Container>
       </PrivateLayout>
