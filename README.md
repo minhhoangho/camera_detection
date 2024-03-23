@@ -12,7 +12,6 @@ This project is a Python-based camera detection system that detects and analyzes
 The Camera Detection Project is designed to analyze real-time camera feed and detect various objects using computer vision algorithms. It utilizes Python and popular computer vision libraries to process and analyze the captured video frames.
 
 ## Installation
-
 To install and run this project locally, follow these steps:
 
 1. Clone the repository:
