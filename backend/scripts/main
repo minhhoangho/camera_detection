@@ -1,0 +1,136 @@
+#!/usr/bin/env bash
+
+ORGANIZATION=MyOrg
+PROJECT_REPO=django-rest-example
+# ORGANIZATION_LOWER=myorg
+# PROJECT_NAME=src
+
+
+# -----------------------------------------------------------------------------
+# Helper functions start with _ and aren't listed in this script's help menu.
+# -----------------------------------------------------------------------------
+
+function _compose {
+    if [[ $(docker compose version || true) ]]; then
+        docker compose "${@}"
+    else
+        docker-compose "${@}"
+    fi
+}
+
+function _dc {
+    _compose "${DC}" ${TTY} "${@}"
+}
+
+function _build_run_down {
+    _compose build
+    _compose run ${TTY} "${@}"
+    _compose down
+}
+
+function _dc:termbyport {
+    for id in $(docker ps -q)
+    do
+        if [[ $(docker port "${id}") == *"${1}"* ]]; then
+            echo "stopping container ${id}"
+            docker stop "${id}"
+        fi
+    done
+}
+
+# -----------------------------------------------------------------------------
+
+function cmd {
+    # Run any command you want in the djapp container
+    _dc djapp ${@}
+}
+
+function dev:boot {
+    # Boot up the project once at the first time
+
+    PYTHON_VERSION=3.10.4
+
+    # install pip, pyenv, poetry, docker, docker-compose
+    # https://pip.pypa.io/en/stable/installation/
+    python -m pip install --upgrade pip setuptools wheel
+
+    # https://github.com/pyenv/pyenv
+    [[ -d ~/.pyenv/versions/$PYTHON_VERSION ]] || pyenv install $PYTHON_VERSION
+    pyenv local $PYTHON_VERSION
+
+    # https://python-poetry.org/
+    poetry env use $PYTHON_VERSION
+    poetry install --remove-untracked -vv
+
+    git:init
+
+    # https://docs.docker.com/get-started/
+    # https://docs.docker.com/compose/install/
+    # _compose build --no-cache
+    _compose build
+    _compose run --rm djapp python manage.py migrate
+    _compose up
+}
+
+function git:init {
+    # Add git repository to the current folder
+    [ -d .git/ ] && rm -rf .git/
+    git init
+    git remote add origin git@github.com:$ORGANIZATION/$PROJECT_REPO.git
+    git checkout -b feature/init_project
+    git add . && git commit -m "feat: init django project"
+    git pull --rebase -s recursive -X theirs origin master
+    git push -u origin feature/init_project
+}
+
+function shell {
+    # Start a shell session in the djapp container
+    cmd bash ${@}
+}
+
+function pip3:install {
+    # Install pip3 dependencies and write lock file
+    _build_run_down djapp bash -c "cd .. && bin/pip3-install"
+}
+
+function pip3:outdated {
+    # List any installed packages that are outdated
+    cmd pip3 list --outdated
+}
+
+function ci:env-up {
+    echo "+ Setup project environment variables"
+    # This is just a statictic key for docker run the checks
+    random_key=$(openssl rand -hex 40)
+    cp config/.env.template config/.env
+    sed -i'' -e "s/__CHANGEME__/$random_key/" config/.env
+    rm -rf config/.env-e
+    export DOCKER_BUILDKIT=1
+    export COMPOSE_DOCKER_CLI_BUILD=1
+    echo "+ Done!!!"
+}
+
+function ci:docker-test {
+    # init test enviroments
+    [ ! -d config/.env ] && ci:env-up
+
+    _dc:termbyport 3307 # MySQL
+
+    # Run tests that are located inside the generate project:
+    _compose -f docker-compose.yml -f docker/docker-compose.prod.yml config --quiet
+
+    # Building and testing dev image:
+    _compose build
+    _compose run --user=root --rm djapp ./docker/ci.sh
+
+    # Building and testing prod image:
+    # _compose -f docker-compose.yml -f docker/docker-compose.prod.yml build
+    # _compose -f docker-compose.yml \
+    #    -f docker/docker-compose.prod.yml run \
+    #    --approval=root --rm djapp \
+    #    python manage.py check --deploy --fail-level WARNING
+
+    # Checking the size of final images:
+    # disl "$PROJECT_NAME:dev" 950MiB
+    # disl "ghcr.io/$ORGANIZATION_LOWER/$PROJECT_NAME:latest" 640MiB
+}

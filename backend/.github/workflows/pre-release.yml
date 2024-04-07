@@ -1,0 +1,125 @@
+# .github/workflows/version.yml
+name: "CI (Pre Release 🏗)"
+
+on:
+  push:
+    branches:
+      - rc
+      - dev/*
+      - test/*
+      - deck/*
+  workflow_call:
+    inputs:
+      is_draft_release:
+        required: false
+        type: boolean
+        default: false
+
+env:
+  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+
+jobs:
+  Semver:
+    runs-on: ubuntu-latest
+    outputs:
+      image_version: ${{ steps.tag.outputs.IMAGE_VERSION }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ env.BRANCH_NAME }}
+          fetch-depth: 0
+      - name: Semver Finder
+        id: SemverFinder
+        uses: codacy/git-version@2.7.1
+        with:
+          tool-version: latest
+          release-branch: master
+          dev-branch: rc
+          minor-identifier: "feature:"
+          major-identifier: "breaking:"
+          prefix: "v"
+          log-paths: ./
+      - name: Semver Parse
+        id: SemverParser
+        uses: madhead/semver-utils@latest
+        with:
+          version: ${{ steps.SemverFinder.outputs.version }}
+      - name: Set up git-cliff
+        uses: kenji-miyake/setup-git-cliff@v1
+      - name: Prepare Version & CHANGELOG
+        id: tag
+        run: |
+          echo "${{ toJson(steps.SemverFinder.outputs) }}"
+          echo "${{ toJson(steps.SemverParser.outputs) }}"
+          _group=$( cut -d '/' -f 1 <<< "${{ env.BRANCH_NAME }}" )
+          _ver=${{steps.SemverFinder.outputs.version}}
+          if [[ $_group == master ]]; then
+            echo "TAG_VERSION=$_ver" >> $GITHUB_OUTPUT
+          else
+            _ver=$(echo $_ver | sed -e "s/${{ steps.SemverParser.outputs.prerelease-0 }}/$_group/g")
+            if [[ $_group == rc ]]; then
+              _ver=${{steps.SemverFinder.outputs.version}}
+            fi
+            echo "TAG_VERSION=$_group/$_ver" >> $GITHUB_OUTPUT
+          fi
+          _dist="${{steps.SemverFinder.outputs.previous-version}}..HEAD"
+          echo "PREV_TAG=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
+          echo "IMAGE_VERSION=$_ver" >> $GITHUB_OUTPUT
+          echo "CHANGELOG<<EOF" >> $GITHUB_OUTPUT
+          echo "$(git-cliff -c ./.github/cliff.toml $_dist)" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      - name: "Create release"
+        uses: "actions/github-script@v6.4.0"
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          script: |
+            try {
+                const tag_v = `${{ steps.tag.outputs.TAG_VERSION }}`
+                const pre_tag_v = `${{ steps.tag.outputs.PREV_TAG }}`
+                const is_draft_release = `${{ inputs.is_draft_release }}` == 'true'
+                let draftRelease
+                if (is_draft_release) {
+                  const releases = await github.rest.repos.listReleases({...context.repo});
+                  draftRelease = releases.data.find((r) => r.draft && r.tag_name == tag_v);
+                } else {
+                  const prevRelease = await github.rest.repos.getReleaseByTag({
+                    ...context.repo,
+                    tag: pre_tag_v
+                  }).catch(() => {});
+                  draftRelease = prevRelease?.prerelease ? prevRelease?.data : undefined
+                }
+                if (draftRelease) {
+                  await github.rest.repos.deleteRelease({...context.repo, release_id: draftRelease?.id}).catch(() => {});
+                  await github.rest.git.deleteRef({...context.repo, ref: `tags/${draftRelease?.tag_name}`}).catch(() => {});
+                }
+                github.rest.repos.createRelease({
+                  ...context.repo,
+                  generate_release_notes: true,
+                  name: tag_v,
+                  tag_name: tag_v,
+                  body: `${{ steps.tag.outputs.CHANGELOG }}`,
+                  target_commitish: context.sha,
+                  draft: is_draft_release,
+                  prerelease: !is_draft_release,
+                  make_latest: 'false'
+                });
+                // Log
+                console.log({
+                  is_draft_release: is_draft_release,
+                  tag_v: tag_v,
+                  pre_tag_v: pre_tag_v,
+                  release_id: draftRelease?.id,
+                  tag_name: draftRelease?.tag_name
+                })
+            } catch (error) {
+                core.setFailed(error.message);
+            }
+
+  BuidDevImage:
+    needs: Semver
+    uses: ./.github/workflows/release.yaml
+    with:
+      image_version: ${{ needs.Semver.outputs.image_version }}
+
+

@@ -1,0 +1,72 @@
+---
+
+# This compose-file is production only. So, it should not be called directly.
+#
+# Instead, it should be a part of your deployment strategy.
+# This setup is supposed to be used with `docker-swarm`.
+# See `./docs/pages/template/production.rst` docs.
+
+version: "3.8"
+services:
+
+  nginx:
+    build: ./docker/nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - djapp
+    networks:
+      - proxynet
+    volumes:
+      - './docker/socket:/var/run/django'
+
+  djapp:
+    <<: &djapp
+      # Image for production:
+      image: "ghcr.io/myorg/src:latest"
+      build:
+        context: .
+        target: production_build
+        args:
+          DJANGO_ENV: production
+        cache_from:
+          - "src:latest"
+          - "ghcr.io/myorg/src:latest"
+          - "*"
+
+      restart: unless-stopped
+      volumes:
+        - django-media:/var/www/django/media  # since in dev it is app's folder
+        - django-locale:/code/locale  # since in dev it is app's folder
+        - './docker/socket:/code/run'
+
+    command: bash ./docker/django/gunicorn.sh
+    healthcheck:
+      test: curl --fail --silent --unix-socket run/gunicorn.sock sock-http/health?format=json || exit 1
+    networks:
+      - proxynet
+    expose:
+      - 8000
+
+# This task is an example of how to extend existing ones:
+# celeryworker:
+#   <<: *djapp
+#   env_file: ./config/.env
+#   restart: unless-stopped
+#   command: celery -A src.worker worker -c 4 -E -l DEBUG
+#   deploy:
+#     replicas: 2
+#   networks:
+#     - proxynet
+
+networks:
+  # Network for your proxy server and application to connect them,
+  # do not use it for anything else!
+  proxynet:
+
+volumes:
+  django-media:
+  django-locale:
+  caddy-config:
+  caddy-data:

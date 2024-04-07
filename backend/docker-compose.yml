@@ -1,0 +1,54 @@
+---
+
+# Default compose file for development and production.
+# Should be used directly in development.
+# Automatically loads `docker-compose.override.yml` if it exists.
+# No extra steps required.
+# Should be used together with `docker/docker-compose.prod.yml`
+# in production.
+
+version: "3.8"
+services:
+
+  djapp:
+    <<: &djapp
+      # Image name is changed in production:
+      image: "src:dev"
+      build:
+        context: .
+        target: development_build
+        dockerfile: ./docker/django/Dockerfile
+        args:
+          DJANGO_ENV: development
+        cache_from:
+          - "src:dev"
+          - "src:latest"
+          - "ghcr.io/myorg/src:latest"
+          - "*"
+
+      networks:
+        - appnet
+      volumes:
+        - django-static:/var/www/django/static
+      env_file: ./config/.env
+
+    command: python -Wd manage.py runserver 0.0.0.0:8000
+    healthcheck:
+      test: curl --fail --silent http://localhost:8000/health?format=json || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+# This task is an example of how to extend existing ones:
+#   some_worker:
+#     <<: *djapp
+#     command: python manage.py worker_process
+
+networks:
+  # Network for your internals, use it by default:
+  appnet:
+
+volumes:
+  mysql-data:
+  django-static:

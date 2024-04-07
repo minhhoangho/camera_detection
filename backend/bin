@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+cd "$(dirname "$0")"
+
+set -eo pipefail
+# set -o xtrace
+
+DC="${DC:-exec}"
+
+# If we're running in CI we need to disable TTY allocation for docker-compose
+# commands that enable it by default, such as exec and run.
+TTY=""
+# if [[ ! -t 1 ]]; then
+#    TTY="-T"
+# fi
+
+# shellcheck disable=SC1091
+source scripts/main
+
+# deployment scripts
+# shellcheck disable=SC1091
+source scripts/deploy
+source scripts/cron
+
+function help {
+    printf "%s <task> [args]\n\nTasks:\n" "${0}"
+    compgen -A function | grep -v "^_" | cat -n
+    printf "\nExtended help:\n  Each task has comments for general usage\n"
+}
+
+# This idea is heavily inspired by: https://github.com/adriancooney/Taskfile
+TIMEFORMAT=$'\nTask completed in %3lR'
+time "${@:-help}"

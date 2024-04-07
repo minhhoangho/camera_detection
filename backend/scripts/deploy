@@ -1,0 +1,145 @@
+#!/usr/bin/env bash
+
+APP_NAME=djapp
+DISK_RECLAIMED=0
+USE_LOCAL_IMAGE="${USE_LOCAL_IMAGE:0}"
+
+function _dc:dev {
+    if [ "$DOCKER_BUILDKIT" == 0 ]; then
+        export DOCKER_BUILDKIT=1
+        export COMPOSE_DOCKER_CLI_BUILD=1
+    fi
+    _compose -p src ${TTY} ${@}
+}
+
+function _dc:prod {
+    _dc:dev -f docker-compose.yml -f docker/docker-compose.prod.yml ${@}
+}
+
+function _dc:clean {
+    if [ "$DISK_RECLAIMED" == 0 ]; then
+        docker container prune -f
+        docker image prune -f
+        docker network prune -f
+        DISK_RECLAIMED=1
+    fi
+}
+
+function _dc:pull {
+    # pull production image from the docker registry
+    _dc:prod pull $APP_NAME --quiet && _dc:clean
+}
+
+function _exec {
+    env=${1:-"prod"}; shift; # dev/prod
+    cmd=$1; # up/build --other-commands
+    if [ "$env" == "prod" ]; then
+        if [ "$cmd" != "build" ]; then
+            # Prod image pull, ignore for build from local source
+            _dc:pull
+        fi
+        _dc:prod ${@}
+    else
+        _dc:dev ${@}
+    fi
+}
+
+function _reload_nginx {
+    nginx_container_id=$(docker ps -f name=nginx -q | tail -n1)
+    docker exec $nginx_container_id /usr/sbin/nginx -s reload
+}
+
+function _zero_downtime_deploy {
+    _APP_NAME=$1
+    old_container_id=$(docker ps -f name=$_APP_NAME -q | tail -n1)
+    if [ "$old_container_id" == "" ]; then
+        echo "Service is not running, starting ..."
+        docker:app-up prod
+        exit 1;
+    fi;
+
+    drop_container() {
+        sleep 1
+        docker stop $1
+        docker rm $1
+        _dc:clean
+    }
+
+    # bring a new container online, running new code
+    # (nginx continues routing to the old container only)
+    _dc:prod up -d --no-deps --scale $_APP_NAME=2 --no-recreate $APP_NAME
+
+    (
+        # wait for new container to be available
+        cd ./docker/socket || exit
+        new_container_id=$(docker ps -f name=$_APP_NAME -q | head -n1)
+
+        # wait for new gunicorn socket available
+        new_socket=$new_container_id.sock
+        SECONDS=0
+        while [ ! -S "$new_socket" ]; do
+            if [ $SECONDS -gt 20 ]; then
+                echo "Exec timeout when trying to scale a new container"
+                drop_container $new_container_id
+                rm -rf $new_socket
+                exit 1;
+            fi
+            sleep .5;
+        done
+
+        # validate again the new socket, then promote it to the main socket
+        curl --silent --include --retry-connrefused --retry 30 --retry-delay 1 --fail --unix-socket $new_socket sock-http || exit 1
+
+        # start routing requests to the new container (as well as the old)
+        _reload_nginx & mv $new_socket gunicorn.sock
+    )
+
+    # take the old container offline
+    drop_container $old_container_id
+
+    _dc:prod up -d --no-deps --scale $_APP_NAME=1 --no-recreate $APP_NAME
+
+    # stop routing requests to the old container
+    _reload_nginx
+}
+
+function docker:app-migrate {
+    _exec "$1" run --rm djapp python manage.py migrate
+}
+
+function docker:build {
+    # $1 is dev/prod - default is `prod`
+    # Only use for source code from current directory
+    # prod build ex: ./bin docker:build prod
+    _exec "$1" build $APP_NAME && _dc:clean
+}
+
+function docker:upall {
+    # compose up all containers including: nginx, app, worker
+    _exec "$1" up
+}
+
+function docker:app-up {
+    env=${1:-"prod"};
+    _exec "$1" up -d --remove-orphans $APP_NAME
+    if [ "$env" == "prod" ]; then
+        _exec "$1" up -d --remove-orphans nginx
+    fi
+}
+
+function docker:worker-up {
+    _dc:prod up -d --remove-orphans --no-deps celeryworker
+}
+
+function docker:deploy {
+    # $1 is djapp/celeryworker - default is `djapp`
+    # The command is using for deployment from the image:latest without downtime
+    # Working only for production
+    _app=${1:-$APP_NAME};
+    if [ "$USE_LOCAL_IMAGE" != 1 ]; then _dc:pull; fi
+    if [ "$_app" == "worker" ]; then
+        _dc:prod up -d --remove-orphans -d celeryworker
+    else
+        _zero_downtime_deploy "$_app"
+    fi
+}

@@ -1,0 +1,128 @@
+---
+name: "CI (Release 🏗)"
+
+on:
+  workflow_call:
+    inputs:
+      image_version:
+        required: true
+        type: string
+        default: 0
+
+env:
+  PYTHON_VERSION: 3.10.4
+  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+  ECR_REGISTRY: ghcr.io
+  ECR_REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  PreJob:
+    runs-on: [self-hosted, "tool-runner"]
+    outputs:
+      isPublish: ${{ steps.setVar.outputs.isPublish }}
+      appVersion: ${{ steps.setVar.outputs.appVersion }}
+      organization_slug: ${{ env.packageJson_organization_slug }}
+      project_slug: ${{ env.packageJson_project_slug }}
+    steps:
+      - name: Checkout source code 📥
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ env.BRANCH_NAME }}
+          fetch-depth: 0
+      - name: Load cookiecutter configuration 🛠️
+        uses: antifree/json-to-variables@v1.0.1
+        with:
+          filename: './config/cookiecutter-config.json'
+          prefix: packageJson
+      - name: Set Variables
+        id: setVar
+        run: |
+          publishing=${{ inputs.image_version == 0 && true || false }}
+          releaseVer=${{ inputs.image_version }}
+          if [[ $publishing == true ]]; then
+            releaseVer=$(git describe HEAD --tags --abbrev=0)
+          fi
+          echo "appVersion=$releaseVer" >> $GITHUB_OUTPUT
+          echo "isPublish=$publishing" >> $GITHUB_OUTPUT
+
+  Release-CHANGELOG:
+    needs: PreJob
+    if: needs.PreJob.outputs.isPublish == true
+    runs-on: [self-hosted, "tool-runner"]
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ env.BRANCH_NAME }}
+          fetch-depth: 0
+      - name: Install Poetry 👷
+        uses: snok/install-poetry@v1.3.3
+        with:
+          version: 1.4.0
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+      - name: Bump version 🔥
+        run: |
+          echo ${{needs.PreJob.outputs.isPublish}}
+          poetry version ${{needs.PreJob.outputs.appVersion}}
+      - name: Update changelog 📜
+        run: |
+          apt install -qq npm -y || echo "Ignore npm install"
+          npm install github-release-notes -g
+          export GREN_GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          gren changelog --override
+      - name: Get short SHA
+        uses: benjlevesque/short-sha@v2.1
+        id: short-sha
+        with:
+          length: 6
+      - name: Commit release 🚀
+        uses: EndBug/add-and-commit@v9
+        with:
+          author_name: Github Action
+          author_email: GitHub Action <noreply@github.com>
+          commit: --signoff
+          message: "chore: release version ${{ github.event.release.tag_name }} (${{ steps.short-sha.outputs.sha }})"
+
+  ECR-Image:
+    needs: PreJob
+    if: needs.PreJob.outputs.isPublish == true
+    runs-on: [self-hosted, "tool-runner"]
+    env:
+      IMAGE_VERSION: ${{needs.PreJob.outputs.appVersion}}
+      ORGANIZATION_SLUG: ${{needs.PreJob.outputs.organization_slug}}
+      PROJECT_SLUG: ${{needs.PreJob.outputs.project_slug}}
+    steps:
+      - name: Prepare docker tags
+        id: tag
+        env:
+          DOCKER_IMAGE: ${{env.ECR_REGISTRY}}/${{env.ORGANIZATION_SLUG}}/${{env.PROJECT_SLUG}}
+        run: |
+          _tag=${{env.DOCKER_IMAGE}}:${{env.IMAGE_VERSION}}
+          if [[ ${{needs.PreJob.outputs.isPublish}} == true ]]; then
+            _tag=${{env.DOCKER_IMAGE}}:latest, $_tag
+          fi
+          echo "DOCKER_TAGS=$_tag" >> $GITHUB_OUTPUT
+          echo $_tag
+      - name: Login to Registry 🔌
+        uses: docker/login-action@v2
+        with:
+          registry: ${{env.ECR_REGISTRY}}
+          username: phuongtmr
+          password: ${{env.ECR_REGISTRY_PASS}}
+      - name: Set up QEMU 🐳
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx 🐳
+        uses: docker/setup-buildx-action@v2
+      - name: Build & push image to ECR 🐳
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: ./docker/django/Dockerfile
+          builder: ${{ steps.buildx.outputs.name }}
+          push: true
+          cache-from: ${{env.DOCKER_IMAGE}}:latest
+          build-args: |
+            DJANGO_ENV=production
+          tags: ${{steps.tag.outputs.DOCKER_TAGS}}
+
