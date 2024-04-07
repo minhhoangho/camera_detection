@@ -52,7 +52,7 @@ urlpatterns = [
 
     # It is a good practice to have explicit index view:
     path("", include("src.Apps.illustration.urls")),
-    path("", include("src.Apps.approval.urls")),
+    path("", include("src.Apps.user.urls")),
 ]
 
 if settings.DEBUG:  # pragma: no cover
