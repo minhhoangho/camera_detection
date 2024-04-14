@@ -12,7 +12,7 @@ REST_FRAMEWORK = {
         "checkr_hourly": "1/hour",
     },
     "OVERRIDE_THROTTLE_RATES": {"special": "10000/hour"},
-    # "DEFAULT_CONTENT_NEGOTIATION_CLASS": "ai_api.content_negotiation.IgnoreClientContentNegotiation",
+    "EXCEPTION_HANDLER": "src.Apps.base.exception_handler.app_exception_handler",
 }
 
 REST_FRAMEWORK_CACHE = {
