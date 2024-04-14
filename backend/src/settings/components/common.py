@@ -79,7 +79,6 @@ ROOT_URLCONF = "src.urls"
 
 WSGI_APPLICATION = "src.wsgi.application"
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
@@ -97,7 +96,6 @@ LOCALE_PATHS = ("locale/",)
 USE_TZ = True
 TIME_ZONE = "UTC"
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
@@ -107,7 +105,6 @@ STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 )
-
 
 # Templates
 # https://docs.djangoproject.com/en/4.0/ref/templates/api
@@ -134,7 +131,6 @@ TEMPLATES = [
     }
 ]
 
-
 # Media files
 # Media root dir is commonly changed in production
 # (see development.py and production.py).
@@ -143,14 +139,10 @@ TEMPLATES = [
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR.joinpath("media")
 
-
 # Django authentication system
 # https://docs.djangoproject.com/en/4.0/topics/auth/
 
-AUTHENTICATION_BACKENDS = (
-    "axes.backends.AxesBackend",
-    "django.contrib.auth.backends.ModelBackend",
-)
+
 
 PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
@@ -159,7 +151,6 @@ PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
     "django.contrib.auth.hashers.Argon2PasswordHasher",
 ]
-
 
 # Security
 # https://docs.djangoproject.com/en/4.0/topics/security/
@@ -178,12 +169,10 @@ REFERRER_POLICY = "same-origin"
 # https://github.com/adamchainz/django-permissions-policy#setting
 PERMISSIONS_POLICY: Dict[str, Union[str, List[str]]] = {}  # noqa: WPS234
 
-
 # Timeouts
 # https://docs.djangoproject.com/en/4.0/ref/settings/#std:setting-EMAIL_TIMEOUT
 
 EMAIL_TIMEOUT = 5
-
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field

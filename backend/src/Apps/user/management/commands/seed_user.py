@@ -12,6 +12,11 @@ class Command(BaseCommand):
         fake = Faker()
         list_user = []
         UserModel = get_user_model()
+        list_user.append(UserModel(
+            username="admin",
+            email="admin@gmail.com",
+            password=make_password("123456")
+        ))
         for i in range(num_user):
             email = fake.ascii_email()
             list_user.append(UserModel(
@@ -22,5 +27,5 @@ class Command(BaseCommand):
                 password=make_password("123456")
             ))
 
-        bulk_user = UserModel.objects.bulk_create(list_user)
+        bulk_user = UserModel.objects.bulk_create(list_user, update_conflicts=False)
         print("Seed completed for ", len(bulk_user))

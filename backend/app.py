@@ -14,7 +14,7 @@ app = Flask(__name__)
 CORS(app)
 app.config["REDIS_URL"] = "redis://localhost:6379"
 app.register_blueprint(sse, url_prefix='/api/sse')
-detector = DetectionUtil(os.path.join("./models", "yolov8m.pt"))
+detector = DetectionUtil(os.path.join("../models", "yolov8m.pt"))
 
 
 stream = CamGear(source='https://youtu.be/dQw4w9WgXcQ', stream_mode = True, logging=True).start() # YouTube Video URL as input

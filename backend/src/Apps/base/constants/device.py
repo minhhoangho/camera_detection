@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from src.Apps.base.constants import const
 
 
-class DeviceType(const):
+class DeviceType:
     MOBILE = 1  #
     ANDROID_PHONE = 2
     IOS_PHONE = 3
@@ -51,7 +51,7 @@ class DeviceType(const):
         return _("Unknown")
 
 
-class MobileType(const):
+class MobileType:
     ANDROID = 0
     IOS = 1
 
