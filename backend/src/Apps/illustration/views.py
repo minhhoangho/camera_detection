@@ -3,6 +3,8 @@ from http import HTTPStatus
 import structlog
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 
 def ping(request: HttpRequest) -> HttpResponse:
@@ -14,27 +16,23 @@ def ping(request: HttpRequest) -> HttpResponse:
     return render(request, "index.html")
 
 
-def log(request: HttpRequest) -> HttpResponse:
-    """
-    Return rendered default page to the approval.
+@api_view(['GET'])
+def healthcheck(request: HttpRequest) -> Response:
+    import toml
+    # Load the pyproject.toml file
+    with open('pyproject.toml', 'r') as f:
+        pyproject_toml = toml.load(f)
 
-    Typed with the help of ``django-stubs`` project.
-    """
-    logger = structlog.get_logger(__name__)
-    try:
-        logger.bind(ip="127.0.0.1", message="Nevermind, I'm testing the logger!!!")
-        logger.debug("debug message", bar="Buz")
-        logger.info("info message", bar="Buz")
-        logger.warning("warning message", bar="Buz")
-        logger.error("error message", bar="Buz")
-        logger.critical("critical message", bar="Buz")
-        print(1 / 0)  # noqa
-    except Exception:
-        logger.exception("Catched an exception")
-    return HttpResponse(status=HTTPStatus.OK)
+    # Get the project version
+    version = pyproject_toml['tool']['poetry']['version']
+    desc = pyproject_toml['tool']['poetry']['description']
+    repository = pyproject_toml['tool']['poetry']['repository']
+    authors = pyproject_toml['tool']['poetry']['authors']
+    return Response(data=dict(
+        status="Success",
+        version=version,
+        desc=desc,
+        repository=repository,
+        authors=authors,
+    ), status=HTTPStatus.OK)
 
-
-def sentry_debug(request: HttpRequest) -> HttpResponse:
-    #  Check Sentry setting
-    print(1 / 0) # noqa
-    return HttpResponse(status=200)
