@@ -12,3 +12,9 @@ class ViewPointSerializer(serializers.ModelSerializer):
 class CUViewPointSerializer(serializers.Serializer):
     lat = serializers.FloatField(required=True)
     long = serializers.FloatField(required=True)
+
+
+class CUCameraViewPointSerializer(serializers.Serializer):
+    id = serializers.IntegerField(required=False)
+    camera_source = serializers.IntegerField(required=True)
+    camera_uri = serializers.CharField(required=True)

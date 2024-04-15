@@ -28,7 +28,7 @@ class TypeUtils:
             return default
 
     @classmethod
-    def safe_str(cls, val, default=None):
+    def safe_str(cls, val, default=""):
         """Safely cast value to str, Optional: Pass default value. Returned if casting fails.
 
         Args:
