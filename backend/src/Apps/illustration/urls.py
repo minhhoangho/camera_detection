@@ -1,13 +1,10 @@
-
-
 from django.urls import path
 
-from src.Apps.illustration.views import log, ping, sentry_debug
+from src.Apps.illustration.views import ping, healthcheck
 
 app_name = "main"
 
 urlpatterns = [
+    path("health-check", healthcheck, name="healthcheck"),
     path("", ping, name="ping"),
-    path("logs", log, name="log"),
-    path("sentry_debug", sentry_debug, name="sentry_debug"),
 ]
