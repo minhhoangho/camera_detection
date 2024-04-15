@@ -8,6 +8,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from src.Apps.base.exceptions import AppException, ApiErr
+from src.Apps.base.exceptions.validation_error import ValidationErr
 from src.Apps.base.utils.type_utils import TypeUtils
 from src.Apps.gis_map.models import GisViewPoint
 from src.Apps.gis_map.serializers.gis_map import ViewPointSerializer
@@ -37,7 +38,7 @@ class GisMapViewSet(PaginationMixin):
     def update_view_point(self, request: Request, pk):
         pk = TypeUtils.safe_int(pk)
         if not pk:
-            raise ValidationError("Invalid view point id")
+            raise AppException(error=ValidationErr.INVALID, params=["pk"])
 
         lat = request.data.get('lat')
         long = request.data.get('long')

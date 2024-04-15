@@ -5,7 +5,8 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 
 from src.Apps.base.exceptions import AppException, EmptyThrottled, AppExceptions, ApiErr, BadHeaderParams, TokenExpired
-from src.Apps.base.exceptions.error import COMMON_ERROR_MESSAGES
+from src.Apps.base.exceptions.api_error import COMMON_ERROR_MESSAGES
+from src.Apps.base.exceptions.validation_error import ValidationErr
 from src.Apps.base.logging.application_log import AppLog
 
 
@@ -60,6 +61,17 @@ def get_all_errors(field_name, current_errors, rest_errors=[], olivia_errors=[])
             rest_errors.append({"field": field_name, "message": str(current_errors[0]), "code": code})
 
 
+def num_from_str(error_message: str):
+    try:
+        """
+        error_message = "Max len is 10"
+        """
+        numbers = [int(s) for s in error_message[:-1].split() if s.isdigit()]
+        return numbers[0] if len(numbers) > 0 else 0
+    except:
+        return 0
+
+
 def parser_error_to_list(exc):
     errors = []
     rest_errors = []
@@ -78,7 +90,7 @@ def parser_error_to_list(exc):
                     ValidationErr.MAX_VALUE["code"],
                     ValidationErr.MIN_VALUE["code"],
                 ]:
-                    value = extract_number_from_string(error["message"])
+                    value = num_from_str(error["message"])
                     error_message = error_message.format(error["field"], value)
                 elif error_code == ValidationErr.UNIQUE_SET["code"]:
                     error_message = error["message"]

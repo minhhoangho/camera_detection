@@ -4,7 +4,7 @@ __date__ = "Oct 06, 2023 14:04"
 from typing import Optional, Dict, Any
 from rest_framework import exceptions, status
 
-from src.Apps.base.exceptions.error import ApiErr
+from src.Apps.base.exceptions.api_error import ApiErr
 from django.utils.translation import gettext_lazy as _
 
 
