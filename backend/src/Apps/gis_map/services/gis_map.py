@@ -12,19 +12,20 @@ from django.core.paginator import EmptyPage, Paginator
 from django.db import transaction
 from django.db.models import Q
 
+from src.Apps.gis_map.models import GisViewPoint
+
 UserModel = get_user_model()
 
 
 class GisMapService:
     @classmethod
     def list_paginate(cls, page: int, per_page: int = 10):
-        qs = UserModel.objects.filter()
+        qs = GisViewPoint.objects.filter()
         paginator = Paginator(qs, per_page)
         total = paginator.count
         try:
             data = paginator.page(page).object_list
-            data = data.values("id", "username", "email", "first_name", "last_name", "is_active", "is_staff",
-                               "is_superuser", "date_joined")
+            data = data.values()
         except EmptyPage:
             data = []
         return data, total

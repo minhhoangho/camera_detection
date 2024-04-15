@@ -1,10 +1,13 @@
 from django.db import models
 
-from src.Apps.user.models.abstracts.attribute import Attribute
+from src.Apps.base.models.timestamped import AutoTimeStampedModel
+from src.Apps.base.models.user_interaction import UserInteractionModel
 
 
-class UserAttribute(Attribute):
-    user_id = models.PositiveIntegerField(db_index=True)
+class GisViewPoint(UserInteractionModel, AutoTimeStampedModel):
+
+    lat = models.FloatField()
+    long = models.FloatField()
 
     class Meta:
-        db_table = "user_attributes"
+        db_table = "gis_view_points"

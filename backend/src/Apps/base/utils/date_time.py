@@ -1,11 +1,17 @@
-
-
+from contextlib import suppress
 from datetime import datetime
-
 import pytz
-
+from time import mktime
 from src.Apps.base.logging.application_log import AppLog
 from src.Apps.base.utils.main import Utils
+from django.utils.formats import date_format
+from pytz import country_timezones
+from phonenumbers import parse as pn_parse
+import re
+from dateutil.parser import parse as dateutil_parse
+from phonenumbers import timezone as pn_timezone
+
+from src.Apps.base.utils.type_utils import TypeUtils
 
 UTC_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S+00:00"
 YYYMMDD_DATE_FORMAT = "%Y-%m-%d"
@@ -20,6 +26,14 @@ US_ARIZONA_DEFAULT = "US/Arizona"
 
 
 class DateTimeUtils:
+    FORMAT_DATE_PATTERN_YYYYMMDD = "%Y/%m/%d"
+    FORMAT_DATE_PATTERN_MMDDYYYY = "%m/%d/%Y"
+    FORMAT_DATE_PATTERN_Y_M_D_H_M_S = "%Y-%m-%d %H:%M:%S"
+    FORMAT_DATE_PATTERN_M_D_Y_H_M_S_SLASH = "%m/%d/%Y %H:%M:%S"
+    FORMAT_DATE_PATTERN_M_D_Y = "M d, Y"
+    FORMAT_DATE_PATTERN_D_M_Y = "d M, Y"
+    FORMAT_DATE_PATTERN_YYYY_MM_DD = "%Y-%m-%d"
+
     @staticmethod
     def get_min_max_dates_in_list(datetime_list):
         min_datetime = ""
@@ -150,8 +164,19 @@ class DateTimeUtils:
         if isinstance(dt_input, datetime):
             dt_object = dt_input
         else:
-            dt_object = Utils.parse_res_date(dt_input)
+            dt_object = cls.parse_res_date(dt_input)
         return dt_object.strftime("%Y%m%d%H%M%S%f")[:-3]
+
+    @classmethod
+    def parse_res_date(cls, date):
+        """
+        Try to convert a string datetime to object datetime with strange format
+        :param date:
+        Returns: Object DateTime
+        """
+        with suppress(Exception):
+            return datetime.strptime(date, "%Y-%m-%dT%H:%M:%S%fZ")
+        return dateutil_parse(date, fuzzy=True)
 
     @classmethod
     def to_utc(cls, dt_input, timezone):
@@ -168,3 +193,165 @@ class DateTimeUtils:
         if not from_date or not to_date:
             return 0
         return (to_date - from_date).days
+
+    @classmethod
+    def timezone_in_minutes(cls, tz_str):
+        res = 0
+        try:
+            dt = datetime.utcnow()
+            utc_tz = pytz.timezone("UTC")
+            dt0 = cls.convert_timezone(dt, tz_str).replace(tzinfo=utc_tz)
+            dt = cls.convert_timezone(dt, "UTC").replace(tzinfo=utc_tz)
+            time_diff = dt0 - dt
+            res = (time_diff.seconds // 60) + time_diff.days * 24 * 60
+        except Exception as e:
+            AppLog.project.error(e)
+        return res
+
+    @classmethod
+    def convert_datetime(cls, time_convert, time_zone, to_timezone="UTC", day_time="min", return_datetime_obj=False):
+        if not isinstance(time_convert, datetime):
+            time_convert = datetime.strptime(time_convert, cls.FORMAT_DATE_PATTERN_Y_M_D_H_M_S)
+        if day_time == "min":
+            time_convert = time_convert.replace(hour=0, minute=0, second=0)
+        elif day_time == "max":
+            time_convert = time_convert.replace(hour=23, minute=59, second=59)
+        time_convert = cls.convert_timezone(time_convert, from_timezone=time_zone, to_timezone=to_timezone)
+        if return_datetime_obj:
+            return time_convert
+        return datetime.strftime(time_convert, cls.FORMAT_DATE_PATTERN_Y_M_D_H_M_S)
+
+    @staticmethod
+    def convert_timezone(datetime_value, to_timezone, from_timezone="UTC"):
+        """
+        @param from/to_timezone: element in pytz.all_timezones. ex: Asia/Ho_Chi_Minh
+        """
+        with suppress(Exception):
+            _datetime_value = datetime_value.replace(tzinfo=None)
+            _from_timezone = pytz.timezone(from_timezone)
+            _to_timezone = pytz.timezone(to_timezone)
+            result = _from_timezone.localize(_datetime_value).astimezone(_to_timezone)
+            return result
+        return datetime_value
+
+    @classmethod
+    def parse_date(cls, date_string, format="%Y%m%d", to_timezone=None, use_l10n=False):
+        try:
+            date_value = dateutil_parse(date_string)
+            if to_timezone:
+                # Convert to a specific timezone time before parse to string
+                date_value = cls.convert_timezone(date_value, to_timezone=to_timezone, from_timezone="UTC")
+            if use_l10n:
+                return date_format(date_value, format, use_l10n=True)
+            return date_value.strftime(format)
+        except Exception as e:
+            AppLog.error_exception(e)
+        return ""
+
+    @classmethod
+    def parse_string_to_date(cls, date):
+        with suppress(Exception):
+            year, month, day = (int(x) for x in date.split(","))
+            return datetime(year, month, day)
+        return None
+
+    @classmethod
+    def parse_date_string_to_datetime(cls, date_str):
+        with suppress(Exception):
+            return dateutil_parse(date_str)
+        return None
+
+    @classmethod
+    def convert_day_string_to_utc(cls, day_str, time_str, tz_str="US/Arizona"):
+        # day_str format as YYYY-MM-dd
+        # time str format at HH:MM
+        _timezone = pytz.timezone(tz_str)
+        date_time_str = f"{day_str} {time_str}:00"
+        date_time_obj = datetime.strptime(date_time_str, "%Y-%m-%d %H:%M:%S")
+        datetime_at_time_zone = _timezone.localize(date_time_obj)
+
+        # The datetime saving on DB should be convert from approval choose timezone to UTC
+        return datetime_at_time_zone.astimezone(pytz.utc)
+
+    @classmethod
+    def get_tz(cls, phone_number, default=None):
+        with suppress(Exception):
+            x = pn_parse(phone_number)
+            tz = pn_timezone.time_zones_for_number(x)
+            tz = tz[0]
+            # this data AREA_CODE_LOCATOR just support for US/CA phone numbers
+            # TODO: need review this method more
+            if x.country_code == 1:
+                number = str(x.national_number)
+                area_code = TypeUtils.safe_int(number[: (1 + 2)])
+                tz_by_areacd = None
+                if tz_by_areacd:
+                    for tz_str in country_timezones.get("US", []) + country_timezones.get("CA", []):
+                        city = re.sub("_", " ", tz_str.split("/")[-1])
+                        if city in tz_by_areacd:
+                            tz = tz_str
+                            break
+            return tz
+        return default or pytz.utc.zone
+
+    @classmethod
+    def time_to_24h(cls, time_str, meridiem):
+        """
+        :param time_str: time string format HH:MM (12:22)
+        :type time_str: str
+        :param meridiem: AM
+        :type meridiem: str
+        :return: time string
+        :rtype: str
+        """
+        # Convert time_str to 24h
+        try:
+            time_str_with_meridiem = f"{time_str} {meridiem.upper()}"
+            date_time_24h = datetime.strptime(time_str_with_meridiem, "%I:%M %p")
+            return datetime.strftime(date_time_24h, "%H:%M")
+        except Exception as ex:
+            AppLog.project.exception(ex)
+
+    @staticmethod
+    def safe_timezone(timezone_str, default="UTC"):
+        result = default
+        try:
+            result = pytz.timezone(timezone_str).zone
+        except Exception as e:
+            AppLog.project.info(e)
+        return result
+
+    @staticmethod
+    def safe_date(date_str, date_format):
+        result = ""
+        try:
+            result = datetime.strptime(date_str, date_format)
+        except Exception as e:
+            AppLog.project.info(e)
+        return result
+
+    @classmethod
+    def safe_date_str(cls, date_str, date_format):
+        safe_date = cls.safe_date(date_str, date_format)
+        if safe_date:
+            return safe_date.strftime(date_format)
+        return ""
+
+    @staticmethod
+    def safe_format_date(date, date_format, default=""):
+        with suppress(Exception):
+            return date.strftime(date_format)
+        return default
+
+    @staticmethod
+    def dt_to_milliseconds(dt):
+        if isinstance(dt, datetime):
+            sec_since_epoch = mktime(dt.timetuple()) + dt.microsecond / 1000000.0
+            return int(sec_since_epoch * 1000)
+        return 0
+
+    @staticmethod
+    def dt_fr_milliseconds(ms):
+        with suppress(Exception):
+            return datetime.fromtimestamp(ms / 1000.0)
+        return None

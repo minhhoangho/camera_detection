@@ -5,6 +5,6 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 
-class GisMapSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = get_user_model()
+class ViewPointSerializer(serializers.Serializer):
+    lat = serializers.FloatField(required=True)
+    long = serializers.FloatField(required=True)

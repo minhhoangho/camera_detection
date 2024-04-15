@@ -1,7 +1,7 @@
 # Styles file for nitpick
 
 [nitpick]
-    minimum_version = "0.32.0"
+    minimum_version = "0.35.0"
 
     [nitpick.styles]
         include = [
