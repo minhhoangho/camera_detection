@@ -12,10 +12,10 @@ from src.Apps.user.views.mixin import UserViewMixin
 
 class UserViewSet(UserViewMixin):
     def list(self, request: Request, *args, **kwargs):
-        print(request.query_params)
-        page = int(request.query_params.get("page", 1))
-        per_page = int(request.query_params.get("per_page", 10))
-        data, count = UserService.list_paginate(page=page, per_page=per_page)
-        result = self.to_list(items=data, total=count, limit=per_page, offset=(page - 1) * per_page, page=page,
+        limit = int(request.query_params.get("limit", 10))
+        offset = int(request.query_params.get("offset", 0))
+        page = offset // limit + 1
+        data, count = UserService.list_paginate(page=page, per_page=limit)
+        result = self.to_list(items=data, total=count, limit=limit, offset=offset, page=page,
                               with_paginate=True)
         return Response(data=result, status=HTTPStatus.OK)

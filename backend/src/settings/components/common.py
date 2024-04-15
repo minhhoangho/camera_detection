@@ -23,6 +23,7 @@ INSTALLED_APPS: Tuple[str, ...] = (
     # Your apps go here:
     "src.Apps.illustration",
     "src.Apps.user",
+    "src.Apps.gis_map",
 
     # Default django apps:
     "django.contrib.auth",
