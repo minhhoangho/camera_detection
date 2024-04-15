@@ -68,3 +68,33 @@ class AppException(exceptions.ValidationError):
     def __str__(self):
         return self.error["message"]
 
+
+class AppExceptions(Exception):
+    """
+    Base class for REST framework exceptions.
+    Subclasses should provide `.status_code` and `.default_detail` properties.
+    """
+
+    status_code: int = 400
+    errors: list = []
+
+    def __init__(self, status_code=400, errors=None):
+        self.errors = []
+        errors = errors or []
+        self.status_code = status_code
+        for error in errors:
+            if isinstance(error, AppException):
+                self.errors.append(error)
+
+class EmptyThrottled(Exception):
+    pass
+
+
+class BadHeaderParams(exceptions.APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = _("Invalid request headers")
+
+
+class TokenExpired(exceptions.APIException):
+    status_code = 432
+    default_detail = _("Token expired")
