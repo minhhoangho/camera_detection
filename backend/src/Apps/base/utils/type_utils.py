@@ -63,7 +63,7 @@ class TypeUtils:
         return round(cls.safe_cast(_val, float, default), ndigits)
 
     @classmethod
-    def safe_int(cls, val, default=None):
+    def safe_int(cls, val, default=0):
         """Safely cast value to int. Optional: Pass default value. Returned if casting fails.
 
         Args:

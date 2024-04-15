@@ -2,10 +2,13 @@ from http import HTTPStatus
 
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from src.Apps.base.exceptions import AppException, ApiErr
+from src.Apps.base.utils.type_utils import TypeUtils
 from src.Apps.gis_map.models import GisViewPoint
 from src.Apps.gis_map.serializers.gis_map import ViewPointSerializer
 from src.Apps.gis_map.services.gis_map import GisMapService
@@ -28,10 +31,14 @@ class GisMapViewSet(PaginationMixin):
         if serializer.is_valid(raise_exception=True):
             view_point = GisViewPoint(lat=lat, long=long)
             view_point.save()
-        return Response(data=[], status=HTTPStatus.OK)
+        return Response(status=HTTPStatus.OK)
 
     @action(methods=["PUT"], url_path="view-points/(?P<pk>\w+)", detail=False)
     def update_view_point(self, request: Request, pk):
+        pk = TypeUtils.safe_int(pk)
+        if not pk:
+            raise ValidationError("Invalid view point id")
+
         lat = request.data.get('lat')
         long = request.data.get('long')
         payload = {
@@ -40,8 +47,12 @@ class GisMapViewSet(PaginationMixin):
         }
         serializer = ViewPointSerializer(data=payload)
         if serializer.is_valid(raise_exception=True):
-            view_point = GisViewPoint(lat=lat, long=long)
-            view_point.save()
+            gis_vp = GisViewPoint.objects.filter(pk=pk).first()
+            if not gis_vp:
+                raise AppException(error=ApiErr.NOT_FOUND)
+            gis_vp.lat = lat
+            gis_vp.long = long
+            gis_vp.save()
         return Response(data=[], status=HTTPStatus.OK)
 
     @action(methods=["GET"], url_path="view-points", detail=False)
