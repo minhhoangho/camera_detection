@@ -59,7 +59,7 @@ class PaginationMixin(viewsets.ViewSet):
             page_number = page or (offset // limit) + 1
 
             return dict(
-                items=items,
+                data=items,
                 pagination=dict(limit=limit, total=total, offset=offset, page=page_number),
             )
 

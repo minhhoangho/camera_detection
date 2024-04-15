@@ -28,3 +28,8 @@ class UserService:
         except EmptyPage:
             data = []
         return data, total
+
+    @classmethod
+    def create(cls, data: Dict) -> UserModel:
+        user = UserModel.objects.create(**data)
+        return user

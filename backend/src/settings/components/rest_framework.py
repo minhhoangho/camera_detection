@@ -1,5 +1,8 @@
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "src.Apps.auth.services.token_authentication.AppAuthentication"
+    ],
     "EXPIRED_FOREVER": "2000-10-10 00:00:00",
     "DEFAULT_THROTTLE_RATES": {
         "custom_user": "180/minute",

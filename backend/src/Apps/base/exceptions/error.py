@@ -39,10 +39,7 @@ class ApiErr:
     DOES_NOT_SUPPORTED = {"code": 1018, "message": _("This API does not support yet")}
 
 
-
-
-
-REST_ERROR_MESSAGES = {
+COMMON_ERROR_MESSAGES = {
     "REQUIRED": "This field is required.",
     "NULL": "This field may not be null.",
     "EMPTY": "This field may not be blank.",

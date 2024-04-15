@@ -1,17 +1,17 @@
 from django.db import connection, transaction
 from django.http import Http404
-from requests import Response
-from rest_framework import exceptions, status
+from rest_framework import exceptions, status, response
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.response import Response
 
 from src.Apps.base.exceptions import AppException, EmptyThrottled, AppExceptions, ApiErr, BadHeaderParams, TokenExpired
-from src.Apps.base.exceptions.error import REST_ERROR_MESSAGES
+from src.Apps.base.exceptions.error import COMMON_ERROR_MESSAGES
 from src.Apps.base.logging.application_log import AppLog
 
 
 def get_error_label(error_message):
-    for label in REST_ERROR_MESSAGES:
-        if error_message.find(REST_ERROR_MESSAGES[label]) >= 0:
+    for label in COMMON_ERROR_MESSAGES:
+        if error_message.find(COMMON_ERROR_MESSAGES[label]) >= 0:
             return label
     return None
 

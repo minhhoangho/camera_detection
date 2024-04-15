@@ -7,6 +7,7 @@ import jwt
 from datetime import datetime, timedelta
 
 from src.Apps.base.constants.http import HttpMethod
+from src.Apps.base.exceptions import AppExceptions, AppException, ApiErr
 
 
 class AuthViewSet(viewsets.ViewSet):
@@ -19,14 +20,13 @@ class AuthViewSet(viewsets.ViewSet):
 
         user = authenticate(email=email, password=password)
 
-        if user is not None:
-            exp = datetime.utcnow() + timedelta(seconds=settings.JWT_TOKEN_EXPIRED_TIME)
-            payload = {
-                'user_id': user.id,
-                'exp': exp
-            }
-            access_token = jwt.encode(payload, key=settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
+        if not user:
+            raise AppException(error=ApiErr.AUTHENTICATION_FAILED, status_code=status.HTTP_401_UNAUTHORIZED)
+        exp = datetime.utcnow() + timedelta(seconds=settings.JWT_TOKEN_EXPIRED_TIME)
+        payload = {
+            'user_id': user.id,
+            'exp': exp
+        }
+        access_token = jwt.encode(payload, key=settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
 
-            return Response({'access_token': access_token, 'exp': exp}, status=status.HTTP_200_OK)
-        else:
-            return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response({'access_token': access_token, 'exp': exp}, status=status.HTTP_200_OK)
