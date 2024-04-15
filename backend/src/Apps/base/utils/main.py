@@ -1,11 +1,10 @@
-
 import base64
 import re
 import string
 import urllib.parse
 from base64 import b64decode, b64encode
-from collections import OrderedDict, namedtuple
-from contextlib import contextmanager, suppress
+from collections import OrderedDict
+from contextlib import suppress
 from datetime import datetime, timedelta
 from decimal import Decimal
 from hashlib import sha1
@@ -16,29 +15,22 @@ from math import floor
 from pprint import PrettyPrinter
 from random import SystemRandom, randint
 from random import sample as rd_sample
-from re import compile as re_compile
 from re import split as re_split
 from string import punctuation
-from time import mktime
 from types import FunctionType
 from typing import Any, Type
 from urllib.parse import urlparse, urlunparse
 
 import pytz
-from dateutil.parser import parse as dateutil_parse
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.management import call_command
 from django.core.serializers import base, python
 from django.core.validators import validate_email, validate_ipv46_address
-from django.db import connection
 from django.db.models import QuerySet
-from django.db.utils import OperationalError
 from django.forms.models import model_to_dict
 from django.utils.encoding import force_bytes, force_str
-from django.utils.formats import date_format
-from django.utils.functional import Promise, keep_lazy
-from django.utils.safestring import SafeText, mark_safe
+from django.utils.functional import Promise
 from django.utils.text import format_lazy
 from django.utils.timesince import timesince
 from django.utils.translation import gettext_lazy
@@ -48,33 +40,21 @@ from furl import furl
 from html2text import HTML2Text
 from jsonschema import validate as validate_schema
 from lxml import etree
-from phonenumbers import PhoneNumberFormat, format_number, is_valid_number
+from phonenumbers import PhoneNumberFormat, format_number
 from phonenumbers import parse as pn_parse
 from phonenumbers import region_code_for_country_code
-from phonenumbers import timezone as pn_timezone
 from pytz import country_timezones
 from urlextract import URLExtract
 
 from src.Apps.base.constants.device import DeviceType
-from src.Apps.base.constants.languages import LanguageCode
 from src.Apps.base.logging.application_log import AppLog
 from src.Apps.base.utils.dicttoxml import dicttoxml
+from src.Apps.base.utils.type_utils import TypeUtils
 
 
 class Utils:
-    FORMAT_DATE_PATTERN_YYYYMMDD = "%Y/%m/%d"
-    FORMAT_DATE_PATTERN_MMDDYYYY = "%m/%d/%Y"
-    FORMAT_DATE_PATTERN_Y_M_D_H_M_S = "%Y-%m-%d %H:%M:%S"
-    FORMAT_DATE_PATTERN_M_D_Y_H_M_S_SLASH = "%m/%d/%Y %H:%M:%S"
-    FORMAT_DATE_PATTERN_M_D_Y = "M d, Y"
-    FORMAT_DATE_PATTERN_D_M_Y = "d M, Y"
-    FORMAT_DATE_PATTERN_YYYY_MM_DD = "%Y-%m-%d"
     MAX_PAGE_SIZE = 100
     DEFAULT_PAGE_SIZE = 20
-
-    @staticmethod
-    def test_common():
-        return "OK"
 
     @staticmethod
     def base64_encode(data):
@@ -90,7 +70,7 @@ class Utils:
         return 200 <= status_code < 300
 
     @staticmethod
-    def is_vaild_url(url: str) -> bool:
+    def is_valid_url(url: str) -> bool:
         """
         Check a vaild url link
         :param url: url
@@ -131,19 +111,6 @@ class Utils:
         return [x for x in seq if not (x in seen or seen_add(x))]
 
     @staticmethod
-    def dt_to_milliseconds(dt):
-        if isinstance(dt, datetime):
-            sec_since_epoch = mktime(dt.timetuple()) + dt.microsecond / 1000000.0
-            return int(sec_since_epoch * 1000)
-        return 0
-
-    @staticmethod
-    def dt_fr_milliseconds(ms):
-        with suppress(Exception):
-            return datetime.fromtimestamp(ms / 1000.0)
-        return None
-
-    @staticmethod
     def is_unicode(str_text):
         if isinstance(str_text, str):
             return True
@@ -155,32 +122,6 @@ class Utils:
             reg = re.compile(r"^.*(?P<zipcode>\d{5}).*$")
             match = reg.match(text)
             return match.groupdict()["zipcode"]
-        return False
-
-    @staticmethod
-    def clean_zipcode_us(text):
-        """
-        Extract US zip code
-        If more than 5 digits exist in a text, it will abort
-        Example:
-            793004,shillong ,meghalaya india => False
-            85001, pheonix arizona => 85001
-        """
-        with suppress(Exception):
-            reg = re.compile(r"^.*(?P<zipcode>\d{5}).*$")
-            match = reg.match(text)
-            zipcode = match.groupdict()["zipcode"]
-            all_digit_parts = re.findall(r"\d+", text)
-            if zipcode in all_digit_parts:
-                return zipcode
-        return False
-
-    @staticmethod
-    def clean_zipcode_ca(text):
-        with suppress(Exception):
-            reg = re.compile(r"[A-Z]\d[A-Z] *\d[A-Z]\d")
-            zipcode = reg.search(text.upper()).group()
-            return zipcode
         return False
 
     @staticmethod
@@ -196,7 +137,7 @@ class Utils:
         return format_lazy("{0} {1}", vowel_prefix, word)
 
     @staticmethod
-    def replace_punction(str_data, allow_punc=None, replace_by=" "):
+    def replace_punctuation(str_data, allow_punc=None, replace_by=" "):
         allow_punc = allow_punc or []
         if str_data:
             punc_list = set(string.punctuation)
@@ -210,7 +151,7 @@ class Utils:
         return str_data
 
     @staticmethod
-    def replace_special_character(str_data, replace_by=" ", exclude="", to_lower=False, regex=""):
+    def replace_special_characters(str_data, replace_by=" ", exclude="", to_lower=False, regex=""):
         """
         This function used to replace all special characters to replace by
         :return:
@@ -232,12 +173,6 @@ class Utils:
         return bool(pattern.fullmatch(text))
 
     @staticmethod
-    def safe_number(val, default=0):
-        with suppress(Exception):
-            return float(val)
-        return default
-
-    @staticmethod
     def strip_non_ascii(string):
         """Returns the string without non ASCII characters"""
         stripped = (c for c in string if 0 < ord(c) < 127)
@@ -254,91 +189,6 @@ class Utils:
         r = rf"^[^\w]*|[{punctuation}]*$"
         new_strs = re.sub(r, " ", strs, re.UNICODE)
         return new_strs.split()
-
-    @classmethod
-    def safe_parse_jsonlist(cls, val, default=None):
-        if isinstance(val, list):
-            return val
-        return cls.safe_jsonloads(val, default)
-
-    @staticmethod
-    def safe_jsonloads(val, default=None):
-        """
-        NOTE
-          Some external systems send JSON which does not follow the prototype, duplicate keys
-          Example WorkDay
-        INPUT
-          {
-              "Report_Entry": {
-                  "WID": "8c435efe76d7103cd79bd0e18ac78c88",
-                  "Name": "Ranjani Kakaraparti",
-                  "Email_Work": "Ranjani.Kakaraparti@unilever.com",
-                  "Phone": "+91  919986028305",
-                  "Role": "FS Record to Report Spec"
-              },
-              "Report_Entry": {
-                  "WID": "8c435efe76d7103cda19162a8a738c9b",
-                  "Name": "Mandar Prabhakar Kulkarni (Mandar Kulkarni)",
-                  "Email_Work": "Mandar.Kulkarni@unilever.com",
-                  "Phone": "",
-                  "Role": "Make Supervisor"
-              },
-          }
-        OUTPUT
-          {
-            "Report_Entry": [
-                {
-                    "WID": "f42bc7b0b8c90154703c15f55e012d53",
-                    "Name": "Gourab Ghosh",
-                    "Email_Work": "Gourab.Ghosh@unilever.com",
-                    "Phone": "",
-                    "Role": "IBE Administrator"
-                },
-                {
-                    "WID": "1a5f41e0f0f0019661c058225f016050",
-                    "Name": "Shivachalappa Neelgar",
-                    "Email_Work": "",
-                    "Phone": "",
-                    "Role": "IBE Administrator"
-                }
-            ]
-        }
-        """
-
-        def dict_raise_on_duplicates(ordered_pairs):
-            """Convert duplicate keys to JSON array."""
-            d = {}
-            for k, v in ordered_pairs:
-                if k in d:
-                    if type(d[k]) is list:
-                        d[k].append(v)
-                    else:
-                        d[k] = [d[k], v]
-                else:
-                    d[k] = v
-            return d
-
-        with suppress(Exception):
-            return json_loads(val, object_pairs_hook=dict_raise_on_duplicates)
-        return {} if default is None else default
-
-    @staticmethod
-    def safe_int(val, default=0):
-        with suppress(Exception):
-            return int(val)
-        return default
-
-    @staticmethod
-    def safe_float(val, default=0.0):
-        with suppress(Exception):
-            return float(val)
-        return default
-
-    @staticmethod
-    def safe_str(val, default=""):
-        with suppress(Exception):
-            return str(val)
-        return default
 
     @staticmethod
     def remove_spaces(val: str):
@@ -377,24 +227,6 @@ class Utils:
         elif val in FALSE_VALUES:
             return False
         return default
-
-    @staticmethod
-    def safe_timezone(timezone_str, default="UTC"):
-        result = default
-        try:
-            result = pytz.timezone(timezone_str).zone
-        except Exception as e:
-            AppLog.project.info(e)
-        return result
-
-    @staticmethod
-    def safe_date(date_str, date_format):
-        result = ""
-        try:
-            result = datetime.strptime(date_str, date_format)
-        except Exception as e:
-            AppLog.project.info(e)
-        return result
 
     @staticmethod
     def safe_qdict_to_dict(query_dict, default={}):
@@ -818,19 +650,6 @@ class Utils:
         return settings.STATIC_URL + media_path
 
     @staticmethod
-    def convert_timezone(datetime_value, to_timezone, from_timezone="UTC"):
-        """
-        @param from/to_timezone: element in pytz.all_timezones. ex: Asia/Ho_Chi_Minh
-        """
-        with suppress(Exception):
-            _datetime_value = datetime_value.replace(tzinfo=None)
-            _from_timezone = pytz.timezone(from_timezone)
-            _to_timezone = pytz.timezone(to_timezone)
-            result = _from_timezone.localize(_datetime_value).astimezone(_to_timezone)
-            return result
-        return datetime_value
-
-    @staticmethod
     def extract_email(text):
         try:
             # https://stackoverflow.com/a/2049510/7181800
@@ -995,17 +814,6 @@ class Utils:
             else f"CONVERT_TZ({db_field}, '{from_offset}', '{to_offset}')"
         )
         return convert_fnc
-
-    @staticmethod
-    def parse_res_date(date):
-        """
-        Try to convert a string datetime to object datetime with strange format
-        :param date:
-        Returns: Object DateTime
-        """
-        with suppress(Exception):
-            return datetime.strptime(date, "%Y-%m-%dT%H:%M:%S%fZ")
-        return dateutil_parse(date, fuzzy=True)
 
     @staticmethod
     def get_client_ip(request):
@@ -1450,7 +1258,6 @@ class Utils:
             return (url_obj.hostname or "").split(".")[0]
         return subdomain
 
-
     @staticmethod
     def first_upper(text):
         """
@@ -1471,7 +1278,7 @@ class Utils:
     @classmethod
     def base64_decode_json(cls, s, default={}):
         s = cls.base64_decode(s)
-        return cls.safe_jsonloads(s, default)
+        return TypeUtils.safe_jsonloads(s, default)
 
     @classmethod
     def get_page_size(cls, size, min_size=0):
@@ -1492,16 +1299,6 @@ class Utils:
             return re_split(r"(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s", text)
         except TypeError:
             return []
-
-    @classmethod
-    def fill_in_message(cls, message: str, variables: dict) -> str:
-        if variables and isinstance(variables, dict):
-            for k, v in variables.items():
-                try:
-                    message = message.replace(k, str(v))
-                except Exception:
-                    pass
-        return message
 
     @classmethod
     def add_url_params(cls, url, params=None):
@@ -1532,8 +1329,6 @@ class Utils:
         except Exception as e:
             AppLog.error_exception(e)
         return url
-
-
 
     @classmethod
     def query_with_pagination(cls, queryset: QuerySet, **kwargs):
@@ -1649,19 +1444,6 @@ class Utils:
             return d
 
     @classmethod
-    def safe_date_str(cls, date_str, date_format):
-        safe_date = cls.safe_date(date_str, date_format)
-        if safe_date:
-            return safe_date.strftime(date_format)
-        return ""
-
-    @staticmethod
-    def safe_format_date(date, date_format, default=""):
-        with suppress(Exception):
-            return date.strftime(date_format)
-        return default
-
-    @classmethod
     def extract_domain(cls, domain_str, strip_www=False):
         domain_str = cls.add_scheme(domain_str)
         if domain_str:
@@ -1684,20 +1466,6 @@ class Utils:
         else:
             short_name = name[:2]
         return short_name
-
-    @classmethod
-    def timezone_in_minutes(cls, tz_str):
-        res = 0
-        try:
-            dt = datetime.utcnow()
-            utc_tz = pytz.timezone("UTC")
-            dt0 = cls.convert_timezone(dt, tz_str).replace(tzinfo=utc_tz)
-            dt = cls.convert_timezone(dt, "UTC").replace(tzinfo=utc_tz)
-            time_diff = dt0 - dt
-            res = (time_diff.seconds // 60) + time_diff.days * 24 * 60
-        except Exception as e:
-            AppLog.project.error(e)
-        return res
 
     @classmethod
     def fix_encoding(cls, text):
@@ -1826,40 +1594,6 @@ class Utils:
         return area_cd
 
     @classmethod
-    def get_tz(cls, phone_number, default=None):
-        with suppress(Exception):
-            x = pn_parse(phone_number)
-            tz = pn_timezone.time_zones_for_number(x)
-            tz = tz[0]
-            # this data AREA_CODE_LOCATOR just support for US/CA phone numbers
-            # TODO: need review this method more
-            if x.country_code == 1:
-                number = str(x.national_number)
-                area_code = cls.safe_int(number[: (1 + 2)])
-                tz_by_areacd = None
-                if tz_by_areacd:
-                    for tz_str in country_timezones.get("US", []) + country_timezones.get("CA", []):
-                        city = re.sub("_", " ", tz_str.split("/")[-1])
-                        if city in tz_by_areacd:
-                            tz = tz_str
-                            break
-            return tz
-        return default or pytz.utc.zone
-
-    @classmethod
-    def convert_datetime(cls, time_convert, time_zone, to_timezone="UTC", day_time="min", return_datetime_obj=False):
-        if not isinstance(time_convert, datetime):
-            time_convert = datetime.strptime(time_convert, cls.FORMAT_DATE_PATTERN_Y_M_D_H_M_S)
-        if day_time == "min":
-            time_convert = time_convert.replace(hour=0, minute=0, second=0)
-        elif day_time == "max":
-            time_convert = time_convert.replace(hour=23, minute=59, second=59)
-        time_convert = cls.convert_timezone(time_convert, from_timezone=time_zone, to_timezone=to_timezone)
-        if return_datetime_obj:
-            return time_convert
-        return datetime.strftime(time_convert, cls.FORMAT_DATE_PATTERN_Y_M_D_H_M_S)
-
-    @classmethod
     def is_the_same_plain_texts(cls, text1: str, text2: str, exclude_blank=False):
         with suppress(Exception):
             separate = "" if exclude_blank else " "
@@ -1900,7 +1634,6 @@ class Utils:
             AppLog.project.info(e)
         return domain
 
-
     @classmethod
     def clean_list(cls, data, rtn_format=str, excludes=None):
         if excludes is None:
@@ -1928,37 +1661,6 @@ class Utils:
         for code in html_codes:
             s = s.replace(code[1], code[0])
         return s
-
-    @classmethod
-    def safe_external_value(cls, value):
-        return str(value)
-
-    @classmethod
-    def parse_string_to_date(cls, date):
-        with suppress(Exception):
-            year, month, day = (int(x) for x in date.split(","))
-            return datetime(year, month, day)
-        return None
-
-    @classmethod
-    def parse_date_string_to_datetime(cls, date_str):
-        with suppress(Exception):
-            return dateutil_parse(date_str)
-        return None
-
-    @classmethod
-    def parse_date(cls, date_string, format="%Y%m%d", to_timezone=None, use_l10n=False):
-        try:
-            date_value = dateutil_parse(date_string)
-            if to_timezone:
-                # Convert to a specific timezone time before parse to string
-                date_value = cls.convert_timezone(date_value, to_timezone=to_timezone, from_timezone="UTC")
-            if use_l10n:
-                return date_format(date_value, format, use_l10n=True)
-            return date_value.strftime(format)
-        except Exception as e:
-            AppLog.error_exception(e)
-        return ""
 
     @classmethod
     def get_random_item(cls, items=[], default=""):
@@ -2021,36 +1723,6 @@ class Utils:
                 text = handler.handle(html_str)
                 return text.strip() if should_strip_text else text
         return text
-
-    @classmethod
-    def time_to_24h(cls, time_str, meridiem):
-        """
-        :param time_str: time string format HH:MM (12:22)
-        :type time_str: str
-        :param meridiem: AM
-        :type meridiem: str
-        :return: time string
-        :rtype: str
-        """
-        # Convert time_str to 24h
-        try:
-            time_str_with_meridiem = f"{time_str} {meridiem.upper()}"
-            date_time_24h = datetime.strptime(time_str_with_meridiem, "%I:%M %p")
-            return datetime.strftime(date_time_24h, "%H:%M")
-        except Exception as ex:
-            AppLog.project.exception(ex)
-
-    @classmethod
-    def convert_day_string_to_utc(cls, day_str, time_str, tz_str="US/Arizona"):
-        # day_str format as YYYY-MM-dd
-        # time str format at HH:MM
-        _timezone = pytz.timezone(tz_str)
-        date_time_str = f"{day_str} {time_str}:00"
-        date_time_obj = datetime.strptime(date_time_str, "%Y-%m-%d %H:%M:%S")
-        datetime_at_time_zone = _timezone.localize(date_time_obj)
-
-        # The datetime saving on DB should be convert from approval choose timezone to UTC
-        return datetime_at_time_zone.astimezone(pytz.utc)
 
     @classmethod
     def dict_deep_update(cls, dict1, dict2):
@@ -2172,67 +1844,6 @@ class Utils:
             AppLog.error_exception(e)
         return None
 
-    @staticmethod
-    def is_eu_phone_number(phone_number):
-        from phonenumbers.phonenumberutil import NumberParseException
-
-        # TODO-REFACTORING Change to get_gdpr_area(phone_number)
-        #    return GdprArea.EU or GdprArea.GLOBAL
-        #
-        if phone_number:
-            try:
-                parse = pn_parse(phone_number)
-                return parse.country_code in (
-                    43,
-                    39,
-                    32,
-                    371,
-                    359,
-                    370,
-                    385,
-                    352,
-                    357,
-                    356,
-                    420,
-                    31,
-                    45,
-                    48,
-                    372,
-                    351,
-                    358,
-                    40,
-                    33,
-                    421,
-                    49,
-                    386,
-                    30,
-                    34,
-                    36,
-                    46,
-                    353,
-                    44,
-                )
-            except NumberParseException:
-                # This is case when the phone_number have no country_code at beginning
-                return False
-        return False
-
-    @staticmethod
-    def is_us_phone_number(phone_number):
-        is_us = False
-        with suppress(Exception):
-            if phone_number.startswith("+1"):
-                return True
-            number = re.sub("[^0-9]", "", phone_number)  # Normalize phone number
-            x = pn_parse(f"+{number}")
-            if x.country_code != 1:  # Try with US phone number first
-                x_us = pn_parse(f"+1{number}")
-                if is_valid_number(x_us):
-                    is_us = True
-            else:
-                is_us = True
-        return is_us
-
     @classmethod
     def dict2obj(cls, data_dict):
 
@@ -2290,13 +1901,6 @@ class Utils:
         if not alpha_2:
             country_code = countries.get(alpha_2=country_code).alpha_3
         return p.country_code, country_code, p.national_number
-
-    @staticmethod
-    def has_ca_token(text: str):
-        has_token = False  # noqa
-        with suppress(Exception):
-            has_token = bool(re.search(r"#ca-[a-z]+[\w*-]*", str(text)))
-        return has_token
 
     @staticmethod
     def add_any_room_options(rooms, job_loc_id):

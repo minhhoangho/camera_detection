@@ -7,6 +7,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from src.Apps.gis_map.models import GisViewPoint
+from src.Apps.gis_map.serializers.gis_map import ViewPointSerializer
 from src.Apps.gis_map.services.gis_map import GisMapService
 from src.Apps.base.views.mixins import PaginationMixin, GenericViewMixin
 
@@ -19,11 +20,28 @@ class GisMapViewSet(PaginationMixin):
     def create_view_point(self, request: Request, *args, **kwargs):
         lat = request.data.get('lat')
         long = request.data.get('long')
+        payload = {
+            "lat": lat,
+            "long": long
+        }
+        serializer = ViewPointSerializer(data=payload)
+        if serializer.is_valid(raise_exception=True):
+            view_point = GisViewPoint(lat=lat, long=long)
+            view_point.save()
+        return Response(data=[], status=HTTPStatus.OK)
 
-        view_point = GisViewPoint(lat=lat, long=long)
-
-        # Step 3: Save to database
-        view_point.save()
+    @action(methods=["PUT"], url_path="view-points/(?P<pk>\w+)", detail=False)
+    def update_view_point(self, request: Request, pk):
+        lat = request.data.get('lat')
+        long = request.data.get('long')
+        payload = {
+            "lat": lat,
+            "long": long
+        }
+        serializer = ViewPointSerializer(data=payload)
+        if serializer.is_valid(raise_exception=True):
+            view_point = GisViewPoint(lat=lat, long=long)
+            view_point.save()
         return Response(data=[], status=HTTPStatus.OK)
 
     @action(methods=["GET"], url_path="view-points", detail=False)
@@ -37,5 +55,5 @@ class GisMapViewSet(PaginationMixin):
         return Response(data=result, status=HTTPStatus.OK)
 
     @action(methods=["POST"], url_path=r"view-points/(?P<pk>\w+)/camera", detail=False)
-    def config_camera_source_for_viewpoint(self, request: Request, *args, **kwargs):
+    def config_camera_source_for_viewpoint(self, request: Request, pk):
         return Response(data=[], status=HTTPStatus.OK)
