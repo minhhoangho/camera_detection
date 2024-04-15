@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from src.Apps.gis_map.models import GisViewPoint
+from src.Apps.gis_map.models import GisViewPoint, GisViewPointCamera
 
 
 class ViewPointSerializer(serializers.ModelSerializer):
@@ -12,6 +12,12 @@ class ViewPointSerializer(serializers.ModelSerializer):
 class CUViewPointSerializer(serializers.Serializer):
     lat = serializers.FloatField(required=True)
     long = serializers.FloatField(required=True)
+
+
+class CameraViewPointSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GisViewPointCamera
+        fields = "__all__"
 
 
 class CUCameraViewPointSerializer(serializers.Serializer):

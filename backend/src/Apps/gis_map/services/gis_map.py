@@ -21,7 +21,7 @@ UserModel = get_user_model()
 
 class GisMapService:
     @classmethod
-    def list_paginate(cls, page: int, per_page: int = 10):
+    def list_view_points_paginate(cls, page: int, per_page: int = 10):
         qs = GisViewPoint.objects.filter()
         paginator = Paginator(qs, per_page)
         total = paginator.count
@@ -39,6 +39,18 @@ class GisMapService:
             raise AppException(error=ApiErr.NOT_FOUND, params="View Point")
 
         return vp
+
+    @classmethod
+    def list_camera_paginate(cls, view_point_id: int,  page: int, per_page: int = 10):
+        qs = GisViewPointCamera.objects.filter(view_point_id=view_point_id)
+        paginator = Paginator(qs, per_page)
+        total = paginator.count
+        try:
+            data = paginator.page(page).object_list
+            data = data.values()
+        except EmptyPage:
+            data = []
+        return data, total
 
     @classmethod
     def get_view_point_camera_detail(cls, pk: int, raise_exception: bool = True) -> GisViewPointCamera:

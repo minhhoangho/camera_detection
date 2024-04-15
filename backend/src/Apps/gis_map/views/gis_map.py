@@ -31,7 +31,7 @@ class GisMapViewSet(PaginationMixin):
         limit = int(request.query_params.get("limit", 10))
         offset = int(request.query_params.get("offset", 0))
         page = offset // limit + 1
-        data, count = GisMapService.list_paginate(page=page, per_page=limit)
+        data, count = GisMapService.list_view_points_paginate(page=page, per_page=limit)
         result = self.to_list(
             items=data,
             total=count,
@@ -70,6 +70,25 @@ class GisMapViewSet(PaginationMixin):
             gis_vp.long = long
             gis_vp.save()
         return Response(data=ViewPointSerializer(gis_vp).data, status=HTTPStatus.OK)
+
+    @action(methods=[HttpMethod.GET], url_path=r"view-points/(?P<pk>\w+)/cameras", detail=False)
+    def get_list_vp_cameras(self, request: Request, pk):
+        limit = int(request.query_params.get("limit", 10))
+        offset = int(request.query_params.get("offset", 0))
+        page = offset // limit + 1
+        view_point_id = TypeUtils.safe_int(pk)
+        if not view_point_id:
+            raise AppException(error=ValidationErr.INVALID, params=["view_point_id"])
+        data, count = GisMapService.list_camera_paginate(view_point_id, page=page, per_page=limit)
+        result = self.to_list(
+            items=data,
+            total=count,
+            limit=limit,
+            offset=offset,
+            page=page,
+            with_paginate=True,
+        )
+        return Response(data=result, status=HTTPStatus.OK)
 
     @action(methods=[HttpMethod.POST], url_path=r"view-points/(?P<pk>\w+)/camera", detail=False)
     def config_camera_source_for_viewpoint(self, request: Request, pk):
