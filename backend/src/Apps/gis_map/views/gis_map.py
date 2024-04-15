@@ -11,7 +11,7 @@ from src.Apps.base.utils.type_utils import TypeUtils
 from src.Apps.gis_map.models import GisViewPoint
 from src.Apps.gis_map.serializers.gis_map import (
     ViewPointSerializer,
-    CUViewPointSerializer, CUCameraViewPointSerializer,
+    CUViewPointSerializer, CUCameraViewPointSerializer, CameraViewPointSerializer,
 )
 from src.Apps.gis_map.services.gis_map import GisMapService
 from src.Apps.base.views.mixins import PaginationMixin
@@ -103,4 +103,4 @@ class GisMapViewSet(PaginationMixin):
                 result = GisMapService.edit_view_point_camera(pk=pk, payload=payload)
             else:
                 result = GisMapService.create_view_point_camera(payload)
-        return Response(data=result, status=HTTPStatus.OK)
+        return Response(data=CameraViewPointSerializer(result).data, status=HTTPStatus.OK)
