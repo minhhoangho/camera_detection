@@ -1,6 +1,6 @@
 from django.urls import path
 
-from src.Apps.illustration.views import ping, healthcheck
+from src.Apps.system.views import ping, healthcheck
 
 app_name = "main"
 

@@ -20,18 +20,13 @@ This examples uses Django's default media
 files serving technique in development.
 """
 
-
 from django.conf import settings
 from django.urls import include, path
 from django.views.generic import TemplateView
 from health_check import urls as health_urls
 
-from src.Apps.illustration import urls as illustration_urls
-
 
 urlpatterns = [
-    # Apps:
-    path("illustration/", include(illustration_urls, namespace="illustration")),
     # Health checks:
     path("health", include(health_urls)),
     # Text and xml static files:
@@ -49,9 +44,8 @@ urlpatterns = [
             content_type="text/plain",
         ),
     ),
-
     # It is a good practice to have explicit index view:
-    path("", include("src.Apps.illustration.urls")),
+    path("", include("src.Apps.system.urls")),
     path("", include("src.Apps.auth.urls")),
     path("", include("src.Apps.user.urls")),
     path("", include("src.Apps.gis_map.urls")),

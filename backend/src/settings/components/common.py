@@ -21,24 +21,20 @@ SECRET_KEY = config("DJANGO_SECRET_KEY")
 
 INSTALLED_APPS: Tuple[str, ...] = (
     # Your apps go here:
-    "src.Apps.illustration",
+    "src.Apps.system",
     "src.Apps.user",
     "src.Apps.gis_map",
-
     # Default django apps:
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
     # django-admin:
     "django.contrib.admin",
     "django.contrib.admindocs",
-
     # Security:
     "axes",
-
     # Health checks:
     # You may want to enable other checks as well,
     # see: https://github.com/KristianOellegaard/django-health-check
@@ -142,7 +138,6 @@ MEDIA_ROOT = BASE_DIR.joinpath("media")
 
 # Django authentication system
 # https://docs.djangoproject.com/en/4.0/topics/auth/
-
 
 
 PASSWORD_HASHERS = [
