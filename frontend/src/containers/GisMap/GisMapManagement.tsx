@@ -135,7 +135,6 @@ export function GisMapViewPointManagement() {
         setKeyword('');
         setPaginationParams({limit: query.limit, offset: query.offset});
     };
-    console.log("dataListResponse?.pagination", dataListResponse?.pagination)
     return (
         <BaseLayout>
             <PrivateLayout>
