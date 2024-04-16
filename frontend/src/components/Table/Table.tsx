@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from 'react';
 import { Box } from '@mui/material';
 import { DataGrid, GridColDef, GridPaginationModel } from '@mui/x-data-grid';
 import { TablePaginationAction } from './TablePaginationAction';
@@ -20,27 +19,13 @@ export function Table({
   loading = false,
   onChangePage,
 }: TableProps) {
-  const [tableLoading, setTableLoading] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (rows.length) {
-      setTableLoading(false);
-    } else {
-      setTableLoading(true);
-    }
-    return () => setTableLoading(false);
-  }, [rows]);
-
   const handleChangePage = (payload: GridPaginationModel) => {
     if (payload.pageSize !== pagination.limit) {
-      payload.page = 1;
+      payload.page = 0;
       rows.splice(0, payload.pageSize);
     }
-    if (payload.page < 1) {
-      payload.page = 1;
-    }
     const limit = payload.pageSize;
-    const offset = (payload.page - 1) * payload.pageSize;
+    const offset = (payload.page) * payload.pageSize;
     onChangePage({ limit, offset });
   };
 
@@ -49,19 +34,18 @@ export function Table({
       <DataGrid
         rows={rows}
         columns={columns}
-        loading={loading ?? tableLoading}
+        loading={loading}
         rowCount={pagination.total}
         initialState={{
           pagination: {
             paginationModel: {
               pageSize: pagination.limit,
-              page: 1,
             },
           },
         }}
         paginationModel={{
           pageSize: pagination?.limit,
-          page: pagination?.offset / pagination?.limit + 1,
+          page: pagination?.offset / pagination?.limit, // Page default is from 0
         }}
         onPaginationModelChange={handleChangePage}
         paginationMode="server"

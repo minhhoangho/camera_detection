@@ -51,7 +51,10 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           {...rest}
           ref={ref as React.RefObject<HTMLTextAreaElement>}
           style={{ border: '1px solid #e0e0e0' }}
-          className="border-1 px-3 py-3 placeholder-blueGray-300 rounded-xl text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+          className={classNames(
+            'border-1 px-3 py-3 placeholder-blueGray-300 rounded-xl text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150',
+            inputElementClassName,
+          )}
           autoComplete={autoComplete}
           value={value ?? ''}
           onChange={(event) => onInputChange?.(event.target.value)}

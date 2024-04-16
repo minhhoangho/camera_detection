@@ -7,7 +7,7 @@ import CookiesStorage from "../../utils/cookie-storage";
 
 
 const getPageTitle = (title: string): string => {
-  return title ? `Code base - ${title}` : 'Code base';
+  return title ? `Camera detection - ${title}` : 'Camera detection';
 };
 
 export function BaseLayout({ children, pageTitle = '', isLoading = false }: {
@@ -20,7 +20,7 @@ export function BaseLayout({ children, pageTitle = '', isLoading = false }: {
   const isAuthenticated: boolean = CookiesStorage.isAuthenticated();
   useEffect(() => {
       isAuthenticated && router.pathname === "/login" && router.replace("/")
-  },[isAuthenticated])
+  },[isAuthenticated, router])
   return (
     <>
       <Head>

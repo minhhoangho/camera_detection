@@ -4,7 +4,7 @@ export const VIEW_POINT_MANAGEMENT_KEY = {
     LAT: 'lat',
     LONG: 'long',
     DESCRIPTION: 'description',
-    CREATED_AT: 'created_at',
+    CREATED_AT: 'createdAt',
     ACTION: 'action',
 };
 

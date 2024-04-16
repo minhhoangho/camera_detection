@@ -3,15 +3,13 @@ import View from 'ol/View';
 import Map from 'ol/Map';
 import TileLayer from 'ol/layer/Tile';
 import OSM from 'ol/source/OSM';
-import Feature from 'ol/Feature';
-import Point from 'ol/geom/Point';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import Style from 'ol/style/Style';
 import Circle from 'ol/style/Circle';
 import Fill from 'ol/style/Fill';
 import 'ol/ol.css';
-import  TileWMS  from 'ol/source/TileWMS'; // Import OpenLayers CSS
+// Import OpenLayers CSS
 
 const DEFAULT_GEO = [12047000, 1812900]; // (long, lat) Da nang location
 // const DEFAULT_GEO = [108224527.94 , 16577970.54] // (long, lat) Da nang location

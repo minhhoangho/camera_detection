@@ -7,8 +7,8 @@ export type ViewPointData = {
     long: number
     name: string;
     description: string;
-    created_at: string;
-    updated_at: string;
+    createdAt: string;
+    updatedAt: string;
 }
 
 

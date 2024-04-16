@@ -1,5 +1,6 @@
 import {request} from '../utils/request';
 import {
+    CreateViewPointPayloadRequest, EditViewPointPayloadRequest,
     ListViewPointPaginateResponse,
     ViewPointPaginateRequest,
 } from '../containers/GisMap/models';
@@ -14,11 +15,11 @@ export const listViewPointsPaginate = async ({
     return request.get(`/gis-maps/view-points?${offsetParam}&${limitParam}&${keywordParam}`);
 };
 
-export const createViewPoint = async (data: any) => {
+export const createViewPoint = async (data: CreateViewPointPayloadRequest) => {
     return request.post('/gis-maps/view-points', data);
 }
 
-export const updateViewPoint = async (id: number, data: any) => {
+export const updateViewPoint = async (id: number, data: EditViewPointPayloadRequest) => {
     return request.put(`/gis-maps/view-points/${id}`, data);
 }
 
