@@ -52,7 +52,23 @@ class GisMapViewSet(PaginationMixin):
             view_point.save()
         return Response(data=ViewPointSerializer(view_point).data, status=HTTPStatus.OK)
 
-    @action(methods=[HttpMethod.PUT], url_path=r"view-points/(?P<pk>\w+)", detail=False)
+    @action(methods=[HttpMethod.PUT, HttpMethod.GET], url_path=r"view-points/(?P<pk>\w+)", detail=False)
+    def view_point_detail(self, request: Request, pk):
+        if HttpMethod.is_put(request.method):
+            return self.update_view_point(request, pk)
+        if HttpMethod.is_get(request.method):
+            return self.get_view_point_detail(request, pk)
+        return Response(status=HTTPStatus.NOT_FOUND)
+
+    def get_view_point_detail(self, request: Request, pk):
+        pk = TypeUtils.safe_int(pk)
+        if not pk:
+            raise AppException(error=ValidationErr.INVALID, params=["pk"])
+        gis_vp = GisViewPoint.objects.filter(pk=pk).first()
+        if not gis_vp:
+            raise AppException(error=ApiErr.NOT_FOUND)
+        return Response(data=ViewPointSerializer(gis_vp).data, status=HTTPStatus.OK)
+
     def update_view_point(self, request: Request, pk):
         pk = TypeUtils.safe_int(pk)
         if not pk:
