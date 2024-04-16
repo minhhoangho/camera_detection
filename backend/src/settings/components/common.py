@@ -35,6 +35,7 @@ INSTALLED_APPS: Tuple[str, ...] = (
     "django.contrib.admindocs",
     # Security:
     "axes",
+    "corsheaders",
     # Health checks:
     # You may want to enable other checks as well,
     # see: https://github.com/KristianOellegaard/django-health-check
@@ -61,6 +62,7 @@ MIDDLEWARE: Tuple[str, ...] = (
     "django_permissions_policy.PermissionsPolicyMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -175,3 +177,4 @@ EMAIL_TIMEOUT = 5
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 APPEND_SLASH = False
+

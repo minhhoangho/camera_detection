@@ -29,19 +29,19 @@ export function OpenLayerMap() {
     const map = new Map({
       target: mapRef.current,
       layers: [
-        // new TileLayer({
-        //   source: new OSM(),
-        // }),
         new TileLayer({
-          // extent: [-13884991, 2870341, -7455066, 6338219],
-          source: new TileWMS({
-            url: 'http://localhost:8089/geoserver/my_workspace/wms',
-            params: { LAYERS: 'my_workspace:VNM_adm2', TILED: true },
-            serverType: 'geoserver',
-            // Countries have transparency, so do not fade tiles:
-            transition: 0,
-          }),
+          source: new OSM(),
         }),
+        // new TileLayer({
+        //   // extent: [-13884991, 2870341, -7455066, 6338219],
+        //   source: new TileWMS({
+        //     url: 'http://localhost:8089/geoserver/my_workspace/wms',
+        //     params: { LAYERS: 'my_workspace:VNM_adm2', TILED: true },
+        //     serverType: 'geoserver',
+        //     // Countries have transparency, so do not fade tiles:
+        //     transition: 0,
+        //   }),
+        // }),
       ],
       view: new View({
         center: DEFAULT_GEO, // Center coordinates of New York in EPSG:3857 projection
@@ -68,15 +68,15 @@ export function OpenLayerMap() {
     // Generate random traffic flows and add them to the vector source
     const mapExtent = map.getView().calculateExtent();
     // console.log("mapExtent >> ", mapExtent )
-    for (let i = 0; i < numberOfFlows; i++) {
-      const startPoint = generateRandomPoint(mapExtent);
-      const endPoint = generateRandomPoint(mapExtent);
-      const flow = new Feature({
-        geometry: new Point(startPoint),
-      });
-      flow.setProperties({ endPoint });
-      vectorSource.addFeature(flow);
-    }
+    // for (let i = 0; i < numberOfFlows; i++) {
+    //   const startPoint = generateRandomPoint(mapExtent);
+    //   const endPoint = generateRandomPoint(mapExtent);
+    //   const flow = new Feature({
+    //     geometry: new Point(startPoint),
+    //   });
+    //   flow.setProperties({ endPoint });
+    //   vectorSource.addFeature(flow);
+    // }
 
     return () => {
       map.setTarget(null);

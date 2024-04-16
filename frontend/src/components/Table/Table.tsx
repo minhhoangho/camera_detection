@@ -4,7 +4,16 @@ import { DataGrid, GridColDef, GridPaginationModel } from '@mui/x-data-grid';
 import { TablePaginationAction } from './TablePaginationAction';
 import { PaginationMeta } from '../../shared/models/responses';
 import { PaginationQueryParams } from '../../shared/models/requests';
+function getCallerName() {
+  // Get stack array
+  const orig = Error.prepareStackTrace;
+  Error.prepareStackTrace = (error, stack) => stack;
+  const { stack } = new Error();
+  Error.prepareStackTrace = orig;
 
+  const caller = stack[2];
+  return caller ? caller.getFunctionName() : undefined;
+}
 type TableProps = {
   rows: Record<string, any>[];
   columns: GridColDef[];
@@ -33,14 +42,22 @@ export function Table({
   }, [rows]);
 
   const handleChangePage = (payload: GridPaginationModel) => {
+    console.log("handleChangePage pagination", pagination)
+    console.log("handleChangePage ", payload)
+
     if (payload.pageSize !== pagination.limit) {
       payload.page = 1;
       rows.splice(0, payload.pageSize);
     }
     const limit = payload.pageSize;
     const offset = (payload.page - 1) * payload.pageSize;
+    console.log("{ limit, offset } ", { limit, offset })
+
     onChangePage({ limit, offset });
   };
+
+  console.log("pagination props", pagination)
+  console.log("pagination props pagination.offset / pagination.limit + 1", pagination.offset / pagination.limit + 1)
   return (
     <Box height={500}>
       <DataGrid
@@ -57,8 +74,8 @@ export function Table({
           },
         }}
         paginationModel={{
-          pageSize: pagination.limit,
-          page: pagination.offset / pagination.limit + 1,
+          pageSize: pagination?.limit,
+          page: pagination?.offset / pagination?.limit + 1,
         }}
         onPaginationModelChange={handleChangePage}
         paginationMode="server"

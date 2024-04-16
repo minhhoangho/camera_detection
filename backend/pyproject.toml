@@ -123,6 +123,7 @@
     django-hashid-field = "^3.3.7"
     croniter = "^1.4.1"
     pytz = "^2024.1"
+django-cors-headers = "^4.3.1"
 
 
 [tool.nitpick]

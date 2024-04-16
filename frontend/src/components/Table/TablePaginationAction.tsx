@@ -20,7 +20,8 @@ export function TablePaginationAction(props: TablePaginationActionProps) {
   const handleFirstPageButtonClick = (
     event: React.MouseEvent<HTMLButtonElement>,
   ) => {
-    onPageChange(event, 0);
+      console.log("handleFirstPageButtonClick >> ", )
+    onPageChange(event, 1);
   };
 
   const handleBackButtonClick = (

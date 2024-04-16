@@ -10,9 +10,10 @@ export const request = axios.create({
   baseURL: API_BASE_URL,
   timeout: 10000,
   headers: {
-    Accept: 'application/json',
+    // 'Accept': 'application/json',
     'Content-Type': 'application/json',
-    'Cache-Control': 'no-cache',
+    // 'Access-Control-Allow-Origin': '*',
+    // 'Cache-Control': 'no-cache',
   },
   paramsSerializer: (params) =>
     qs.stringify(params, { arrayFormat: 'brackets' }),
