@@ -9,12 +9,20 @@ import Style from 'ol/style/Style';
 import Circle from 'ol/style/Circle';
 import Fill from 'ol/style/Fill';
 import 'ol/ol.css';
+import { toLonLat } from 'ol/proj';
+
 // Import OpenLayers CSS
 
 const DEFAULT_GEO = [12047000, 1812900]; // (long, lat) Da nang location
 // const DEFAULT_GEO = [108224527.94 , 16577970.54] // (long, lat) Da nang location
 
-export function OpenLayerMap() {
+type OpenLayerMapProps = {
+  width?: number;
+  height: number;
+  // Function
+  onUpdateLatLong?: (lat: number, long: number) => void;
+};
+export function OpenLayerMap({ width, height, onUpdateLatLong }: OpenLayerMapProps) {
   const mapRef = useRef(null);
   // Generate random start and end points within the map bounds
   const generateRandomPoint = (extent) => {
@@ -63,6 +71,13 @@ export function OpenLayerMap() {
     });
     map.addLayer(vectorLayer);
 
+    map.on('click', function (event) {
+      const coordinates = event.coordinate; // Get clicked coordinates
+      const lonLat = toLonLat(coordinates); // Transform coordinates to EPSG:4326
+
+      onUpdateLatLong?.(lonLat[1] as number, lonLat[0] as number);
+    });
+
     // Generate random traffic flows and add them to the vector source
     const mapExtent = map.getView().calculateExtent();
     // console.log("mapExtent >> ", mapExtent )
@@ -81,5 +96,5 @@ export function OpenLayerMap() {
     };
   }, []);
 
-  return <div ref={mapRef} style={{ width: '100%', height: '600px' }} />;
+  return <div ref={mapRef} style={{ width, height }} />;
 }

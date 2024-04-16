@@ -1,12 +1,12 @@
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { useQuery } from 'react-query';
+import { Container } from '@mui/material';
 import { ViewPointData } from './models';
 import { getDetailViewPoint } from '../../api/view-point';
 import { toast } from '../../components/Toast';
 import { useDebouncedCallback } from '../../shared/hooks/use-debounce-callback';
 import { BaseLayout, PrivateLayout } from '../../layouts';
-import { Container } from '@mui/material';
 
 export function ViewPointDetail() {
   const router = useRouter();

@@ -1,4 +1,4 @@
-import { Box, Button, Modal } from '@mui/material';
+import { Box, Button, Grid, Modal } from '@mui/material';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -7,6 +7,7 @@ import { useRouter } from 'next/router';
 import { useMutation } from 'react-query';
 import * as React from 'react';
 import { CreateViewPointPayloadRequest, ViewPointData } from './models';
+import { OpenLayerMap } from './OpenLayerMap';
 import styles from './GisMap.module.scss';
 import { toast } from '../../components/Toast';
 import { PathName } from '../../constants/routes';
@@ -31,7 +32,7 @@ export function CreateViewPointModal({ onClose, isOpen }: ModalProps) {
     long: yup.number().required('Longitude is required'),
   });
 
-  const { control, handleSubmit } = useForm({
+  const { control, handleSubmit, setValue } = useForm({
     resolver: yupResolver(validationSchema),
   });
 
@@ -54,6 +55,10 @@ export function CreateViewPointModal({ onClose, isOpen }: ModalProps) {
     createViewpointMutate(data as CreateViewPointPayloadRequest);
   };
 
+  const updateFormLatLong = (lat: number, long: number) => {
+    setValue("lat", lat)
+    setValue("long", long)
+  }
   return (
     <Modal open={isOpen} onClose={onClose}>
       <Box
@@ -62,7 +67,7 @@ export function CreateViewPointModal({ onClose, isOpen }: ModalProps) {
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          width: 400,
+          width: 700,
           bgcolor: 'background.paper',
           boxShadow: 24,
           borderRadius: 1,
@@ -71,59 +76,80 @@ export function CreateViewPointModal({ onClose, isOpen }: ModalProps) {
       >
         <div className="modal-header flex justify-between mb-2">
           <span className="modal-title">Create new view point</span>
-          <button type="button" className="close bg-transparent border-none " data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true" className="text-xl">&times;</span>
+          <button
+            type="button"
+            className="close bg-transparent border-none cursor-pointer"
+            data-dismiss="modal"
+            aria-label="Close"
+            onClick={onClose}
+          >
+            <span aria-hidden="true" className="text-xl">
+              &times;
+            </span>
           </button>
         </div>
-        <form
-          onSubmit={handleSubmit(handleCreateViewPoint)}
-          className={styles['create-modal-form']}
-        >
-          <FormInput
-            control={control}
-            name="name"
-            inputElementClassName="form-control mr-sm-2"
-            placeholder="Location name"
-            label="Location name"
-            isRequired
-          />
-          <FormInput
-            control={control}
-            name="description"
-            isTextarea
-            inputElementClassName="form-control mr-sm-2 resize-vertical"
-            placeholder="Description"
-            label="Description"
-          />
+        <Grid container spacing={3} alignItems="stretch">
+          <Grid item xs={4}>
+            <Box>
+              <form
+                onSubmit={handleSubmit(handleCreateViewPoint)}
+                className={styles['create-modal-form']}
+              >
+                <FormInput
+                  control={control}
+                  name="name"
+                  inputElementClassName="form-control mr-sm-2"
+                  placeholder="Location name"
+                  label="Location name"
+                  isRequired
+                />
+                <FormInput
+                  control={control}
+                  name="description"
+                  isTextarea
+                  inputElementClassName="form-control mr-sm-2 resize-none"
+                  placeholder="Description"
+                  label="Description"
+                />
 
-          <FormInput
-            control={control}
-            name="lat"
-            type="number"
-            inputElementClassName="form-control mr-sm-2"
-            placeholder="Latitude"
-            label="Latitude"
-            labelClassName=""
-            isRequired
-          />
+                <FormInput
+                  control={control}
+                  name="lat"
+                  type="number"
+                  inputElementClassName="form-control mr-sm-2"
+                  placeholder="Latitude"
+                  label="Latitude"
+                  labelClassName=""
+                  isRequired
+                />
 
-          <FormInput
-            control={control}
-            name="long"
-            type="number"
-            inputElementClassName="form-control mr-sm-2"
-            placeholder="Longitude"
-            label="Longitude"
-            labelClassName=""
-            isRequired
-          />
+                <FormInput
+                  control={control}
+                  name="long"
+                  type="number"
+                  inputElementClassName="form-control mr-sm-2"
+                  placeholder="Longitude"
+                  label="Longitude"
+                  labelClassName=""
+                  isRequired
+                />
 
-          <div className="mt-5 flex justify-end">
-            <Button className='btn wd-140 btn-sm btn-outline-light' type="submit"
-              disabled={isLoading}
-            >Save</Button>
-          </div>
-        </form>
+                <div className="mt-5 flex justify-end">
+                  <Button
+                    className="btn wd-140 btn-sm btn-outline-light"
+                    type="submit"
+                    disabled={isLoading}
+                  >
+                    Save
+                  </Button>
+                </div>
+              </form>
+            </Box>
+          </Grid>
+          <Grid item xs={8}>
+            <OpenLayerMap width={400} height={400} onUpdateLatLong={updateFormLatLong}/>
+          </Grid>
+        </Grid>
       </Box>
     </Modal>
   );

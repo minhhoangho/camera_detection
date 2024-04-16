@@ -43,12 +43,10 @@ class GisMapViewSet(PaginationMixin):
         return Response(data=result, status=HTTPStatus.OK)
 
     def create_view_point(self, request: Request, *args, **kwargs):
-        lat = request.data.get("lat")
-        long = request.data.get("long")
-        payload = {"lat": lat, "long": long}
+        payload = request.data.copy()
         serializer = CUViewPointSerializer(data=payload)
         if serializer.is_valid(raise_exception=True):
-            view_point = GisViewPoint(lat=lat, long=long)
+            view_point = GisViewPoint(**payload)
             view_point.save()
         return Response(data=ViewPointSerializer(view_point).data, status=HTTPStatus.OK)
 
