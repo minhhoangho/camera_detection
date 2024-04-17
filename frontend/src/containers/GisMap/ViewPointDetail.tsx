@@ -33,12 +33,22 @@ export function ViewPointDetail() {
     isFetching,
     refetch,
     isLoading,
-  }: {data: ViewPointData, isFetching: boolean, isLoading: boolean,} = useQuery<ViewPointData>({
+  }: {
+    data: ViewPointData;
+    isFetching: boolean;
+    isLoading: boolean;
+  } = useQuery<ViewPointData>({
     queryKey: ['getViewPointDetail', viewPointId],
     queryFn: () => {
       if (viewPointId) {
         return getDetailViewPoint(viewPointId);
       }
+    },
+    onSuccess: (data: ViewPointData) => {
+      setValue('name', data.name);
+      setValue('description', data.description);
+      setValue('lat', data.lat);
+      setValue('long', data.long);
     },
     onError: () => toast('error', 'Error'),
     // cacheTime: 0,
@@ -125,11 +135,13 @@ export function ViewPointDetail() {
               </Box>
             </Grid>
             <Grid item xs={6}>
-              <OpenLayerMap
-                width="100%"
-                height={600}
-                onUpdateLatLong={updateFormLatLong}
-              />
+              {!isLoading && (
+                <OpenLayerMap
+                  width="100%"
+                  height={600}
+                  onUpdateLatLong={updateFormLatLong}
+                />
+              )}
             </Grid>
           </Grid>
         </Container>
