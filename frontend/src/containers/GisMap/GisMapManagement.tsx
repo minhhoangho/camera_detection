@@ -15,6 +15,7 @@ import Tooltip from '@mui/material/Tooltip';
 import { GridColDef } from '@mui/x-data-grid';
 import { format } from 'date-fns';
 import EditIcon from '@mui/icons-material/Edit';
+import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
 import { ListViewPointPaginateResponse } from './models';
 import {
   VIEW_POINT_MANAGEMENT_COLUMNS_LABEL,
@@ -74,12 +75,14 @@ export function GisMapViewPointManagement() {
     //  eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paginationParams.limit, paginationParams.offset]);
 
-  const renderActionButton = () => {
+  const renderActionButton = (params) => {
     return (
       <div className="flex justify-end gap-x-6">
         <Tooltip title="Edit location">
           <Button
-            onClick={() => router.push(PathName.GisLocationManagement)}
+            onClick={() =>
+              router.push(`${PathName.GisLocationManagement}/${params.row.id}`)
+            }
             style={{ padding: 0 }}
           >
             <EditIcon style={{ fontSize: '20px', outline: 'none' }} />
@@ -104,7 +107,19 @@ export function GisMapViewPointManagement() {
         VIEW_POINT_MANAGEMENT_COLUMNS_LABEL[VIEW_POINT_MANAGEMENT_KEY.NAME],
       sortable: false,
       filterable: false,
-      width: 180,
+      width: 150,
+      renderCell: (params) => {
+        return (
+          <span
+            onClick={() =>
+              router.push(`${PathName.GisLocationManagement}/${params.row.id}`)
+            }
+            className="cursor-pointer  hover:underline font-semibold"
+          >
+            {params.row.name}
+          </span>
+        );
+      },
     },
     {
       field: VIEW_POINT_MANAGEMENT_KEY.DESCRIPTION,
@@ -114,7 +129,7 @@ export function GisMapViewPointManagement() {
         ],
       sortable: false,
       filterable: false,
-      width: 200,
+      width: 150,
     },
     {
       field: VIEW_POINT_MANAGEMENT_KEY.LAT,
@@ -122,7 +137,7 @@ export function GisMapViewPointManagement() {
         VIEW_POINT_MANAGEMENT_COLUMNS_LABEL[VIEW_POINT_MANAGEMENT_KEY.LAT],
       sortable: false,
       filterable: false,
-      width: 100,
+      width: 200,
     },
     {
       field: VIEW_POINT_MANAGEMENT_KEY.LONG,
@@ -130,7 +145,7 @@ export function GisMapViewPointManagement() {
         VIEW_POINT_MANAGEMENT_COLUMNS_LABEL[VIEW_POINT_MANAGEMENT_KEY.LONG],
       sortable: false,
       filterable: false,
-      width: 100,
+      width: 200,
     },
     {
       field: VIEW_POINT_MANAGEMENT_KEY.CREATED_AT,
@@ -140,7 +155,7 @@ export function GisMapViewPointManagement() {
         ],
       sortable: false,
       filterable: false,
-      width: 160,
+      width: 150,
       valueFormatter: (params) => {
         return `${format(
           new Date(params?.value || Date.now()),
@@ -155,9 +170,7 @@ export function GisMapViewPointManagement() {
       sortable: false,
       filterable: false,
       width: 100,
-      renderCell: () => {
-        return renderActionButton();
-      },
+      renderCell: renderActionButton,
     },
   ];
 
@@ -166,7 +179,7 @@ export function GisMapViewPointManagement() {
     setPaginationParams({ limit: query.limit, offset: query.offset });
   };
   const handleCreate = () => {
-    setIsOpenCreate(true)
+    setIsOpenCreate(true);
   };
 
   const onFilterName = () => {};
@@ -201,7 +214,7 @@ export function GisMapViewPointManagement() {
                 className="w-[200px]"
                 onClick={handleCreate}
               >
-                Create Location
+                <span>Create Location</span>
               </Button>
             </Grid>
             <Grid item xs={12}>

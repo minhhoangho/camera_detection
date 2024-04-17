@@ -13,6 +13,8 @@ export const MENU_KEY = {
 
   CATEGORY: 'category',
 
+  GIS_MANAGEMENT: 'gis_management',
+
   ANALYTIC: 'analytic',
 };
 
@@ -26,6 +28,8 @@ export const MENU_LABEL = {
 
   [MENU_KEY.BLOG]: 'Blog',
   [MENU_KEY.POST]: 'Posts',
+
+  [MENU_KEY.GIS_MANAGEMENT]: 'GIS Map',
 
   [MENU_KEY.CATEGORY]: 'Category',
 };

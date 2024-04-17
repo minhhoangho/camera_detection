@@ -1,4 +1,5 @@
 import * as React from 'react';
+import MapIcon from '@mui/icons-material/Map';
 import PieChartIcon from '@mui/icons-material/PieChart';
 import HomeIcon from '@mui/icons-material/Home';
 import PersonIcon from '@mui/icons-material/Person';
@@ -66,6 +67,11 @@ export const MenuDirectory = [
         label: MENU_LABEL[MENU_KEY.USER_MANAGEMENT] as string,
         icon: <PeopleIcon />,
         url: PathName.UserManagement
+      }, {
+        key: MENU_KEY.GIS_MANAGEMENT,
+        label: MENU_LABEL[MENU_KEY.GIS_MANAGEMENT] as string,
+        icon: <MapIcon />,
+        url: PathName.GisLocationManagement
       },
     ]
   },

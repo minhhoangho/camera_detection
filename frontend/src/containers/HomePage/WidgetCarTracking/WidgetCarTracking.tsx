@@ -93,19 +93,19 @@ export function WidgetCarTracking({ title, subheader }: Props) {
   const [objects, setObjects] = useState(CLASS_NAME)
   const [isLoadedVideo, setIsLoadedVideo] = useState(false)
 
-  useEffect(() => {
-    const eventSource = new EventSource(`${API_BASE_URL}/sse`);
-
-    eventSource.addEventListener('video_tracking', event => {
-      const eventData = JSON.parse(event.data);
-      setIsLoadedVideo(true)
-      setObjects(eventData.objects)
-    });
-
-    return () => {
-      eventSource.close();
-    };
-  }, []);
+  // useEffect(() => {
+  //   const eventSource = new EventSource(`${API_BASE_URL}/sse`);
+  //
+  //   eventSource.addEventListener('video_tracking', event => {
+  //     const eventData = JSON.parse(event.data);
+  //     setIsLoadedVideo(true)
+  //     setObjects(eventData.objects)
+  //   });
+  //
+  //   return () => {
+  //     eventSource.close();
+  //   };
+  // }, []);
 
 
   const renderListItem = (key, value) => {

@@ -17,8 +17,8 @@ const DEFAULT_GEO = [12047000, 1812900]; // (long, lat) Da nang location
 // const DEFAULT_GEO = [108224527.94 , 16577970.54] // (long, lat) Da nang location
 
 type OpenLayerMapProps = {
-  width?: number;
-  height: number;
+  width?: number | string;
+  height: number | string;
   // Function
   onUpdateLatLong?: (lat: number, long: number) => void;
 };
