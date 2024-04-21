@@ -1,5 +1,6 @@
 import { Box } from '@mui/material';
 import { DataGrid, GridColDef, GridPaginationModel } from '@mui/x-data-grid';
+import {cloneDeep} from "lodash";
 import { TablePaginationAction } from './TablePaginationAction';
 import { PaginationMeta } from '../../shared/models/responses';
 import { PaginationQueryParams } from '../../shared/models/requests';
@@ -8,6 +9,7 @@ type TableProps = {
   columns: GridColDef[];
   pagination: PaginationMeta;
   loading?: boolean;
+  reformatID?: boolean;
   // Function
   onChangePage: (queryParams: PaginationQueryParams) => void;
 };
@@ -18,6 +20,7 @@ export function Table({
   pagination,
   loading = false,
   onChangePage,
+  reformatID = true,
 }: TableProps) {
   const handleChangePage = (payload: GridPaginationModel) => {
     if (payload.pageSize !== pagination.limit) {
@@ -25,14 +28,30 @@ export function Table({
       rows.splice(0, payload.pageSize);
     }
     const limit = payload.pageSize;
-    const offset = (payload.page) * payload.pageSize;
+    const offset = payload.page * payload.pageSize;
     onChangePage({ limit, offset });
+  };
+
+  const reformatRows = (_rows: any[]) => {
+    if (!reformatID) {
+      return _rows;
+    }
+    // reorder column id to the first of array columns, if not exist -> add id to the first of array columns
+    columns = columns.filter((column) => column.field !== 'id');
+    columns.unshift({ field: 'rowId', headerName: 'ID', width: 50, sortable: false, filterable: false });
+
+    return _rows.map((row, index) => {
+      return {
+        ...row,
+        rowId: index + pagination.offset + 1,
+      };
+    });
   };
 
   return (
     <Box height={500}>
       <DataGrid
-        rows={rows}
+        rows={reformatRows(cloneDeep(rows))}
         columns={columns}
         loading={loading}
         rowCount={pagination.total}
@@ -50,6 +69,7 @@ export function Table({
         onPaginationModelChange={handleChangePage}
         paginationMode="server"
         sortingMode="server"
+
         slotProps={{
           toolbar: {
             showQuickFilter: true,

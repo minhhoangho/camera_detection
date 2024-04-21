@@ -4,7 +4,7 @@ const path = require('path');
  * @type {import('next').NextConfig}
  */
 const config = {
-    reactStrictMode: true,
+    reactStrictMode: false,
     eslint: {
         dirs: ['src'],
     },

@@ -8,7 +8,6 @@ export type InputProps = {
   placeholder: string;
   isRequired?: boolean;
   className?: string;
-  inputClassName?: string;
   inputElementClassName?: string;
   value?: string;
   labelClassName?: string;

@@ -1,28 +1,60 @@
-import {request} from '../utils/request';
+import { request } from '../utils/request';
 import {
-    CreateViewPointPayloadRequest, EditViewPointPayloadRequest,
-    ListViewPointPaginateResponse,
-    ViewPointPaginateRequest,
+  CreateViewPointPayloadRequest,
+  EditViewPointPayloadRequest,
+  ListViewPointCameraPaginateResponse,
+  ListViewPointPaginateResponse, UpsertCameraSourcePayloadRequest,
+  ViewPointData,
+  ViewPointPaginateRequest,
 } from '../containers/GisMap/models';
+import { PaginationQueryParams } from '../shared/models/requests';
 
 export const listViewPointsPaginate = async ({
-    pagination,
-    keyword,
+  pagination,
+  keyword,
 }: ViewPointPaginateRequest): Promise<ListViewPointPaginateResponse> => {
-    const offsetParam = `offset=${pagination?.offset ?? ''}`;
-    const limitParam = `limit=${pagination?.limit ?? ''}`;
-    const keywordParam = `keyword=${keyword ?? ''}`;
-    return request.get(`/gis-maps/view-points?${offsetParam}&${limitParam}&${keywordParam}`);
+  const offsetParam = `offset=${pagination?.offset ?? ''}`;
+  const limitParam = `limit=${pagination?.limit ?? ''}`;
+  const keywordParam = `keyword=${keyword ?? ''}`;
+  return request.get(
+    `/gis-maps/view-points?${offsetParam}&${limitParam}&${keywordParam}`,
+  );
 };
 
-export const createViewPoint = async (data: CreateViewPointPayloadRequest) => {
-    return request.post('/gis-maps/view-points', data);
-}
+export const createViewPoint = async (
+  data: CreateViewPointPayloadRequest,
+): Promise<ViewPointData> => {
+  return request.post('/gis-maps/view-points', data);
+};
 
-export const updateViewPoint = async (id: number, data: EditViewPointPayloadRequest) => {
-    return request.put(`/gis-maps/view-points/${id}`, data);
-}
+export const updateViewPoint = async (
+  id: number,
+  data: EditViewPointPayloadRequest,
+) => {
+  return request.put(`/gis-maps/view-points/${id}`, data);
+};
 
-export const getDetailViewPoint = async (id: number) => {
-    return request.get(`/gis-maps/view-points/${id}`);
-}
+export const getDetailViewPoint = async (
+  id: number,
+): Promise<ViewPointData> => {
+  return request.get(`/gis-maps/view-points/${id}`);
+};
+
+export const deleteViewPoint = async (id: number) => {
+  return request.delete(`/gis-maps/view-points/${id}`);
+};
+
+export const getListViewPointCameras = async (
+  id: number,
+  pagination: PaginationQueryParams,
+): Promise<ListViewPointCameraPaginateResponse> => {
+  const offsetParam = `offset=${pagination?.offset ?? ''}`;
+  const limitParam = `limit=${pagination?.limit ?? ''}`;
+  return request.get(
+    `/gis-maps/view-points/${id}/cameras?${offsetParam}&${limitParam}`,
+  );
+};
+
+export const upsertNewViewPointCamera = async (viewpointId: number, payload: UpsertCameraSourcePayloadRequest) => {
+  return request.post(`/gis-maps/view-points/${viewpointId}/camera`, payload);
+};

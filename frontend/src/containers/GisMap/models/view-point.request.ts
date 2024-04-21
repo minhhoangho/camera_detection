@@ -20,3 +20,11 @@ export type EditViewPointPayloadRequest = {
   lat: number;
   long: number;
 };
+
+
+
+export type UpsertCameraSourcePayloadRequest = {
+  id?: string;
+  cameraSource: number;
+  cameraUri: string;
+};

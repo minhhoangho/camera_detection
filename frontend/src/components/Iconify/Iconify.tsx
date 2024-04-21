@@ -6,7 +6,7 @@ import Box from '@mui/material/Box';
 // ----------------------------------------------------------------------
 
 // eslint-disable-next-line react/display-name
-export const Iconify = forwardRef(({ icon, width = 20, sx, ...other }, ref) => (
+export const Iconify = forwardRef(({ icon, width = 20, sx, ...other } , ref) => (
   <Box
     ref={ref}
     component={Icon}

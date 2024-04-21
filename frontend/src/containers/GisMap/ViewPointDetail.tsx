@@ -14,6 +14,7 @@ import * as React from 'react';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { ViewPointCameraList } from './components/ViewPointCameraList';
 
 export function ViewPointDetail() {
   const router = useRouter();
@@ -33,39 +34,36 @@ export function ViewPointDetail() {
     isFetching,
     refetch,
     isLoading,
-  }: {
-    data: ViewPointData;
-    isFetching: boolean;
-    isLoading: boolean;
-  } = useQuery<ViewPointData>({
+  } = useQuery({
     queryKey: ['getViewPointDetail', viewPointId],
     queryFn: () => {
-      if (viewPointId) {
-        return getDetailViewPoint(viewPointId);
-      }
+      return getDetailViewPoint(viewPointId);
     },
     onSuccess: (data: ViewPointData) => {
-      setValue('name', data.name);
-      setValue('description', data.description);
-      setValue('lat', data.lat);
-      setValue('long', data.long);
+      setValue('name', data?.name);
+      setValue('description', data?.description);
+      setValue('lat', data?.lat);
+      setValue('long', data?.long);
     },
     onError: () => toast('error', 'Error'),
+    enabled: !!viewPointId,
     // cacheTime: 0,
   });
 
-  const debouncedRefetch = useDebouncedCallback(() => refetch?.(), 300, [
-    router.query,
-  ]);
+  // const debouncedRefetch = useDebouncedCallback(() => refetch?.(), 300, [
+  //   router.query,
+  // ]);
 
-  useEffect(() => {
-    debouncedRefetch();
-    return () => {
-      debouncedRefetch.cancel();
-    };
-  }, [debouncedRefetch, router.query]);
+  // useEffect(() => {
+  //   debouncedRefetch();
+  //   return () => {
+  //     debouncedRefetch.cancel();
+  //   };
+  // }, [debouncedRefetch, router.query]);
 
-  const handleSubmitForm = () => {};
+  const handleSubmitForm = (data) => {
+    handleSubmit(data);
+  };
   const updateFormLatLong = (lat: number, long: number) => {
     setValue('lat', lat);
     setValue('long', long);
@@ -77,7 +75,16 @@ export function ViewPointDetail() {
           <h1>{dataDetail?.name ?? ''}</h1>
           <Grid container spacing={3} alignItems="stretch">
             <Grid item xs={6}>
-              <Box>
+              <Box className="mb-2">
+                <div className="flex justify-end">
+                  <Button
+                    className="btn wd-140 btn-sm btn-outline-light"
+                    type="submit"
+                    disabled={isLoading}
+                  >
+                    Save
+                  </Button>
+                </div>
                 <form
                   onSubmit={handleSubmitForm}
                   className={styles['create-modal-form']}
@@ -121,18 +128,9 @@ export function ViewPointDetail() {
                       isRequired
                     />
                   </div>
-
-                  <div className="mt-5 flex justify-end">
-                    <Button
-                      className="btn wd-140 btn-sm btn-outline-light"
-                      type="submit"
-                      disabled={isLoading}
-                    >
-                      Save
-                    </Button>
-                  </div>
                 </form>
               </Box>
+              <ViewPointCameraList viewPointId={viewPointId} />
             </Grid>
             <Grid item xs={6}>
               {!isLoading && (

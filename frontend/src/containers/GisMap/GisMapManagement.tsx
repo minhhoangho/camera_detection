@@ -12,7 +12,7 @@ import React, { useEffect } from 'react';
 import { useQuery } from 'react-query';
 import { useRouter } from 'next/router';
 import Tooltip from '@mui/material/Tooltip';
-import { GridColDef } from '@mui/x-data-grid';
+import {GridColDef, GridRenderCellParams} from '@mui/x-data-grid';
 import { format } from 'date-fns';
 import EditIcon from '@mui/icons-material/Edit';
 import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
@@ -30,7 +30,6 @@ import { listViewPointsPaginate } from '../../api/view-point';
 import { DEFAULT_PAGINATION_PARAMS } from '../../constants';
 import { PaginationQueryParams } from '../../shared/models/requests';
 import { PathName } from '../../constants/routes';
-import { useDebouncedCallback } from '../../shared/hooks/use-debounce-callback';
 import { Iconify } from '../../components/Iconify';
 
 export function GisMapViewPointManagement() {
@@ -47,7 +46,7 @@ export function GisMapViewPointManagement() {
     refetch,
     isLoading,
   } = useQuery<ListViewPointPaginateResponse>({
-    queryKey: ['getListViewPointPaginate'],
+    queryKey: ['getListViewPointPaginate', paginationParams],
     queryFn: () =>
       listViewPointsPaginate({
         keyword: keyword ?? '',
@@ -60,22 +59,18 @@ export function GisMapViewPointManagement() {
     // cacheTime: 0,
   });
 
-  const debouncedRefetch = useDebouncedCallback(() => refetch(), 300, [
-    paginationParams.limit,
-    paginationParams.offset,
-  ]);
+  // useEffect(() => {
+  //   debouncedRefetch();
+  //
+  //   // Cleanup function
+  //   return () => {
+  //     debouncedRefetch.cancel();
+  //   };
+  //   //  eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [paginationParams.limit, paginationParams.offset]);
 
-  useEffect(() => {
-    debouncedRefetch();
 
-    // Cleanup function
-    return () => {
-      debouncedRefetch.cancel();
-    };
-    //  eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paginationParams.limit, paginationParams.offset]);
-
-  const renderActionButton = (params) => {
+    const renderActionButton = (params) => {
     return (
       <div className="flex justify-end gap-x-6">
         <Tooltip title="Edit location">
@@ -108,11 +103,11 @@ export function GisMapViewPointManagement() {
       sortable: false,
       filterable: false,
       width: 150,
-      renderCell: (params) => {
+      renderCell: (params: GridRenderCellParams<any, any>) => {
         return (
           <span
             onClick={() =>
-              router.push(`${PathName.GisLocationManagement}/${params.row.id}`)
+              router.push(`${PathName.GisLocationManagement}/${params?.row.id}`)
             }
             className="cursor-pointer  hover:underline font-semibold"
           >
