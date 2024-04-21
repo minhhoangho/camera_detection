@@ -7,7 +7,7 @@ import {
   OutlinedInput,
   Typography,
 } from '@mui/material';
-import React, { useEffect } from 'react';
+import React from 'react';
 // import {OpenLayerMap} from "./OpenLayerMap";
 import { useQuery } from 'react-query';
 import { useRouter } from 'next/router';
@@ -15,7 +15,6 @@ import Tooltip from '@mui/material/Tooltip';
 import {GridColDef, GridRenderCellParams} from '@mui/x-data-grid';
 import { format } from 'date-fns';
 import EditIcon from '@mui/icons-material/Edit';
-import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
 import { ListViewPointPaginateResponse } from './models';
 import {
   VIEW_POINT_MANAGEMENT_COLUMNS_LABEL,

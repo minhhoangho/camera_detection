@@ -21,8 +21,8 @@ export const request = axios.create({
 
 request.interceptors.request.use(
   (config) => {
-    // config.params = humps.decamelizeKeys(config.params);
-    // config.data = humps.decamelizeKeys(config.data);
+    config.params = humps.decamelizeKeys(config.params);
+    config.data = humps.decamelizeKeys(config.data);
 
     const accessToken: string = CookiesStorage.getAccessToken(); // Get accessToken
     if (accessToken) {

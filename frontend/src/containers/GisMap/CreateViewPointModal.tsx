@@ -8,7 +8,6 @@ import { useMutation } from 'react-query';
 import * as React from 'react';
 import { CreateViewPointPayloadRequest, ViewPointData } from './models';
 import { OpenLayerMap } from './OpenLayerMap';
-import styles from './GisMap.module.scss';
 import { toast } from '../../components/Toast';
 import { PathName } from '../../constants/routes';
 import { createViewPoint } from '../../api/view-point';
@@ -93,7 +92,6 @@ export function CreateViewPointModal({ onClose, isOpen }: ModalProps) {
             <Box>
               <form
                 onSubmit={handleSubmit(handleCreateViewPoint)}
-                className={styles['create-modal-form']}
               >
                 <FormInput
                   control={control}

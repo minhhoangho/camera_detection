@@ -1,5 +1,5 @@
 import { Card, CardHeader, Box, Grid, ListItem, List } from '@mui/material';
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { API_BASE_URL } from '../../../constants';
 
 type Props = {

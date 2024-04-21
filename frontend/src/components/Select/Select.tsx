@@ -2,9 +2,10 @@ import MenuItem from '@mui/material/MenuItem';
 import { InputLabel, Select } from '@mui/material';
 import React from 'react';
 import classNames from 'classnames';
+import styles from './Select.module.scss';
 
 export type OptionProps = {
-  value: string;
+  value: string | number;
   label: string;
 };
 
@@ -35,18 +36,27 @@ export const SelectField = ({
   className,
   selectElementClassName,
 }: SelectProps) => {
+  const labelNameId = `select_${name}_label`;
   return (
     <div className={classNames('relative w-full mb-1', className)}>
-      <InputLabel className={classNames('', labelClassName)}>
+      <InputLabel
+        id={labelNameId}
+        className={classNames('text-sm', labelClassName)}
+      >
         {label} {isRequired && <sup className="text-red-500 text-xs">*</sup>}
       </InputLabel>
       <Select
+        labelId={labelNameId}
         multiple={multiple}
         name={name}
         value={value}
         label={label}
         onChange={onSelectChange}
-        className={classNames('relative w-full', selectElementClassName)}
+        className={classNames(
+          'relative w-full',
+          styles['select-input'],
+          selectElementClassName,
+        )}
       >
         {options.map((option: OptionProps) => (
           <MenuItem key={option.value} value={option.value}>

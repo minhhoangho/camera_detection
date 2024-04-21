@@ -1,20 +1,18 @@
 import { useRouter } from 'next/router';
-import { useEffect } from 'react';
 import { useQuery } from 'react-query';
 import { Box, Button, Container, Grid } from '@mui/material';
-import { ViewPointData } from './models';
-import { getDetailViewPoint } from '../../api/view-point';
-import { toast } from '../../components/Toast';
-import { useDebouncedCallback } from '../../shared/hooks/use-debounce-callback';
-import { BaseLayout, PrivateLayout } from '../../layouts';
-import styles from './GisMap.module.scss';
-import { FormInput } from '../../components/Form';
-import { OpenLayerMap } from './OpenLayerMap';
 import * as React from 'react';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { ViewPointData } from './models';
+import styles from './GisMap.module.scss';
+import { OpenLayerMap } from './OpenLayerMap';
 import { ViewPointCameraList } from './components/ViewPointCameraList';
+import { getDetailViewPoint } from '../../api/view-point';
+import { toast } from '../../components/Toast';
+import { BaseLayout, PrivateLayout } from '../../layouts';
+import { FormInput } from '../../components/Form';
 
 export function ViewPointDetail() {
   const router = useRouter();
@@ -31,8 +29,6 @@ export function ViewPointDetail() {
 
   const {
     data: dataDetail,
-    isFetching,
-    refetch,
     isLoading,
   } = useQuery({
     queryKey: ['getViewPointDetail', viewPointId],

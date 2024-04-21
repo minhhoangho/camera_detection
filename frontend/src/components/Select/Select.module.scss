@@ -1,0 +1,8 @@
+
+.select-input {
+    @apply text-sm #{!important};
+
+  .MuiInputBase-input{
+    @apply py-1 #{!important};
+  }
+}

@@ -3,14 +3,12 @@ import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useState } from 'react';
-import { useRouter } from 'next/router';
 import { useMutation } from 'react-query';
 import * as React from 'react';
 import { toast } from '../../../components/Toast';
 import { FormInput } from '../../../components/Form';
 import {
   UpsertCameraSourcePayloadRequest,
-  ViewPointCameraData,
 } from '../models';
 import { upsertNewViewPointCamera } from '../../../api/view-point';
 import { FormSelect } from '../../../components/Form/FormSelect';
@@ -29,13 +27,11 @@ export function UpsertCameraSourceModal({
   onClose,
   isOpen,
 }: ModalProps) {
-  const router = useRouter();
-
   const [isLoading, setIsLoading] = useState(false);
 
   const validationSchema = yup.object({
     cameraUri: yup.string().trim().required('Url is require'),
-    cameraSource: yup.string(),
+    cameraSource: yup.number().required('Camera source is require'),
   });
 
   const { control, handleSubmit } = useForm({
@@ -45,13 +41,15 @@ export function UpsertCameraSourceModal({
   const { mutate } = useMutation({
     mutationFn: (data: UpsertCameraSourcePayloadRequest): any =>
       upsertNewViewPointCamera(viewPointId, data),
-    onSuccess: (data: ViewPointCameraData) => {
+    onSuccess: () => {
       setIsLoading(false);
       toast('success', 'Updated camera source');
+      onClose?.()
     },
     onError: () => {
       toast('error', 'Update camera source error');
       setIsLoading(false);
+      onClose?.()
     },
   });
 
@@ -82,7 +80,7 @@ export function UpsertCameraSourceModal({
         }}
       >
         <div className="modal-header flex justify-between mb-2">
-          <span className="modal-title">Camera source</span>
+          <span className="modal-title">Video source configuration</span>
           <button
             type="button"
             className="close bg-transparent border-none cursor-pointer"
@@ -99,53 +97,24 @@ export function UpsertCameraSourceModal({
           <Grid item xs={12}>
             <Box>
               <form onSubmit={handleSubmit(handleUpsertCameraSource)}>
-                {/*<FormInput*/}
-                {/*  control={control}*/}
-                {/*  name="cameraSource"*/}
-                {/*  inputElementClassName="form-control mr-sm-2"*/}
-                {/*  placeholder="Location name"*/}
-                {/*  label="Location name"*/}
-                {/*  isRequired*/}
-                {/*/>*/}
                 <FormSelect
                   control={control}
+                  isRequired
+                  className="mb-2"
                   name="cameraSource"
                   label="Camera source"
                   options={[
-                    { value: '1', label: 'Camera 1' },
-                    { value: '2', label: 'Camera 2' },
-                    { value: '3', label: 'Camera 3' },
+                    { value: 0, label: 'RTSP' },
+                    { value: 1, label: 'Youtube' },
                   ]}
                 />
                 <FormInput
                   control={control}
+                  isRequired
                   name="cameraUri"
-                  isTextarea
                   inputElementClassName="form-control mr-sm-2 resize-none"
-                  placeholder="Description"
-                  label="Description"
-                />
-
-                <FormInput
-                  control={control}
-                  name="lat"
-                  type="number"
-                  inputElementClassName="form-control mr-sm-2"
-                  placeholder="Latitude"
-                  label="Latitude"
-                  labelClassName=""
-                  isRequired
-                />
-
-                <FormInput
-                  control={control}
-                  name="long"
-                  type="number"
-                  inputElementClassName="form-control mr-sm-2"
-                  placeholder="Longitude"
-                  label="Longitude"
-                  labelClassName=""
-                  isRequired
+                  placeholder="Camera URI (rtsp://...)"
+                  label="Camera URI "
                 />
 
                 <div className="mt-5 flex justify-end">
