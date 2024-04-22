@@ -31,6 +31,7 @@ export function ViewPointCameraList({ viewPointId }: ViewPointCameraListProps) {
     DEFAULT_PAGINATION_PARAMS,
   );
   const [isOpenUpsert, setIsOpenUpsert] = React.useState(false);
+  const [selectedCameraViewPointId, setSelectedCameraViewPointId] = React.useState<number>(0);
 
   const {
     data: dataListResponse,
@@ -57,7 +58,7 @@ export function ViewPointCameraList({ viewPointId }: ViewPointCameraListProps) {
     return (
       <div className="flex justify-end gap-x-6">
         <Tooltip title="Edit camera viewpoint">
-          <Button style={{ padding: 0 }}>
+          <Button style={{ padding: 0 }} onClick={handleUpdate}>
             <EditIcon style={{ fontSize: '20px', outline: 'none' }} />
           </Button>
         </Tooltip>
@@ -137,6 +138,11 @@ export function ViewPointCameraList({ viewPointId }: ViewPointCameraListProps) {
     setIsOpenUpsert(true);
   };
 
+  const handleUpdate = (cameraId: number) => {
+    setSelectedCameraViewPointId(cameraId)
+    setIsOpenUpsert(true);
+  }
+
   const handleCloseModal = () => {
     setIsOpenUpsert(false)
     refetch()
@@ -162,6 +168,7 @@ export function ViewPointCameraList({ viewPointId }: ViewPointCameraListProps) {
 
       <UpsertCameraSourceModal
         viewPointId={viewPointId}
+        cameraViewPointId={selectedCameraViewPointId}
         isOpen={isOpenUpsert}
         onClose={handleCloseModal}
       />

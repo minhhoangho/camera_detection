@@ -1,4 +1,4 @@
 class CameraSource:
     RTSP = 0
-    YOU_TUBE = 1
+    YOUTUBE = 1
 
