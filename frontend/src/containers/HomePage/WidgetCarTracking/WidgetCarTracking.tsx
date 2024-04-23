@@ -146,7 +146,6 @@ export function WidgetCarTracking({ title, subheader }: Props) {
           </Box>
         </Card>
       </Grid>
-
     </Grid>
   );
 }

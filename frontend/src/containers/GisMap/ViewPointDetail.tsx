@@ -5,15 +5,23 @@ import * as React from 'react';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { EditViewPointPayloadRequest, ViewPointData } from './models';
+import {
+  EditViewPointPayloadRequest,
+  ViewPointCameraData,
+  ViewPointData,
+} from './models';
 import { OpenLayerMap } from './OpenLayerMap';
 import { ViewPointCameraList } from './components/ViewPointCameraList';
 import { getDetailViewPoint, updateViewPoint } from '../../api/view-point';
 import { toast } from '../../components/Toast';
 import { BaseLayout, PrivateLayout } from '../../layouts';
 import { FormInput } from '../../components/Form';
-
+import { RealtimeCamera } from './components/RealtimeCamera';
 export function ViewPointDetail() {
+  const [showRealtimeCamera, setShowRealtimeCamera] = React.useState(false);
+  const [selectedViewPointCamera, setSelectedViewPointCamera] = React.useState(
+    {} as ViewPointCameraData,
+  );
   const router = useRouter();
   const viewPointId = (router.query['id'] ?? 0) as number;
   const validationSchema = yup.object({
@@ -65,6 +73,15 @@ export function ViewPointDetail() {
     setValue('lat', lat);
     setValue('long', long);
   };
+
+  const handleSetShowRealtimeCamera = (
+    val: boolean,
+    viewPointCamera: ViewPointCameraData,
+  ) => {
+    setShowRealtimeCamera(val);
+    setSelectedViewPointCamera(viewPointCamera);
+  };
+
   return (
     <BaseLayout>
       <PrivateLayout>
@@ -72,60 +89,73 @@ export function ViewPointDetail() {
           <h1>{dataDetail?.name ?? ''}</h1>
           <Grid container spacing={3} alignItems="stretch">
             <Grid item xs={6}>
-              <Box className="mb-2">
-                <form onSubmit={handleSubmit(handleSubmitForm)}>
-                  <div className="flex justify-end">
-                    <Button
-                      variant="contained"
-                      className="btn wd-140 btn-sm btn-primary"
-                      type="submit"
-                      disabled={isLoading}
-                    >
-                      Save
-                    </Button>
-                  </div>
-                  <FormInput
-                    control={control}
-                    name="name"
-                    inputElementClassName="form-control mr-sm-2"
-                    placeholder="Location name"
-                    label="Location name"
-                    isRequired
-                  />
-                  <FormInput
-                    control={control}
-                    name="description"
-                    isTextarea
-                    inputElementClassName="form-control mr-sm-2 resize-none"
-                    placeholder="Description"
-                    label="Description"
-                  />
-                  <div className="flex justify-between gap-3">
-                    <FormInput
-                      control={control}
-                      name="lat"
-                      type="number"
-                      inputElementClassName="form-control mr-sm-2"
-                      placeholder="Latitude"
-                      label="Latitude"
-                      labelClassName=""
-                      isRequired
-                    />
+              {showRealtimeCamera ? (
+                <RealtimeCamera
+                  viewPoint={dataDetail as ViewPointData}
+                  viewPointCamera={selectedViewPointCamera}
+                  setShowRealtimeCamera={setShowRealtimeCamera}
+                />
+              ) : (
+                <>
+                  <Box className="mb-2">
+                    <form onSubmit={handleSubmit(handleSubmitForm)}>
+                      <div className="flex justify-end">
+                        <Button
+                          variant="contained"
+                          className="btn wd-140 btn-sm btn-primary"
+                          type="submit"
+                          disabled={isLoading}
+                        >
+                          Save
+                        </Button>
+                      </div>
+                      <FormInput
+                        control={control}
+                        name="name"
+                        inputElementClassName="form-control mr-sm-2"
+                        placeholder="Location name"
+                        label="Location name"
+                        isRequired
+                      />
+                      <FormInput
+                        control={control}
+                        name="description"
+                        isTextarea
+                        inputElementClassName="form-control mr-sm-2 resize-none"
+                        placeholder="Description"
+                        label="Description"
+                      />
+                      <div className="flex justify-between gap-3">
+                        <FormInput
+                          control={control}
+                          name="lat"
+                          type="number"
+                          inputElementClassName="form-control mr-sm-2"
+                          placeholder="Latitude"
+                          label="Latitude"
+                          labelClassName=""
+                          isRequired
+                        />
 
-                    <FormInput
-                      control={control}
-                      name="long"
-                      type="number"
-                      inputElementClassName="form-control mr-sm-2"
-                      placeholder="Longitude"
-                      label="Longitude"
-                      labelClassName=""
-                      isRequired
-                    />
-                  </div>
-                </form>
-              </Box>
-              <ViewPointCameraList viewPointId={viewPointId} />
+                        <FormInput
+                          control={control}
+                          name="long"
+                          type="number"
+                          inputElementClassName="form-control mr-sm-2"
+                          placeholder="Longitude"
+                          label="Longitude"
+                          labelClassName=""
+                          isRequired
+                        />
+                      </div>
+                    </form>
+                  </Box>
+                  <ViewPointCameraList
+                    viewPointId={viewPointId}
+                    setShowRealtimeCamera={handleSetShowRealtimeCamera}
+                  />
+                </>
+              )}
             </Grid>
             <Grid item xs={6}>
               {!isLoading && (

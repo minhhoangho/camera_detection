@@ -1,4 +1,4 @@
-export const PAGE_LIMIT = 2;
+export const PAGE_LIMIT = 10;
 
 export const INFINITE_LIMIT = 8;
 

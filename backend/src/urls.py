@@ -49,6 +49,7 @@ urlpatterns = [
     path("", include("src.Apps.auth.urls")),
     path("", include("src.Apps.user.urls")),
     path("", include("src.Apps.gis_map.urls")),
+    path("", include("src.Apps.detector.urls")),
 ]
 
 if settings.DEBUG:  # pragma: no cover

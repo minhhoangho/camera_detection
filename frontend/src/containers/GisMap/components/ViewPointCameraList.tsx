@@ -25,8 +25,9 @@ import {
 
 type ViewPointCameraListProps = {
   viewPointId: number;
+  setShowRealtimeCamera: (val: boolean, viewPointCamera: ViewPointCameraData) => void;
 };
-export function ViewPointCameraList({ viewPointId }: ViewPointCameraListProps) {
+export function ViewPointCameraList({ viewPointId, setShowRealtimeCamera }: ViewPointCameraListProps) {
   const [paginationParams, setPaginationParams] = React.useState(
     DEFAULT_PAGINATION_PARAMS,
   );
@@ -71,7 +72,9 @@ export function ViewPointCameraList({ viewPointId }: ViewPointCameraListProps) {
           className="cursor-pointer"
           onClick={() => handleUpdate(item)}
         >
-          <VisibilityIcon style={{ fontSize: '20px', outline: 'none' }} />
+          <VisibilityIcon style={{ fontSize: '20px', outline: 'none' }}
+          onClick={() => setShowRealtimeCamera(true, item)}
+          />
         </Tooltip>
       </div>
     );

@@ -1,4 +1,6 @@
 import sys
+
+
 sys.path.append("./")
 import os
 from flask import Flask, render_template, Response
@@ -7,8 +9,9 @@ import time
 from flask_sse import sse
 from pytube import YouTube
 from flask_cors import CORS
-from detection_util import DetectionUtil
 from vidgear.gears import CamGear
+from src.Apps.detector.detection_util import DetectionUtil
+
 
 app = Flask(__name__)
 CORS(app)
