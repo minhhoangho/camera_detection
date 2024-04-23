@@ -27,10 +27,7 @@ export function ViewPointDetail() {
     resolver: yupResolver(validationSchema),
   });
 
-  const {
-    data: dataDetail,
-    isLoading,
-  } = useQuery({
+  const { data: dataDetail, isLoading } = useQuery({
     queryKey: ['getViewPointDetail', viewPointId],
     queryFn: () => {
       return getDetailViewPoint(viewPointId);
@@ -74,7 +71,8 @@ export function ViewPointDetail() {
               <Box className="mb-2">
                 <div className="flex justify-end">
                   <Button
-                    className="btn wd-140 btn-sm btn-outline-light"
+                    variant="contained"
+                    className="btn wd-140 btn-sm btn-primary"
                     type="submit"
                     disabled={isLoading}
                   >

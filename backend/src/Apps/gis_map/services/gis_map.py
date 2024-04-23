@@ -71,12 +71,13 @@ class GisMapService:
         )
 
     @classmethod
-    def edit_view_point_camera(cls, pk: int, payload: dict):
+    def edit_view_point_camera(cls, pk: int, payload: dict) -> GisViewPointCamera:
         cls.get_view_point_camera_detail(pk=pk)
         view_point_id: int = TypeUtils.safe_int(payload.get("view_point_id"))
         cls.get_view_point_by_id(view_point_id)
         camera_source: int = TypeUtils.safe_int(payload.get("camera_source"))
         camera_uri: str = TypeUtils.safe_str(payload.get("camera_uri"))
-        return GisViewPointCamera.objects.create(
+        GisViewPointCamera.objects.filter(id=pk).update(
             view_point_id=view_point_id, camera_source=camera_source, camera_uri=camera_uri
         )
+        return cls.get_view_point_camera_detail(pk=pk)

@@ -2,27 +2,28 @@ import { Box, Button, Grid, Modal } from '@mui/material';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useMutation } from 'react-query';
 import * as React from 'react';
 import { toast } from '../../../components/Toast';
 import { FormInput } from '../../../components/Form';
 import {
   UpsertCameraSourcePayloadRequest,
+  ViewPointCameraData,
 } from '../models';
 import { upsertNewViewPointCamera } from '../../../api/view-point';
 import { FormSelect } from '../../../components/Form/FormSelect';
 
 type ModalProps = {
   viewPointId: number;
-  cameraViewPointId?: number;
+  cameraViewPoint?: ViewPointCameraData | null;
   isOpen: boolean;
   // Function
   onClose: () => void;
 };
 
 export function UpsertCameraSourceModal({
-  cameraViewPointId,
+  cameraViewPoint,
   viewPointId,
   onClose,
   isOpen,
@@ -34,9 +35,16 @@ export function UpsertCameraSourceModal({
     cameraSource: yup.number().required('Camera source is require'),
   });
 
-  const { control, handleSubmit } = useForm({
+  const { control, handleSubmit, setValue } = useForm({
     resolver: yupResolver(validationSchema),
   });
+
+  useEffect(() => {
+    if (cameraViewPoint) {
+      setValue('cameraUri', cameraViewPoint.cameraUri);
+      setValue('cameraSource', cameraViewPoint.cameraSource);
+    }
+  }, [cameraViewPoint, setValue])
 
   const { mutate } = useMutation({
     mutationFn: (data: UpsertCameraSourcePayloadRequest): any =>
@@ -44,26 +52,22 @@ export function UpsertCameraSourceModal({
     onSuccess: () => {
       setIsLoading(false);
       toast('success', 'Updated camera source');
-      onClose?.()
+      onClose?.();
     },
     onError: () => {
       toast('error', 'Update camera source error');
       setIsLoading(false);
-      onClose?.()
+      onClose?.();
     },
   });
 
   const handleUpsertCameraSource = (data: any) => {
-    if (cameraViewPointId) {
-      data.id = cameraViewPointId;
+    if (cameraViewPoint) {
+      data.id = cameraViewPoint.id;
     }
     mutate(data as UpsertCameraSourcePayloadRequest);
   };
 
-  // const updateFormLatLong = (lat: number, long: number) => {
-  //   setValue("lat", lat)
-  //   setValue("long", long)
-  // }
   return (
     <Modal open={isOpen} onClose={onClose}>
       <Box

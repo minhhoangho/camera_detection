@@ -8,10 +8,9 @@ import EditIcon from '@mui/icons-material/Edit';
 import { UpsertCameraSourceModal } from './UpsertCameraSourceModal';
 import {
   ListViewPointCameraPaginateResponse,
+  ViewPointCameraData,
 } from '../models';
-import {
-  getListViewPointCameras,
-} from '../../../api/view-point';
+import { getListViewPointCameras } from '../../../api/view-point';
 import { toast } from '../../../components/Toast';
 import { DEFAULT_PAGINATION_PARAMS } from '../../../constants';
 import { Table } from '../../../components/Table';
@@ -30,8 +29,10 @@ export function ViewPointCameraList({ viewPointId }: ViewPointCameraListProps) {
   const [paginationParams, setPaginationParams] = React.useState(
     DEFAULT_PAGINATION_PARAMS,
   );
+
   const [isOpenUpsert, setIsOpenUpsert] = React.useState(false);
-  const [selectedCameraViewPointId, setSelectedCameraViewPointId] = React.useState<number>(0);
+  const [selectedCameraViewPoint, setSelectedCameraViewPoint] =
+    React.useState<ViewPointCameraData | null>(null);
 
   const {
     data: dataListResponse,
@@ -54,13 +55,15 @@ export function ViewPointCameraList({ viewPointId }: ViewPointCameraListProps) {
     setPaginationParams({ limit: query.limit, offset: query.offset });
   };
 
-  const renderActionButton = () => {
+  const renderActionButton = (item: ViewPointCameraData) => {
     return (
       <div className="flex justify-end gap-x-6">
-        <Tooltip title="Edit camera viewpoint">
-          <Button style={{ padding: 0 }} onClick={handleUpdate}>
-            <EditIcon style={{ fontSize: '20px', outline: 'none' }} />
-          </Button>
+        <Tooltip
+          title="Edit camera viewpoint"
+          className="cursor-pointer"
+          onClick={() => handleUpdate(item)}
+        >
+          <EditIcon style={{ fontSize: '20px', outline: 'none' }} />
         </Tooltip>
       </div>
     );
@@ -87,15 +90,11 @@ export function ViewPointCameraList({ viewPointId }: ViewPointCameraListProps) {
       filterable: false,
       width: 80,
       renderCell: (params: GridRenderCellParams<any, any>) => {
-        const sourceEnum =  {
-          0: "RTSP",
-          1: "Youtube"
-        }
-        return (
-          <span className="">
-            {sourceEnum[params.row.cameraSource]}
-          </span>
-        );
+        const sourceEnum: Record<number, string> = {
+          0: 'RTSP',
+          1: 'Youtube',
+        };
+        return <span className="">{sourceEnum[params.row.cameraSource]}</span>;
       },
     },
     {
@@ -131,22 +130,24 @@ export function ViewPointCameraList({ viewPointId }: ViewPointCameraListProps) {
       sortable: false,
       filterable: false,
       width: 80,
-      renderCell: renderActionButton,
+      renderCell: (params: GridRenderCellParams) => {
+        return renderActionButton(params.row as ViewPointCameraData);
+      },
     },
   ];
   const handleCreate = () => {
     setIsOpenUpsert(true);
   };
 
-  const handleUpdate = (cameraId: number) => {
-    setSelectedCameraViewPointId(cameraId)
+  const handleUpdate = (viewPointCamera: ViewPointCameraData) => {
+    setSelectedCameraViewPoint(viewPointCamera);
     setIsOpenUpsert(true);
-  }
+  };
 
-  const handleCloseModal = () => {
-    setIsOpenUpsert(false)
-    refetch()
-  }
+  const handleCloseModal = async () => {
+    setIsOpenUpsert(false);
+    await refetch();
+  };
 
   return (
     <Box>
@@ -168,7 +169,7 @@ export function ViewPointCameraList({ viewPointId }: ViewPointCameraListProps) {
 
       <UpsertCameraSourceModal
         viewPointId={viewPointId}
-        cameraViewPointId={selectedCameraViewPointId}
+        cameraViewPoint={selectedCameraViewPoint}
         isOpen={isOpenUpsert}
         onClose={handleCloseModal}
       />
