@@ -50,7 +50,7 @@ export function CreateViewPointModal({ onClose, isOpen }: ModalProps) {
     },
   });
 
-  const handleCreateViewPoint = (data) => {
+  const handleCreateViewPoint = (data: any) => {
     createViewpointMutate(data as CreateViewPointPayloadRequest);
   };
 

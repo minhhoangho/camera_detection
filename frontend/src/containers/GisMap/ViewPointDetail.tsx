@@ -1,15 +1,14 @@
 import { useRouter } from 'next/router';
-import { useQuery } from 'react-query';
+import { useMutation, useQuery } from 'react-query';
 import { Box, Button, Container, Grid } from '@mui/material';
 import * as React from 'react';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { ViewPointData } from './models';
-import styles from './GisMap.module.scss';
+import { EditViewPointPayloadRequest, ViewPointData } from './models';
 import { OpenLayerMap } from './OpenLayerMap';
 import { ViewPointCameraList } from './components/ViewPointCameraList';
-import { getDetailViewPoint } from '../../api/view-point';
+import { getDetailViewPoint, updateViewPoint } from '../../api/view-point';
 import { toast } from '../../components/Toast';
 import { BaseLayout, PrivateLayout } from '../../layouts';
 import { FormInput } from '../../components/Form';
@@ -27,7 +26,11 @@ export function ViewPointDetail() {
     resolver: yupResolver(validationSchema),
   });
 
-  const { data: dataDetail, isLoading } = useQuery({
+  const {
+    data: dataDetail,
+    isLoading,
+    refetch: refetchDetail,
+  } = useQuery({
     queryKey: ['getViewPointDetail', viewPointId],
     queryFn: () => {
       return getDetailViewPoint(viewPointId);
@@ -43,19 +46,20 @@ export function ViewPointDetail() {
     // cacheTime: 0,
   });
 
-  // const debouncedRefetch = useDebouncedCallback(() => refetch?.(), 300, [
-  //   router.query,
-  // ]);
+  const { mutate: updateViewpointMutate } = useMutation({
+    mutationFn: (data: EditViewPointPayloadRequest): any =>
+      updateViewPoint(viewPointId, data),
+    onSuccess: async () => {
+      toast('success', 'Updated view point');
+      await refetchDetail();
+    },
+    onError: () => {
+      toast('error', 'Update view point error');
+    },
+  });
 
-  // useEffect(() => {
-  //   debouncedRefetch();
-  //   return () => {
-  //     debouncedRefetch.cancel();
-  //   };
-  // }, [debouncedRefetch, router.query]);
-
-  const handleSubmitForm = (data) => {
-    handleSubmit(data);
+  const handleSubmitForm = (data: any) => {
+    updateViewpointMutate(data as EditViewPointPayloadRequest);
   };
   const updateFormLatLong = (lat: number, long: number) => {
     setValue('lat', lat);
@@ -69,20 +73,17 @@ export function ViewPointDetail() {
           <Grid container spacing={3} alignItems="stretch">
             <Grid item xs={6}>
               <Box className="mb-2">
-                <div className="flex justify-end">
-                  <Button
-                    variant="contained"
-                    className="btn wd-140 btn-sm btn-primary"
-                    type="submit"
-                    disabled={isLoading}
-                  >
-                    Save
-                  </Button>
-                </div>
-                <form
-                  onSubmit={handleSubmitForm}
-                  className={styles['create-modal-form']}
-                >
+                <form onSubmit={handleSubmit(handleSubmitForm)}>
+                  <div className="flex justify-end">
+                    <Button
+                      variant="contained"
+                      className="btn wd-140 btn-sm btn-primary"
+                      type="submit"
+                      disabled={isLoading}
+                    >
+                      Save
+                    </Button>
+                  </div>
                   <FormInput
                     control={control}
                     name="name"

@@ -71,18 +71,11 @@ class GisMapViewSet(PaginationMixin):
         pk = TypeUtils.safe_int(pk)
         if not pk:
             raise AppException(error=ValidationErr.INVALID, params=["pk"])
-
-        lat = request.data.get("lat")
-        long = request.data.get("long")
-        payload = {"lat": lat, "long": long}
-        serializer = ViewPointSerializer(data=payload)
+        payload = request.data.copy()
+        gis_vp = GisMapService.get_view_point_by_id(pk=pk)
+        serializer = ViewPointSerializer(instance=gis_vp, data=payload)
         if serializer.is_valid(raise_exception=True):
-            gis_vp = GisViewPoint.objects.filter(pk=pk).first()
-            if not gis_vp:
-                raise AppException(error=ApiErr.NOT_FOUND)
-            gis_vp.lat = lat
-            gis_vp.long = long
-            gis_vp.save()
+            serializer.save()
         return Response(data=ViewPointSerializer(gis_vp).data, status=HTTPStatus.OK)
 
     @action(methods=[HttpMethod.GET], url_path=r"view-points/(?P<pk>\w+)/cameras", detail=False)

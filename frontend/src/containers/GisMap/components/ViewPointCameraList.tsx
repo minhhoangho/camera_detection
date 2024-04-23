@@ -5,6 +5,7 @@ import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import { format } from 'date-fns';
 import Tooltip from '@mui/material/Tooltip';
 import EditIcon from '@mui/icons-material/Edit';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import { UpsertCameraSourceModal } from './UpsertCameraSourceModal';
 import {
   ListViewPointCameraPaginateResponse,
@@ -57,13 +58,20 @@ export function ViewPointCameraList({ viewPointId }: ViewPointCameraListProps) {
 
   const renderActionButton = (item: ViewPointCameraData) => {
     return (
-      <div className="flex justify-end gap-x-6">
+      <div className="flex justify-end gap-x-3">
         <Tooltip
           title="Edit camera viewpoint"
           className="cursor-pointer"
           onClick={() => handleUpdate(item)}
         >
           <EditIcon style={{ fontSize: '20px', outline: 'none' }} />
+        </Tooltip>
+         <Tooltip
+          title="View viewpoint"
+          className="cursor-pointer"
+          onClick={() => handleUpdate(item)}
+        >
+          <VisibilityIcon style={{ fontSize: '20px', outline: 'none' }} />
         </Tooltip>
       </div>
     );
