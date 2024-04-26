@@ -160,7 +160,7 @@ export function ViewPointDetail() {
             <Grid item xs={6}>
               {!isLoading && (
                 <OpenLayerMap
-                  width="100%"
+                  width={"--webkit-fill-available"}
                   height={600}
                   onUpdateLatLong={updateFormLatLong}
                 />

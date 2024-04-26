@@ -4,6 +4,8 @@ from src.Apps.gis_map.models import GisViewPoint, GisViewPointCamera
 
 
 class ViewPointSerializer(serializers.ModelSerializer):
+    description = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+
     class Meta:
         model = GisViewPoint
         fields = "__all__"

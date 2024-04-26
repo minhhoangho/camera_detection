@@ -66,7 +66,7 @@ export function CreateViewPointModal({ onClose, isOpen }: ModalProps) {
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          width: 700,
+          width: '50%',
           bgcolor: 'background.paper',
           boxShadow: 24,
           borderRadius: 1,
@@ -145,7 +145,7 @@ export function CreateViewPointModal({ onClose, isOpen }: ModalProps) {
             </Box>
           </Grid>
           <Grid item xs={8}>
-            <OpenLayerMap width={400} height={400} onUpdateLatLong={updateFormLatLong}/>
+            <OpenLayerMap width={'-webkit-fill-available'} height={400} onUpdateLatLong={updateFormLatLong}/>
           </Grid>
         </Grid>
       </Box>
