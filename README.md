@@ -17,12 +17,12 @@ To install and run this project locally, follow these steps:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/minhhoangho/camera_detection.git
+      git clone https://github.com/minhhoangho/camera_detection.git
    ```
 
 2. Navigate to the project directory:
    ```bash
-    cd camera_detection
+      cd camera_detection
    ```
 
 3. Create python environment
@@ -33,7 +33,7 @@ To install and run this project locally, follow these steps:
 
 4. Install dependencies
    ```bash
-       pip install -r requirements.txt
+      pip install -r requirements.txt
    ```
 
 
