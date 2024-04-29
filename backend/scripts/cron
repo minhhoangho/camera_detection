@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-function cron:job_feed {
-    _exec "$1" run --rm djapp python manage.py sample_cron_name
-}

@@ -41,3 +41,10 @@ To install and run this project locally, follow these steps:
   ```bash
       docker compose up -d
    ```
+
+
+
+### Screenshots
+![img.png](img.png)
+
+![img_1.png](img_1.png)
