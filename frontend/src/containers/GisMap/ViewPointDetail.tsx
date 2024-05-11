@@ -82,6 +82,8 @@ export function ViewPointDetail() {
     setSelectedViewPointCamera(viewPointCamera);
   };
 
+            console.log("dataDetail >> ", dataDetail)
+
   return (
     <BaseLayout>
       <PrivateLayout>
@@ -163,6 +165,7 @@ export function ViewPointDetail() {
                   width={"--webkit-fill-available"}
                   height={600}
                   onUpdateLatLong={updateFormLatLong}
+                  center={[dataDetail?.long ?? 0, dataDetail?.lat ?? 0]}
                 />
               )}
             </Grid>

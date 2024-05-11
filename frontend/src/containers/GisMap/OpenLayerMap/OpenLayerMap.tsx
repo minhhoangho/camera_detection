@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import View from 'ol/View';
 import Map from 'ol/Map';
 import TileLayer from 'ol/layer/Tile';
@@ -7,30 +7,63 @@ import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import Style from 'ol/style/Style';
 import Circle from 'ol/style/Circle';
+import Stroke from 'ol/style/Stroke';
 import Fill from 'ol/style/Fill';
 import 'ol/ol.css';
-import { toLonLat } from 'ol/proj';
+import { toLonLat, fromLonLat } from 'ol/proj';
+import Feature from 'ol/Feature';
+import Point from 'ol/geom/Point';
 
 // Import OpenLayers CSS
 
-const DEFAULT_GEO = [12047000, 1812900]; // (long, lat) Da nang location
+// const DEFAULT_GEO = [12047000, 1812900]; // (long, lat) Da nang location
 // const DEFAULT_GEO = [108224527.94 , 16577970.54] // (long, lat) Da nang location
+
+type CenterProps = [number, number];
 
 type OpenLayerMapProps = {
   width?: number | string;
   height: number | string;
+  center: CenterProps;
   // Function
   onUpdateLatLong?: (lat: number, long: number) => void;
 };
-export function OpenLayerMap({ width, height, onUpdateLatLong }: OpenLayerMapProps) {
+
+export function OpenLayerMap({
+  width,
+  height,
+  onUpdateLatLong,
+  center,
+}: OpenLayerMapProps) {
   const mapRef = useRef(null);
   // Generate random start and end points within the map bounds
-  const generateRandomPoint = (extent) => {
-    const [minX, minY, maxX, maxY]: [number, number, number, number] = extent;
-    const randomX: number = Math.random() * (maxX - minX) + minX;
-    const randomY: number = Math.random() * (maxY - minY) + minY;
-    return [randomX, randomY];
+  // const generateRandomPoint = (extent) => {
+  //   const [minX, minY, maxX, maxY]: [number, number, number, number] = extent;
+  //   const randomX: number = Math.random() * (maxX - minX) + minX;
+  //   const randomY: number = Math.random() * (maxY - minY) + minY;
+  //   return [randomX, randomY];
+  // };
+
+  const addCenterPoint = (map: Map, center: CenterProps) => {
+    const centerSource = new VectorSource();
+    const centerLayer = new VectorLayer({
+      source: centerSource,
+      style: new Style({
+        image: new Circle({
+          radius: 20,
+          fill: new Fill({ color: 'blue' }),
+          stroke: new Stroke({ color: 'black', width: 1 }),
+        }),
+      }),
+    });
+    map.addLayer(centerLayer);
+    // Create a feature for the center point and add it to the source
+    const centerFeature = new Feature({
+      geometry: new Point(fromLonLat(center)),
+    });
+    centerSource.addFeature(centerFeature);
   };
+
   useEffect(() => {
     const map = new Map({
       target: mapRef.current,
@@ -50,10 +83,12 @@ export function OpenLayerMap({ width, height, onUpdateLatLong }: OpenLayerMapPro
         // }),
       ],
       view: new View({
-        center: DEFAULT_GEO, // Center coordinates of New York in EPSG:3857 projection
-        zoom: 17, // Initial zoom level
+        center: fromLonLat(center), // Center coordinates of New York in EPSG:3857 projection
+        zoom: 19, // Initial zoom level
       }),
     });
+
+    addCenterPoint(map, center);
 
     // Generate random traffic flows
     const numberOfFlows = 100; // Number of traffic flows to generate
@@ -94,7 +129,7 @@ export function OpenLayerMap({ width, height, onUpdateLatLong }: OpenLayerMapPro
     return () => {
       map.setTarget(null);
     };
-  }, []);
+  }, [center, onUpdateLatLong]);
 
   return <div ref={mapRef} style={{ width, height }} />;
 }
