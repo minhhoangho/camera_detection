@@ -30,6 +30,7 @@ _base_settings = (
     "components/sentry.py",
     "components/general.py",
     "components/rest_framework.py",
+    "components/aws.py",
     # Select the right env:
     f"environments/{_ENV}.py",
     # Optionally override some settings:
