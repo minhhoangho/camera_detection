@@ -41,7 +41,7 @@ class GisMapService:
         return vp
 
     @classmethod
-    def list_camera_paginate(cls, view_point_id: int,  page: int, per_page: int = 10):
+    def list_camera_paginate(cls, view_point_id: int, page: int, per_page: int = 10):
         qs = GisViewPointCamera.objects.filter(view_point_id=view_point_id)
         paginator = Paginator(qs, per_page)
         total = paginator.count
@@ -81,3 +81,8 @@ class GisMapService:
             view_point_id=view_point_id, camera_source=camera_source, camera_uri=camera_uri
         )
         return cls.get_view_point_camera_detail(pk=pk)
+
+    @classmethod
+    def delete_viewpoint_camera(cls, pk: int):
+        GisViewPointCamera.objects.filter(id=pk).delete()
+        return True

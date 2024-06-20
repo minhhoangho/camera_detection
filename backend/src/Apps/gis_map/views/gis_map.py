@@ -111,3 +111,11 @@ class GisMapViewSet(PaginationMixin):
             else:
                 result = GisMapService.create_view_point_camera(payload)
         return Response(data=CameraViewPointSerializer(result).data, status=HTTPStatus.OK)
+
+    @action(methods=[HttpMethod.POST], url_path=r"view-points/(?P<pk>\w+)/camera/?P<cam_id>\w+", detail=False)
+    def delete_camera_viewpoint(self, request: Request, pk, cam_id):
+        view_point_id = TypeUtils.safe_int(pk)
+        cam_id = TypeUtils.safe_int(cam_id)
+        if not view_point_id or not cam_id:
+            raise AppException(error=ValidationErr.INVALID, params=["view_point_id", "cam_id"])
+        GisMapService.delete_view_point_camera(cam_id)
