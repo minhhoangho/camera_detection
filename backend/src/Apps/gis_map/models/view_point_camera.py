@@ -11,4 +11,4 @@ class GisViewPointCamera(UserInteractionModel, AutoTimeStampedModel):
     view_point_id = models.PositiveIntegerField(db_index=True)
 
     class Meta:
-        db_table = "gis_view_point_camera"
+        db_table = "gis_view_point_cameras"
