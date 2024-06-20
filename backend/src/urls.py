@@ -24,11 +24,14 @@ from django.conf import settings
 from django.urls import include, path
 from django.views.generic import TemplateView
 from health_check import urls as health_urls
+from django.contrib import admin
 
 
 urlpatterns = [
     # Health checks:
     path("health", include(health_urls)),
+    # admin site
+    path("admin/", admin.site.urls),
     # Text and xml static files:
     path(
         "robots.txt",

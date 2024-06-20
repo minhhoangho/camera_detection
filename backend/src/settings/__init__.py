@@ -31,6 +31,7 @@ _base_settings = (
     "components/general.py",
     "components/rest_framework.py",
     "components/aws.py",
+    "components/django_q.py",
     # Select the right env:
     f"environments/{_ENV}.py",
     # Optionally override some settings:

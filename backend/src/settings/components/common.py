@@ -44,6 +44,7 @@ INSTALLED_APPS: Tuple[str, ...] = (
     "health_check.cache",
     "health_check.contrib.migrations",
     "rest_framework",
+    "django_q"
     # "health_check.storage",
     # "health_check.contrib.celery",              # requires celery
     # "health_check.contrib.celery_ping",         # requires celery

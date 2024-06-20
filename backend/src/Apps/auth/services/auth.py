@@ -8,7 +8,7 @@ class ModelBackend(backends.ModelBackend):
         try:
             from rest_framework import status
 
-            email = kwargs.pop("email", getattr(request, "email", None))
+            email = kwargs.pop("email", getattr(request, "email", None)) or kwargs.pop("username", getattr(request, "username", None))
             password = kwargs.pop("password", getattr(request, "password",""))
 
             user = User.objects.get(email=email)
