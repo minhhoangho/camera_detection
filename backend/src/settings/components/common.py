@@ -21,6 +21,7 @@ SECRET_KEY = config("DJANGO_SECRET_KEY")
 
 INSTALLED_APPS: Tuple[str, ...] = (
     # Your apps go here:
+    "src.Apps.queue",
     "src.Apps.system",
     "src.Apps.playground",
     "src.Apps.user",

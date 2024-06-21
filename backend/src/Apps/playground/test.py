@@ -1,6 +1,8 @@
 import django
 import os
 from django.conf import settings
+
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "src.settings")
 
 
@@ -8,6 +10,10 @@ if __name__ == "__main__":
     django.setup()
     print("Hello World!")
     print("Django Settings: ", settings.Q_CLUSTER)
-    from django_q.tasks import async_task
-    async_task('src.Apps.system.tasks.calculate_report', task_name='calculate_report')
+    from src.Apps.queue.handler import QueueHandler
+    task_func = "calculate_report"
+    module = "analytic"
+    task_name = QueueHandler.get_task_path(module, task_func)
+    QueueHandler.async_job(task_name, 10)
+
 
