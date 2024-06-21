@@ -22,6 +22,7 @@ SECRET_KEY = config("DJANGO_SECRET_KEY")
 INSTALLED_APPS: Tuple[str, ...] = (
     # Your apps go here:
     "src.Apps.system",
+    "src.Apps.playground",
     "src.Apps.user",
     "src.Apps.gis_map",
     # Default django apps:
