@@ -6,6 +6,8 @@ from vidgear.gears import CamGear
 import os
 from django.conf import settings
 import cv2
+
+from src.Apps.base.utils.type_utils import TypeUtils
 from src.Apps.detector.detection_util import DetectionUtil
 
 detector = DetectionUtil(os.path.join(settings.BASE_DIR,"../models", "yolov8m.pt"))
@@ -17,11 +19,12 @@ class DetectorViewSet(viewsets.ViewSet):
     @action(methods=[HttpMethod.GET], url_path="video/realtime", detail=False)
     def detect_video_realtime(self, request: Request, *args, **kwargs):
         print(request.query_params)
-        video_url = request.query_params.get("uri")
-        return StreamingHttpResponse(self.generate_frames(video_url), content_type="multipart/x-mixed-replace; boundary=frame")
+        video_url = TypeUtils.safe_str(request.query_params.get("uri"))
+        view_point_camera_id = TypeUtils.safe_str(request.query_params.get("view_point_camera_id"))
+        return StreamingHttpResponse(self.handle_frames(video_url, view_point_camera_id), content_type="multipart/x-mixed-replace; boundary=frame")
         # return Response(self.generate_frames(video_url), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-    def generate_frames(self, video_url: str):
+    def handle_frames(self, video_url: str, view_point_camera_id:str):
         cap = CamGear(source=video_url, stream_mode=True, logging=True).start()  # YouTube Video URL as input
 
         # Define the desired frame rate (frames per second)
