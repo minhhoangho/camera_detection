@@ -1,2 +1,2 @@
-def calculate_report():
-    print("Calculating report new...")
+def calculate_report(a, b):
+    print("Calculating report new...", a, b)

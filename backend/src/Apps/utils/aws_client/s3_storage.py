@@ -13,11 +13,12 @@ class S3Storage(AWSClientManager):
 
     def __init__(self, region_name: str = "ap-southeast-1"):
         super().__init__(self.SERVICE_NAME, region_name)
-        self.bucket_name = settings.AWS_S3_PUBLIC_BUCKET or "app-public-bucket"
+        self._bucket_name = settings.AWS_S3_PUBLIC_BUCKET or "app-public-bucket"
         self._bucket = None
 
-    def get_bucket_name(self):
-        return self.bucket_name
+    @property
+    def bucket_name(self):
+        return self._bucket_name
 
     @property
     def bucket(self):
