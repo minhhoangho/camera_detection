@@ -1,0 +1,15 @@
+.marker {
+
+
+}
+
+
+.cctv-camera {
+    width: 30px;
+    height: 30px;
+    background-image: url('/static/icons/marker/cctv-camera.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    cursor: pointer;
+}
