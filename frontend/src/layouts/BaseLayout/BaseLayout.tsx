@@ -1,13 +1,11 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import { Box } from '@mui/material';
 import Head from 'next/head';
-import {useRouter} from "next/router";
 import Spinner from '../../components/Spinner';
-import CookiesStorage from "../../utils/cookie-storage";
 
 
 const getPageTitle = (title: string): string => {
-  return title ? `Camera detection - ${title}` : 'Camera detection';
+  return title ? `City camera - ${title}` : 'City camera';
 };
 
 export function BaseLayout({ children, pageTitle = '', isLoading = false }: {
@@ -15,12 +13,13 @@ export function BaseLayout({ children, pageTitle = '', isLoading = false }: {
   pageTitle?: string,
   isLoading?: boolean
 }) {
-  const router = useRouter();
+  // const router = useRouter();
 
-  const isAuthenticated: boolean = CookiesStorage.isAuthenticated();
-  useEffect(() => {
-      isAuthenticated && router.pathname === "/login" && router.replace("/")
-  },[isAuthenticated, router])
+  // const isAuthenticated: boolean = CookiesStorage.isAuthenticated();
+  // useEffect(() => {
+  //     isAuthenticated && router.pathname === "/login" && router.replace("/")
+  // },[isAuthenticated, router])
+  
   return (
     <>
       <Head>

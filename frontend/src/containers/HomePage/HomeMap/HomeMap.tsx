@@ -8,7 +8,6 @@ import VectorSource from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
 import Style from 'ol/style/Style';
 import Feature from 'ol/Feature.js';
-import Image from 'next/image';
 
 import { Point} from 'ol/geom.js';
 import Icon from 'ol/style/Icon';
@@ -54,14 +53,15 @@ export function HomeMap(props: MapProps) {
         height: 30,
         width: 30,
         anchor: [0.5, 1],
-        img: (
-          <Image
-            src="/static/icons/marker/location_marker.png"
-            alt=""
-            height={30}
-            width={30}
-          />
-        ),
+        src: "/static/icons/marker/location_marker.png",
+        // img: (
+        //   <Image
+        //     src="/static/icons/marker/location_marker.png"
+        //     alt=""
+        //     height={30}
+        //     width={30}
+        //   />
+        // ),
       }),
     });
 

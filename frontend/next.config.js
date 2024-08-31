@@ -29,7 +29,6 @@ const config = {
     },
     experimental: {
         esmExternals: false,
-        outputStandalone: true,
     },
     poweredByHeader: false,
     headers() {
