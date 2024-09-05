@@ -12,7 +12,7 @@ EasyProcess==1.1
 entrypoint2==1.1
 filelock==3.13.1
 Flask==3.0.2
-Flask-Cors==4.0.0
+Flask-Cors==5.0.0
 Flask-SSE==1.0.0
 fonttools==4.49.0
 fsspec==2024.2.0
