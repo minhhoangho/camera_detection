@@ -3,9 +3,9 @@ import { useRouter } from 'next/router';
 import { useResponsive } from '../../../shared/hooks/use-responsive';
 import { useEffect } from 'react';
 import { Avatar, Box, Drawer, IconButton, Typography } from '@mui/material';
-import styles from '../../PrivateLayout/Sidebar/Sidebar.module.scss';
+import styles from '../../../layouts/PrivateLayout/Sidebar/Sidebar.module.scss';
 import { account } from '../../../mocks/account';
-import { CustomSidebarMenu } from '../../PrivateLayout/Sidebar/CustomSidebarMenu';
+import { CustomSidebarMenu } from '../../../layouts/PrivateLayout/Sidebar/CustomSidebarMenu';
 import { Scrollbar } from '../../../components/Scrollbar';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -58,7 +58,7 @@ export function Sidebar({ open, onClose }: Props): React.ReactElement {
     <>
       <Scrollbar>
         <div className="mt-2">
-          <Link href="/" className="flex items-center justify-center">
+          <Link href="/public" className="flex items-center justify-center">
             <Image
               src="/static/images/nextjs.png"
               alt="logo"

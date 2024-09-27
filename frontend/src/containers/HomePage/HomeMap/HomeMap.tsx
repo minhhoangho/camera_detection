@@ -44,6 +44,7 @@ export function HomeMap(props: MapProps) {
         center: fromLonLat(center),
         zoom: zoom,
       }),
+      controls: []
     });
     mapRef.current && map.setTarget(mapRef.current);
    
