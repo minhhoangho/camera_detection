@@ -21,10 +21,18 @@ const getHostnameFromRegex = (url: string) => {
   return (matches?.[1]) ?? '';
 };
 
+function isLocalhost() {
+  return window.location.hostname === 'localhost' ||
+    window.location.hostname === '127.0.0.1' ||
+    window.location.hostname === '::1'; // For IPv6
+}
 export function getCurrentDomain() {
+  if (isLocalhost()) return window.location.hostname;
+
   const parts = getHostnameFromRegex(FE_URL)
     .replace(/:\d*/g, '')
     .split('.');
+
   parts.shift();
   return parts.join('.');
 }

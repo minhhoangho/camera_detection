@@ -51,6 +51,7 @@ export function PrivateLayout({ children }: Props): React.ReactElement {
   }, [userData]);
 
   React.useEffect(() => {
+    console.log("isAuthenticated", isAuthenticated)
     if (!isAuthenticated) {
       router.push({
         pathname: '/login',

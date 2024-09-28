@@ -3,6 +3,8 @@ import addSeconds from 'date-fns/addSeconds';
 import { getCurrentDomain } from 'src/utils';
 import { CookieKey } from 'src/constants';
 
+
+
 const cookies = new Cookies();
 const CookiesStorage = {
   getCookieData(key: string) {
@@ -31,7 +33,6 @@ const CookiesStorage = {
   },
   isAuthenticated() {
     const accessToken = cookies.get(CookieKey.AccessToken);
-    return true
     return !!accessToken;
   },
   clearSession() {

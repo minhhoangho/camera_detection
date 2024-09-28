@@ -20,7 +20,7 @@ import { CookieKey } from '../../constants';
 
 export function Login() {
   const router = useRouter();
-
+  const redirectUrl = router.query['redirectUrl'] as string;
   const [isLoading, setIsLoading] = useState(false);
 
   const validationSchema = yup.object({
@@ -33,26 +33,28 @@ export function Login() {
   });
 
   const { mutate: loginMutate } = useMutation({
-    mutationFn: (data: LoginPayloadRequest): LoginResponse => login(data),
-    onSuccess: ({
-      accessToken,
-      refreshToken,
-      expirationTime,
-    }: LoginResponse) => {
+    mutationFn: (data: LoginPayloadRequest): Promise<LoginResponse> =>
+      login(data),
+    onSuccess: ({ accessToken, exp }: LoginResponse) => {
+      const expirationTime =
+        (new Date(exp as string).getTime() - new Date().getTime()) / 1000;
       CookiesStorage.setCookieData(
         CookieKey.AccessToken,
         accessToken,
         expirationTime,
       );
-      CookiesStorage.setCookieData(
-        CookieKey.RefreshToken,
-        refreshToken,
-        expirationTime * 10,
-      );
-
+      // CookiesStorage.setCookieData(
+      //   CookieKey.RefreshToken,
+      //   refreshToken,
+      //   expirationTime * 10,
+      // );
       setIsLoading(false);
       toast('success', 'Login sucessfully');
-      router.replace(PathName.Home).then();
+      if (redirectUrl) {
+        router.push(redirectUrl);
+      } else {
+        router.push(PathName.GisLocationManagement);
+      }
     },
     onError: () => {
       setIsLoading(false);

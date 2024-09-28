@@ -8,8 +8,8 @@ export const PathName = {
 
   Profile: '/me/profile',
 
-  UserManagement: '/user-management',
-  GisLocationManagement: '/gis-map',
+  UserManagement: '/admin/user-management',
+  GisLocationManagement: '/admin/gis-map',
 
   // Common page
   NotFound: '/not-found',
