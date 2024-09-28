@@ -12,7 +12,7 @@ import React from 'react';
 import { useQuery } from 'react-query';
 import { useRouter } from 'next/router';
 import Tooltip from '@mui/material/Tooltip';
-import {GridColDef, GridRenderCellParams} from '@mui/x-data-grid';
+import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import { format } from 'date-fns';
 import EditIcon from '@mui/icons-material/Edit';
 import { ListViewPointPaginateResponse } from './models';
@@ -42,7 +42,7 @@ export function GisMapViewPointManagement() {
   const {
     data: dataListResponse,
     isFetching,
-    refetch,
+    // refetch,
     isLoading,
   } = useQuery<ListViewPointPaginateResponse>({
     queryKey: ['getListViewPointPaginate', paginationParams],
@@ -68,13 +68,13 @@ export function GisMapViewPointManagement() {
   //   //  eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [paginationParams.limit, paginationParams.offset]);
 
-
-    const renderActionButton = (params) => {
+  const renderActionButton = (params: GridRenderCellParams<any, any>) => {
     return (
       <div className="flex justify-end gap-x-6">
         <Tooltip title="Edit location">
           <Button
             onClick={() =>
+              // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
               router.push(`${PathName.GisLocationManagement}/${params.row.id}`)
             }
             style={{ padding: 0 }}
@@ -106,7 +106,8 @@ export function GisMapViewPointManagement() {
         return (
           <span
             onClick={() =>
-              router.push(`${PathName.GisLocationManagement}/${params?.row.id}`)
+              // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+              router.push(`${PathName.GisLocationManagement}/${params.row?.id}`)
             }
             className="cursor-pointer  hover:underline font-semibold"
           >
@@ -176,7 +177,7 @@ export function GisMapViewPointManagement() {
     setIsOpenCreate(true);
   };
 
-  const onFilterName = () => {};
+  // const onFilterName = () => {};
 
   return (
     <BaseLayout>
