@@ -177,7 +177,10 @@ export function GisMapViewPointManagement() {
     setIsOpenCreate(true);
   };
 
-  // const onFilterName = () => {};
+  const onFilterName = () => {
+    // eslint-disable-next-line no-console
+    console.log("Filter name");
+  };
 
   return (
     <BaseLayout>
