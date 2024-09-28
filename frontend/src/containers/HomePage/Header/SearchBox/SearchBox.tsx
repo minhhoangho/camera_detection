@@ -31,7 +31,6 @@ export function SearchBox() {
   const theme = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<GeoProperty[]>([]);
-  console.log(searchResults);
   const handleSearchLocationByText = async (text: string) => {
     const res = await fetch(
       `${SEARCH_API_ENDPOINT}?text=${text}&apiKey=${GEOAPIFY_API_KEY}`,
@@ -127,16 +126,17 @@ export function SearchBox() {
           }}
         >
           {searchResults.map((res: GeoProperty) => (
-            <ListItem button key={res.geoapifyID}>
+            <ListItem key={res.geoapifyID}>
               <ListItemText>
                 <div className="flex">
                   <Iconify
                     icon="basil:location-outline"
-                    sx={{ color: 'text.disabled', width: 20, height: 20 }}
+                    color="text.disabled"
+                    width={20}
+                    height={20}
                   />
                   <span className="ml-2">{res.addressFormated}</span>
                 </div>
-
               </ListItemText>
             </ListItem>
           ))}
