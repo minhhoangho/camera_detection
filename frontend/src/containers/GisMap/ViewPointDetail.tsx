@@ -17,6 +17,7 @@ import { toast } from '../../components/Toast';
 import { BaseLayout, PrivateLayout } from '../../layouts';
 import { FormInput } from '../../components/Form';
 import { RealtimeCamera } from './components/RealtimeCamera';
+import { Iconify } from '../../components/Iconify';
 export function ViewPointDetail() {
   const [showRealtimeCamera, setShowRealtimeCamera] = React.useState(false);
   const [selectedViewPointCamera, setSelectedViewPointCamera] = React.useState(
@@ -82,12 +83,21 @@ export function ViewPointDetail() {
     setSelectedViewPointCamera(viewPointCamera);
   };
 
-            console.log("dataDetail >> ", dataDetail)
 
   return (
     <BaseLayout>
       <PrivateLayout>
         <Container>
+          <div>
+              <Iconify
+                icon="ic:baseline-arrow-back"
+                color="text.disabled"
+                width={20}
+                height={20}
+                className="cursor-pointer"
+                onClick={() => router.back()}
+              />
+          </div>
           <h1>{dataDetail?.name ?? ''}</h1>
           <Grid container spacing={3} alignItems="stretch">
             <Grid item xs={6}>
@@ -108,15 +118,15 @@ export function ViewPointDetail() {
                           type="submit"
                           disabled={isLoading}
                         >
-                          Save
+                          Lưu
                         </Button>
                       </div>
                       <FormInput
                         control={control}
                         name="name"
                         inputElementClassName="form-control mr-sm-2"
-                        placeholder="Location name"
-                        label="Location name"
+                        placeholder="Tên địa điểm"
+                        label="Tên địa điểm"
                         isRequired
                       />
                       <FormInput
@@ -124,8 +134,9 @@ export function ViewPointDetail() {
                         name="description"
                         isTextarea
                         inputElementClassName="form-control mr-sm-2 resize-none"
-                        placeholder="Description"
-                        label="Description"
+                        placeholder="Mô tả"
+                        label="Mô tả"
+                        labelClassName="mt-2"
                       />
                       <div className="flex justify-between gap-3">
                         <FormInput
@@ -133,8 +144,8 @@ export function ViewPointDetail() {
                           name="lat"
                           type="number"
                           inputElementClassName="form-control mr-sm-2"
-                          placeholder="Latitude"
-                          label="Latitude"
+                          placeholder="Vĩ độ"
+                          label="Vĩ độ"
                           labelClassName=""
                           isRequired
                         />
@@ -144,8 +155,8 @@ export function ViewPointDetail() {
                           name="long"
                           type="number"
                           inputElementClassName="form-control mr-sm-2"
-                          placeholder="Longitude"
-                          label="Longitude"
+                          placeholder="Kinh độ"
+                          label="Kinh độ"
                           labelClassName=""
                           isRequired
                         />

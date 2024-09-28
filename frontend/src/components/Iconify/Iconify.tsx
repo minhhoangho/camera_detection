@@ -19,6 +19,8 @@ export const Iconify = forwardRef(
       height?: number;
       color?: string;
       sx?: object;
+      className?: string,
+      onClick?: () => void,
     },
     ref,
   ) => (

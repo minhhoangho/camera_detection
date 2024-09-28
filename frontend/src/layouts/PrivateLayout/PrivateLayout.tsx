@@ -85,13 +85,12 @@ export function PrivateLayout({ children }: Props): React.ReactElement {
   ]);
 
   if (isClient && isAuthenticated) {
-    if (isNavigatingToAdmin && !isAdmin) return <div></div>;
+    // if (isNavigatingToAdmin && !isAdmin) return <div></div>;
 
     return (
       <>
         {/*<CircularProgress color="inherit" />*/}
         <Header onOpenNav={() => setCollapsed(true)} />
-
         <Box
           sx={{
             minHeight: 1,

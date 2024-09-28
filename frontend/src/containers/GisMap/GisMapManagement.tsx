@@ -38,7 +38,6 @@ export function GisMapViewPointManagement() {
     DEFAULT_PAGINATION_PARAMS,
   );
   const [keyword, setKeyword] = React.useState<string | null>('');
-
   const {
     data: dataListResponse,
     isFetching,
@@ -71,7 +70,7 @@ export function GisMapViewPointManagement() {
   const renderActionButton = (params: GridRenderCellParams<any, any>) => {
     return (
       <div className="flex justify-end gap-x-6">
-        <Tooltip title="Edit location">
+        <Tooltip title="Chỉnh sửa">
           <Button
             onClick={() =>
               // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
@@ -179,7 +178,7 @@ export function GisMapViewPointManagement() {
 
   const onFilterName = () => {
     // eslint-disable-next-line no-console
-    console.log("Filter name");
+    console.log('Filter name');
   };
 
   return (
@@ -187,7 +186,7 @@ export function GisMapViewPointManagement() {
       <PrivateLayout>
         <Container>
           <Typography variant="h4" sx={{ mb: 5 }}>
-            Location Management
+            Quản lý địa điểm
           </Typography>
 
           <Grid container spacing={3} alignItems="stretch">
@@ -196,7 +195,7 @@ export function GisMapViewPointManagement() {
                 className={styles['search-input']}
                 value={keyword}
                 onChange={onFilterName}
-                placeholder="Search location..."
+                placeholder="Tìm kiếm..."
                 fullWidth
                 startAdornment={
                   <InputAdornment position="start">
@@ -212,7 +211,7 @@ export function GisMapViewPointManagement() {
                 className="w-[200px]"
                 onClick={handleCreate}
               >
-                <span>Create Location</span>
+                <span>Tạo địa điểm</span>
               </Button>
             </Grid>
             <Grid item xs={12}>

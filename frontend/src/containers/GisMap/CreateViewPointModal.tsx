@@ -55,9 +55,9 @@ export function CreateViewPointModal({ onClose, isOpen }: ModalProps) {
   };
 
   const updateFormLatLong = (lat: number, long: number) => {
-    setValue("lat", lat)
-    setValue("long", long)
-  }
+    setValue('lat', lat);
+    setValue('long', long);
+  };
   return (
     <Modal open={isOpen} onClose={onClose}>
       <Box
@@ -90,15 +90,13 @@ export function CreateViewPointModal({ onClose, isOpen }: ModalProps) {
         <Grid container spacing={3} alignItems="stretch">
           <Grid item xs={4}>
             <Box>
-              <form
-                onSubmit={handleSubmit(handleCreateViewPoint)}
-              >
+              <form onSubmit={handleSubmit(handleCreateViewPoint)}>
                 <FormInput
                   control={control}
                   name="name"
                   inputElementClassName="form-control mr-sm-2"
-                  placeholder="Location name"
-                  label="Location name"
+                  placeholder="Tên địa điểm"
+                  label="Tên địa điểm"
                   isRequired
                 />
                 <FormInput
@@ -106,8 +104,8 @@ export function CreateViewPointModal({ onClose, isOpen }: ModalProps) {
                   name="description"
                   isTextarea
                   inputElementClassName="form-control mr-sm-2 resize-none"
-                  placeholder="Description"
-                  label="Description"
+                  placeholder="Mô tả"
+                  label="Mô tả"
                 />
 
                 <FormInput
@@ -115,8 +113,8 @@ export function CreateViewPointModal({ onClose, isOpen }: ModalProps) {
                   name="lat"
                   type="number"
                   inputElementClassName="form-control mr-sm-2"
-                  placeholder="Latitude"
-                  label="Latitude"
+                  placeholder="Vĩ độ"
+                  label="Vĩ độ"
                   labelClassName=""
                   isRequired
                 />
@@ -126,8 +124,8 @@ export function CreateViewPointModal({ onClose, isOpen }: ModalProps) {
                   name="long"
                   type="number"
                   inputElementClassName="form-control mr-sm-2"
-                  placeholder="Longitude"
-                  label="Longitude"
+                  placeholder="Kinh độ"
+                  label="Kinh độ"
                   labelClassName=""
                   isRequired
                 />
@@ -138,14 +136,19 @@ export function CreateViewPointModal({ onClose, isOpen }: ModalProps) {
                     type="submit"
                     disabled={isLoading}
                   >
-                    Save
+                    Lưu
                   </Button>
                 </div>
               </form>
             </Box>
           </Grid>
           <Grid item xs={8}>
-            <OpenLayerMap width={'-webkit-fill-available'} height={400} onUpdateLatLong={updateFormLatLong}/>
+            <OpenLayerMap
+              width={'-webkit-fill-available'}
+              height={400}
+              onUpdateLatLong={updateFormLatLong}
+              center={[16.071135, 108.22]}
+            />
           </Grid>
         </Grid>
       </Box>

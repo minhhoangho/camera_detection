@@ -61,7 +61,7 @@ export function ViewPointCameraList({ viewPointId, setShowRealtimeCamera }: View
     return (
       <div className="flex justify-end gap-x-3">
         <Tooltip
-          title="Edit camera viewpoint"
+          title="Chỉnh sửa thông tin camera"
           className="cursor-pointer"
           onClick={() => handleUpdate(item)}
         >
@@ -163,7 +163,7 @@ export function ViewPointCameraList({ viewPointId, setShowRealtimeCamera }: View
   return (
     <Box>
       <Button variant="contained" className="mt-2" onClick={handleCreate}>
-        <span>Add camera source</span>
+        <span>Thêm nguồn camera</span>
       </Button>
       <Table
         rows={dataListResponse?.data ?? []}
