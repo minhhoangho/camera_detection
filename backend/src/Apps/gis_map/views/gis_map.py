@@ -30,8 +30,9 @@ class GisMapViewSet(PaginationMixin):
     def list_view_points(self, request: Request, *args, **kwargs):
         limit = int(request.query_params.get("limit", 10))
         offset = int(request.query_params.get("offset", 0))
+        keyword = request.query_params.get("keyword", '')
         page = offset // limit + 1
-        data, count = GisMapService.list_view_points_paginate(page=page, per_page=limit)
+        data, count = GisMapService.list_view_points_paginate(page=page, per_page=limit, keyword=keyword)
         result = self.to_list(
             items=data,
             total=count,

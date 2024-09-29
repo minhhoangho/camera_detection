@@ -21,8 +21,11 @@ UserModel = get_user_model()
 
 class GisMapService:
     @classmethod
-    def list_view_points_paginate(cls, page: int, per_page: int = 10, order_by: str = "-created_at"):
-        qs = GisViewPoint.objects.filter().order_by(order_by)
+    def list_view_points_paginate(cls, page: int, per_page: int = 10, order_by: str = "-created_at", keyword: str = ""):
+        qs = GisViewPoint.objects
+        if keyword:
+            qs = qs.filter(Q(name__icontains=keyword))
+        qs = qs.order_by(order_by)
         paginator = Paginator(qs, per_page)
         total = paginator.count
         try:
