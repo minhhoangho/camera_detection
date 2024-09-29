@@ -1,7 +1,5 @@
 import React from 'react';
-import {Container} from '@mui/material';
-import { BaseLayout, PrivateLayout, PublicLayout } from 'src/layouts';
-import styles from './HomePage.module.scss';
+import { BaseLayout, PublicLayout } from 'src/layouts';
 import {HomeMap} from "./HomeMap/HomeMap";
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';

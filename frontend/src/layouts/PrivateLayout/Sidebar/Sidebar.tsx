@@ -58,10 +58,10 @@ export function Sidebar({ open, onClose }: Props): React.ReactElement {
         <div className="mt-2">
           <Link href="/" className="flex items-center justify-center">
             <Image
-              src="/static/images/nextjs.png"
+              src="/static/images/webcam-icon.png"
               alt="logo"
-              width={100}
-              height={50}
+              width={75}
+              height={75}
             />
           </Link>
         </div>

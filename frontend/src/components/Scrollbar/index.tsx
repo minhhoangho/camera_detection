@@ -1,15 +1,17 @@
+import React, { FC, ReactNode } from 'react';
 import { Scrollbars } from 'react-custom-scrollbars-2';
-import { FC, ReactNode } from 'react';
 import { Box } from '@mui/material';
 
 type ScrollbarProps = {
   className?: string;
   children?: ReactNode;
+  onScroll?: (e: Event) => void;
 } & Record<string, any>;
 
 export const Scrollbar: FC<ScrollbarProps> = ({
   className,
   children,
+  onScroll,
   ...rest
 }) => {
   return (
@@ -17,6 +19,7 @@ export const Scrollbar: FC<ScrollbarProps> = ({
     // @ts-ignore
     <Scrollbars
       className={className}
+      onScroll={onScroll}
       autoHide
       universal
       renderThumbVertical={() => {
@@ -26,11 +29,6 @@ export const Scrollbar: FC<ScrollbarProps> = ({
               width: 5,
               background: ``,
               borderRadius: `DAE3E5`,
-              // transition: `${theme.transitions.create(['background'])}`,
-              //
-              // '&:hover': {
-              //   background: `${theme.colors.alpha.black[30]}`
-              // }
             }}
           />
         );

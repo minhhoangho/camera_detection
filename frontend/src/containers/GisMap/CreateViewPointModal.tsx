@@ -58,6 +58,7 @@ export function CreateViewPointModal({ onClose, isOpen }: ModalProps) {
     setValue('lat', lat);
     setValue('long', long);
   };
+
   return (
     <Modal open={isOpen} onClose={onClose}>
       <Box

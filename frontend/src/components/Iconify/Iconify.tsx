@@ -11,6 +11,7 @@ export const Iconify = forwardRef(
     {
       icon,
       width = 20,
+      height = 20,
       sx,
       ...other
     }: {
@@ -29,7 +30,7 @@ export const Iconify = forwardRef(
       component={Icon}
       className="component-iconify"
       icon={icon}
-      sx={{ width, height: width, ...sx }}
+      sx={{ width, height, ...sx }}
       {...other}
     />
   ),
