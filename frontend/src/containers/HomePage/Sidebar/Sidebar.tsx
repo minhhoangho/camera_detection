@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useRouter } from 'next/router';
-import { useCallback, useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import {
   Box,
   Drawer,
@@ -10,8 +10,7 @@ import {
   Typography,
 } from '@mui/material';
 import Button from '@mui/material/Button';
-import _debounce from 'lodash/debounce';
-import { useQuery } from 'react-query';
+import { useInfiniteQuery } from 'react-query';
 
 import Card from '@mui/material/Card';
 import CardActionArea from '@mui/material/CardActionArea';
@@ -24,10 +23,10 @@ import {
 } from '../../GisMap/models';
 import { DEFAULT_PAGINATION_PARAMS } from '../../../constants';
 import { listViewPointsPaginate } from '../../../api/view-point';
-import { toast } from '../../../components/Toast';
 import { Iconify } from '../../../components/Iconify';
 import { Scrollbar } from '../../../components/Scrollbar';
 import { PathName } from '../../../constants/routes';
+import Spinner from '../../../components/Spinner';
 
 type Props = {
   onClose: () => void;
@@ -38,65 +37,26 @@ export function Sidebar({ open, onClose }: Props): React.ReactElement {
   const router = useRouter();
   const pathname = router.pathname;
   const [keyword, setKeyword] = React.useState<string | null>('');
-  const [dataRender, setDataRender] = React.useState<ViewPointData[]>([]);
-  const [paginationParams, setPaginationParams] = React.useState(
-    DEFAULT_PAGINATION_PARAMS,
-  );
-  const scrollRef = useRef<HTMLDivElement>(null);
 
   const {
-    data: dataListResponse,
-    // isFetching,
-    refetch,
-    // isLoading,
-  } = useQuery<ListViewPointPaginateResponse>({
-    queryKey: ['getListViewPointPaginate'],
-    queryFn: () =>
-      listViewPointsPaginate({
-        keyword: keyword ?? '',
-        pagination: {
-          offset: paginationParams.offset,
-          limit: paginationParams.limit,
-        },
-      }),
-    onError: () => toast('error', 'Error'),
-    // cacheTime: 0,
-  });
-
-  console.log("DataRender ", dataRender)
-
-  useEffect(() => {
-    if (dataListResponse?.data) {
-      setDataRender((prevData) => [...prevData, ...dataListResponse.data]);
-    }
-  }, [dataListResponse]);
-
-  const debouncedKeywordRefetch = useCallback(
-    _debounce(() => {
-      if(!keyword) {
-        refetch()
-        return
-      }
-      // For this refetch, keyword is changed, so we need to reset the data
-      setDataRender([]);
-      setPaginationParams(DEFAULT_PAGINATION_PARAMS);
-      refetch()
-    }, 300),
-    [refetch],
-  );
-  useEffect(() => {
-    debouncedKeywordRefetch();
-  }, [keyword, debouncedKeywordRefetch]);
-
-
-  useEffect(() => {
-    if (dataListResponse) {
-      if (dataListResponse.pagination.total <= paginationParams.offset) {
-        return;
-      }
-    }
-    refetch();
-  }, [paginationParams, refetch, dataListResponse]);
+    data,
+    fetchNextPage,
+    isLoading,
+    isFetching,
+  } = useInfiniteQuery<ListViewPointPaginateResponse>({
+    queryKey: ['getListViewPointPaginate', keyword],
+    queryFn: ({ pageParam }) => listViewPointsPaginate({
+      keyword: keyword ?? '',
+      pagination: {
+        offset: pageParam?.offset ?? 0,
+        limit: DEFAULT_PAGINATION_PARAMS.limit,
+      },
+    }),
+    getNextPageParam: (lastPage: ListViewPointPaginateResponse) => {
+       const _offset = lastPage?.pagination.offset + DEFAULT_PAGINATION_PARAMS.limit;
+       return _offset < lastPage?.pagination.total ? { offset: _offset } : undefined;
+    },
+  })
 
 
   useEffect(() => {
@@ -108,21 +68,20 @@ export function Sidebar({ open, onClose }: Props): React.ReactElement {
 
   const handleScroll = (event: any) => {
     if (event.target) {
-      const { scrollTop, scrollHeight, clientHeight } = event.target
-      console.log("Debug", scrollTop, scrollHeight, clientHeight)
-      console.log("Number(scrollTop) + clientHeight - scrollHeight ", Number(scrollTop) + clientHeight - scrollHeight)
-      if (Number(scrollTop) + clientHeight >= scrollHeight - 5) {
-        setPaginationParams((prev) => ({
-          ...prev,
-          offset: prev.offset + prev.limit,
-        }));
+      const {
+        scrollTop,
+        scrollHeight,
+        clientHeight,
+      }: {
+        scrollTop: number;
+        scrollHeight: number;
+        clientHeight: number;
+      } = event.target;
+      if ((scrollTop + clientHeight >= scrollHeight - 5) && !isFetching) {
+        fetchNextPage();
       }
     }
   };
-
-
-
-
 
   const renderResultItem = (item: ViewPointData) => {
     return (
@@ -180,17 +139,23 @@ export function Sidebar({ open, onClose }: Props): React.ReactElement {
         />
       </div>
 
-        <Scrollbar
-          style={{
-            overflowY: 'auto',
-            height: 'calc(100vh - 100px)',
-          }}
-          onScroll={handleScroll}
-
-        >
-          {!_isEmpty(dataRender) &&
-            dataRender.map((item) => renderResultItem(item))}
-        </Scrollbar>
+      <Scrollbar
+        style={{
+          overflowY: 'auto',
+          height: 'calc(100vh - 100px)',
+        }}
+        onScroll={handleScroll}
+      >
+        {!_isEmpty(data?.pages) &&
+          data?.pages.map((page, _index) => {
+            return (
+              <React.Fragment key={_index}>
+                {page.data.map((item) => renderResultItem(item))}
+              </React.Fragment>
+            )
+          })}
+        {(isLoading || isFetching) && (<div className="w-100 flex justify-center"><Spinner /></div>)}
+      </Scrollbar>
     </>
   );
   return (
