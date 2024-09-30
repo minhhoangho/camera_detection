@@ -12,6 +12,10 @@ import Feature from 'ol/Feature.js';
 import { Point} from 'ol/geom.js';
 import Icon from 'ol/style/Icon';
 import styles from './HomeMap.module.scss';
+import { useInfiniteQuery, useQuery } from 'react-query';
+import { ListViewPointPaginateResponse } from '../../GisMap/models';
+import { listViewPointsPaginate } from '../../../api/view-point';
+import { DEFAULT_PAGINATION_PARAMS } from '../../../constants';
 
 const DEFAULT_GEO = [108.21631446431337, 16.07401627168764]; // (long, lat) Da nang location
 
@@ -24,7 +28,42 @@ export function HomeMap(props: MapProps) {
   const {width, height} = props;
   const mapRef = useRef(null);
   const [center, setCenter] = useState(DEFAULT_GEO);
+  const [geoPoints, setGeoPoints] = useState<Feature[]>([]);
   const [zoom, setZoom] = useState(15); // Initial zoom level
+
+  const { isLoading, isFetching } =
+    useQuery<ListViewPointPaginateResponse>({
+      queryKey: ['getListViewPointPaginate'],
+      queryFn: () =>
+        listViewPointsPaginate({
+          keyword: '',
+          pagination: {
+            offset: 0,
+            limit: DEFAULT_PAGINATION_PARAMS.limit + 100,
+          },
+        }),
+      onError: (error) => {
+        console.log("Error: ", error);
+      },
+      onSuccess: (paginationResponse) => {
+        const features = paginationResponse.data.map((point) => {
+          return new Feature({
+            type: 'icon',
+            name: point.name,
+            geometry: new Point(fromLonLat([point.long, point.lat])),
+          });
+        })
+        setGeoPoints(features);
+      }
+    });
+
+
+
+
+
+
+
+
 
   const pointFeature = new Feature({
     type: 'icon',
@@ -47,7 +86,7 @@ export function HomeMap(props: MapProps) {
       controls: []
     });
     mapRef.current && map.setTarget(mapRef.current);
-   
+
 
     const pointStyle = new Style({
       image: new Icon({
@@ -71,7 +110,7 @@ export function HomeMap(props: MapProps) {
     }
     const vectorLayer = new VectorLayer({
       source: new VectorSource({
-        features: [pointFeature],
+        features: geoPoints,
       }),
       style: function (feature) {
         return mapStyles[feature.get('type')];
@@ -93,18 +132,19 @@ export function HomeMap(props: MapProps) {
         });
 
         console.log("Feature: ", feature?.get("name"));
-    
+
     });
 
     // on component unmount remove the map refrences to avoid unexpected behaviour
     return () => {
       map.setTarget(undefined);
     };
-  }, []);
+  }, [geoPoints]);
   console.log("Zoom: ", zoom);
   return (
     <div className={styles['home-map_container']}>
       <div ref={mapRef} style={{width, height}}/>
+      <div className={styles['page-loading']}></div>
     </div>
   );
 }

@@ -50,6 +50,7 @@ export function Sidebar({ open, onClose }: Props): React.ReactElement {
             limit: DEFAULT_PAGINATION_PARAMS.limit,
           },
         }),
+      enabled: open,
       getNextPageParam: (lastPage: ListViewPointPaginateResponse) => {
         const _offset =
           lastPage?.pagination.offset + DEFAULT_PAGINATION_PARAMS.limit;
