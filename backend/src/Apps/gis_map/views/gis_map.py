@@ -47,8 +47,11 @@ class GisMapViewSet(PaginationMixin):
         payload = request.data.copy()
         serializer = CUViewPointSerializer(data=payload)
         if serializer.is_valid(raise_exception=True):
+            map_view = payload.pop("map_view")
             view_point = GisViewPoint(**payload)
             view_point.save()
+            map_view["view_point_id"] = view_point.id
+            GisMapService.create_or_update_map_view(**map_view)
         return Response(data=ViewPointSerializer(view_point).data, status=HTTPStatus.OK)
 
     @action(methods=[HttpMethod.PUT, HttpMethod.GET], url_path=r"view-points/(?P<pk>\w+)", detail=False)
@@ -76,7 +79,10 @@ class GisMapViewSet(PaginationMixin):
         gis_vp = GisMapService.get_view_point_by_id(pk=pk)
         serializer = ViewPointSerializer(instance=gis_vp, data=payload)
         if serializer.is_valid(raise_exception=True):
+            map_view = payload.pop("map_view")
             serializer.save()
+            map_view["view_point_id"] = pk
+            GisMapService.create_or_update_map_view(**map_view)
         return Response(data=ViewPointSerializer(gis_vp).data, status=HTTPStatus.OK)
 
     @action(methods=[HttpMethod.GET], url_path=r"view-points/(?P<pk>\w+)/cameras", detail=False)

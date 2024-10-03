@@ -14,7 +14,7 @@ from django.db.models import Q
 
 from src.Apps.base.exceptions import AppException, ApiErr
 from src.Apps.base.utils.type_utils import TypeUtils
-from src.Apps.gis_map.models import GisViewPoint, GisViewPointCamera
+from src.Apps.gis_map.models import GisViewPoint, GisViewPointCamera, GisMapView
 
 UserModel = get_user_model()
 
@@ -89,3 +89,15 @@ class GisMapService:
     def delete_viewpoint_camera(cls, pk: int):
         GisViewPointCamera.objects.filter(id=pk).delete()
         return True
+
+    @classmethod
+    def create_or_update_map_view(cls, **map_view) -> GisMapView:
+        lat: float = TypeUtils.safe_float(map_view.get("lat"))
+        long: float = TypeUtils.safe_float(map_view.get("long"))
+        zoom: float = TypeUtils.safe_float(map_view.get("zoom"))
+        view_point_id: int = TypeUtils.safe_int(map_view.get("view_point_id"))
+        cls.get_view_point_by_id(view_point_id)
+        if GisMapView.objects.filter(view_point_id=view_point_id).exists():
+            GisMapView.objects.filter(view_point_id=view_point_id).update(lat=lat, long=long, zoom=zoom)
+            return GisMapView.objects.filter(view_point_id=view_point_id).first()
+        return GisMapView.objects.create(lat=lat, long=long, zoom=zoom, view_point_id=view_point_id)
