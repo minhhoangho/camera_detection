@@ -11,6 +11,7 @@ export type CreateViewPointPayloadRequest = {
   description: string;
   lat: number;
   long: number;
+  mapView: MapViewData;
 };
 
 
@@ -19,9 +20,14 @@ export type EditViewPointPayloadRequest = {
   description: string;
   lat: number;
   long: number;
+  mapView: MapViewData;
 };
 
-
+export type MapViewData = {
+  zoom: number;
+  lat: number;
+  long: number;
+}
 
 export type UpsertCameraSourcePayloadRequest = {
   id?: string;

@@ -68,7 +68,15 @@ export function ViewPointDetail() {
   });
 
   const handleSubmitForm = (data: any) => {
-    updateViewpointMutate(data as EditViewPointPayloadRequest);
+    const submitData: EditViewPointPayloadRequest = {
+      ...data,
+      mapView: {
+        zoom: 15,
+        lat: data.lat,
+        long: data.long,
+      }
+    }
+    updateViewpointMutate(submitData);
   };
   const updateFormLatLong = (lat: number, long: number) => {
     setValue('lat', lat);

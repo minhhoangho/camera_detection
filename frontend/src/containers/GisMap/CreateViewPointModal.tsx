@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useMutation } from 'react-query';
 import * as React from 'react';
-import { CreateViewPointPayloadRequest, ViewPointData } from './models';
+import { CreateViewPointPayloadRequest, EditViewPointPayloadRequest, ViewPointData } from './models';
 import { OpenLayerMap } from './OpenLayerMap';
 import { toast } from '../../components/Toast';
 import { PathName } from '../../constants/routes';
@@ -51,7 +51,15 @@ export function CreateViewPointModal({ onClose, isOpen }: ModalProps) {
   });
 
   const handleCreateViewPoint = (data: any) => {
-    createViewpointMutate(data as CreateViewPointPayloadRequest);
+    const submitData: CreateViewPointPayloadRequest = {
+      ...data,
+      mapView: {
+        zoom: 15,
+        lat: data.lat,
+        long: data.long,
+      }
+    }
+    createViewpointMutate(submitData);
   };
 
   const updateFormLatLong = (lat: number, long: number) => {
