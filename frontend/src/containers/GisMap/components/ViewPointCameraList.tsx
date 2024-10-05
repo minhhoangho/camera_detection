@@ -6,16 +6,16 @@ import { format } from 'date-fns';
 import Tooltip from '@mui/material/Tooltip';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import { toast } from 'src/components/Toast';
+import { Table } from 'src/components/Table';
 import { UpsertCameraSourceModal } from './UpsertCameraSourceModal';
 import {
   ListViewPointCameraPaginateResponse,
   ViewPointCameraData,
 } from '../models';
-import { getListViewPointCameras } from '../../../api/view-point';
-import { toast } from '../../../components/Toast';
-import { DEFAULT_PAGINATION_PARAMS } from '../../../constants';
-import { Table } from '../../../components/Table';
-import { PaginationQueryParams } from '../../../shared/models/requests';
+import { getListViewPointCameras } from 'src/api/view-point';
+import { DEFAULT_PAGINATION_PARAMS } from 'src/constants';
+import { PaginationQueryParams } from 'src/shared/models/requests';
 import {
   VIEW_POINT_CAMERA_MANAGEMENT_COLUMNS_LABEL,
   VIEW_POINT_CAMERA_MANAGEMENT_KEY,
@@ -119,10 +119,10 @@ export function ViewPointCameraList({ viewPointId, setShowRealtimeCamera }: View
       width: 200,
     },
     {
-      field: VIEW_POINT_MANAGEMENT_KEY.CREATED_AT,
+      field: VIEW_POINT_MANAGEMENT_KEY.UPDATED_AT,
       headerName:
         VIEW_POINT_MANAGEMENT_COLUMNS_LABEL[
-          VIEW_POINT_MANAGEMENT_KEY.CREATED_AT
+          VIEW_POINT_MANAGEMENT_KEY.UPDATED_AT
         ],
       sortable: false,
       filterable: false,

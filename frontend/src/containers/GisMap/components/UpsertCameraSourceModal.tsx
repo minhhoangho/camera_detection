@@ -5,14 +5,15 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useEffect, useState } from 'react';
 import { useMutation } from 'react-query';
 import * as React from 'react';
-import { toast } from '../../../components/Toast';
-import { FormInput } from '../../../components/Form';
+import { toast } from 'src/components/Toast';
+import { FormInput } from 'src/components/Form';
 import {
   UpsertCameraSourcePayloadRequest,
   ViewPointCameraData,
 } from '../models';
 import { upsertNewViewPointCamera } from '../../../api/view-point';
-import { FormSelect } from '../../../components/Form/FormSelect';
+import { FormSelect } from 'src/components/Form/FormSelect';
+import Spinner from '../../../components/Spinner';
 
 type ModalProps = {
   viewPointId: number;
@@ -44,7 +45,7 @@ export function UpsertCameraSourceModal({
       setValue('cameraUri', cameraViewPoint.cameraUri);
       setValue('cameraSource', cameraViewPoint.cameraSource);
     }
-  }, [cameraViewPoint, setValue])
+  }, [cameraViewPoint, setValue]);
 
   const { mutate } = useMutation({
     mutationFn: (data: UpsertCameraSourcePayloadRequest): any =>
@@ -65,6 +66,7 @@ export function UpsertCameraSourceModal({
     if (cameraViewPoint) {
       data.id = cameraViewPoint.id;
     }
+    setIsLoading(true);
     mutate(data as UpsertCameraSourcePayloadRequest);
   };
 
@@ -123,11 +125,12 @@ export function UpsertCameraSourceModal({
 
                 <div className="mt-5 flex justify-end">
                   <Button
-                    className="btn wd-140 btn-sm btn-outline-light"
+                    className="btn wd-140 btn-sm btn-outline-light d-flex justify-content-between align-items-center"
                     type="submit"
                     disabled={isLoading}
                   >
-                    Save
+                    <div>{isLoading && <Spinner className="h-4 w-4" />}</div>
+                    <div className="ml-2">Lưu</div>
                   </Button>
                 </div>
               </form>

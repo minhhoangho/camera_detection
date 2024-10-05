@@ -23,10 +23,10 @@ import {
 } from '../../GisMap/models';
 import { DEFAULT_PAGINATION_PARAMS } from '../../../constants';
 import { listViewPointsPaginate } from '../../../api/view-point';
-import { Iconify } from '../../../components/Iconify';
-import { Scrollbar } from '../../../components/Scrollbar';
+import { Iconify } from 'src/components/Iconify';
+import { Scrollbar } from 'src/components/Scrollbar';
 import { PathName } from '../../../constants/routes';
-import Spinner from '../../../components/Spinner';
+import Spinner from 'src/components/Spinner';
 import styles from './Sidebar.module.scss';
 
 type Props = {

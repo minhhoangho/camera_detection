@@ -10,7 +10,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { useTheme } from '@mui/material/styles';
 import _isEmpty from 'lodash/isEmpty';
 import _debounce from 'lodash/debounce';
-import { Iconify } from '../../../../components/Iconify';
+import { Iconify } from 'src/components/Iconify';
 
 const SEARCH_API_ENDPOINT = 'https://api.geoapify.com/v1/geocode/autocomplete';
 const GEOAPIFY_API_KEY = 'c03ef2b9bca04d8ba477409f929517f9';

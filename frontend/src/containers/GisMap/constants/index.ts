@@ -5,6 +5,7 @@ export const VIEW_POINT_MANAGEMENT_KEY = {
     LONG: 'long',
     DESCRIPTION: 'description',
     CREATED_AT: 'createdAt',
+    UPDATED_AT: 'updatedAt',
     ACTION: 'action',
 };
 
@@ -15,6 +16,7 @@ export const VIEW_POINT_MANAGEMENT_COLUMNS_LABEL = {
     [VIEW_POINT_MANAGEMENT_KEY.LONG]: 'Kinh độ',
     [VIEW_POINT_MANAGEMENT_KEY.DESCRIPTION]: 'Mô tả',
     [VIEW_POINT_MANAGEMENT_KEY.CREATED_AT]: 'Thời gian tạo',
+    [VIEW_POINT_MANAGEMENT_KEY.UPDATED_AT]: 'Thời gian cập nhật',
     [VIEW_POINT_MANAGEMENT_KEY.ACTION]: 'Thao tác',
 };
 

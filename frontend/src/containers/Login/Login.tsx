@@ -13,7 +13,7 @@ import { BaseLayout } from 'src/layouts';
 import styles from './Login.module.scss';
 import { LoginPayloadRequest, LoginResponse } from './models';
 import { login } from '../../api/auth';
-import { toast } from '../../components/Toast';
+import { toast } from 'src/components/Toast';
 import { PathName } from '../../constants/routes';
 import CookiesStorage from '../../utils/cookie-storage';
 import { CookieKey } from '../../constants';

@@ -23,13 +23,13 @@ import {
 import styles from './GisMap.module.scss';
 import { CreateViewPointModal } from './CreateViewPointModal';
 import { BaseLayout, PrivateLayout } from '../../layouts';
-import { Table } from '../../components/Table';
-import { toast } from '../../components/Toast';
+import { Table } from 'src/components/Table';
+import { toast } from 'src/components/Toast';
 import { listViewPointsPaginate } from '../../api/view-point';
 import { DEFAULT_PAGINATION_PARAMS } from '../../constants';
 import { PaginationQueryParams } from '../../shared/models/requests';
 import { PathName } from '../../constants/routes';
-import { Iconify } from '../../components/Iconify';
+import { Iconify } from 'src/components/Iconify';
 
 export function GisMapViewPointManagement() {
   const router = useRouter();

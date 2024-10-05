@@ -5,19 +5,22 @@ import * as React from 'react';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { toast } from 'src/components/Toast';
+import { FormInput } from 'src/components/Form';
+import { Iconify } from 'src/components/Iconify';
+import { FileUpload } from 'src/components/FileUpload';
+import { RealtimeCamera } from './components/RealtimeCamera';
+import { RealtimeCameraRaw } from './components/RealtimeCameraRaw';
+import { OpenLayerMap } from './OpenLayerMap';
+import { ViewPointCameraList } from './components/ViewPointCameraList';
 import {
   EditViewPointPayloadRequest,
   ViewPointCameraData,
   ViewPointData,
 } from './models';
-import { OpenLayerMap } from './OpenLayerMap';
-import { ViewPointCameraList } from './components/ViewPointCameraList';
 import { getDetailViewPoint, updateViewPoint } from '../../api/view-point';
-import { toast } from '../../components/Toast';
 import { BaseLayout, PrivateLayout } from '../../layouts';
-import { FormInput } from '../../components/Form';
-import { RealtimeCamera } from './components/RealtimeCamera';
-import { Iconify } from '../../components/Iconify';
+
 export function ViewPointDetail() {
   const [showRealtimeCamera, setShowRealtimeCamera] = React.useState(false);
   const [selectedViewPointCamera, setSelectedViewPointCamera] = React.useState(
@@ -74,8 +77,8 @@ export function ViewPointDetail() {
         zoom: 15,
         lat: data.lat,
         long: data.long,
-      }
-    }
+      },
+    };
     updateViewpointMutate(submitData);
   };
   const updateFormLatLong = (lat: number, long: number) => {
@@ -91,30 +94,35 @@ export function ViewPointDetail() {
     setSelectedViewPointCamera(viewPointCamera);
   };
 
-
   return (
     <BaseLayout>
       <PrivateLayout>
         <Container>
           <div>
-              <Iconify
-                icon="ic:baseline-arrow-back"
-                color="text.disabled"
-                width={20}
-                height={20}
-                className="cursor-pointer"
-                onClick={() => router.back()}
-              />
+            <Iconify
+              icon="ic:baseline-arrow-back"
+              color="text.disabled"
+              width={20}
+              height={20}
+              className="cursor-pointer"
+              onClick={() => router.back()}
+            />
           </div>
           <h1>{dataDetail?.name ?? ''}</h1>
           <Grid container spacing={3} alignItems="stretch">
             <Grid item xs={6}>
               {showRealtimeCamera ? (
-                <RealtimeCamera
-                  viewPoint={dataDetail as ViewPointData}
-                  viewPointCamera={selectedViewPointCamera}
-                  setShowRealtimeCamera={setShowRealtimeCamera}
-                />
+                <>
+                  <RealtimeCamera
+                    viewPoint={dataDetail as ViewPointData}
+                    viewPointCamera={selectedViewPointCamera}
+                    setShowRealtimeCamera={setShowRealtimeCamera}
+                  />
+                  <RealtimeCameraRaw
+                    viewPoint={dataDetail as ViewPointData}
+                    viewPointCamera={selectedViewPointCamera}
+                  />
+                </>
               ) : (
                 <>
                   <Box className="mb-2">
@@ -181,11 +189,22 @@ export function ViewPointDetail() {
             <Grid item xs={6}>
               {!isLoading && (
                 <OpenLayerMap
-                  width={"--webkit-fill-available"}
-                  height={600}
+                  width={'--webkit-fill-available'}
+                  height={500}
                   onUpdateLatLong={updateFormLatLong}
                   center={[dataDetail?.long ?? 0, dataDetail?.lat ?? 0]}
                 />
+              )}
+
+              {showRealtimeCamera && (
+                <div className="mt-4">
+                  <div>
+                    <span>Ảnh BEV</span>
+                  </div>
+                  <div>
+                    <FileUpload  />
+                  </div>
+                </div>
               )}
             </Grid>
           </Grid>

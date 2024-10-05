@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box } from '@mui/material';
 import Head from 'next/head';
-import Spinner from '../../components/Spinner';
+import Spinner from 'src/components/Spinner';
 
 
 const getPageTitle = (title: string): string => {

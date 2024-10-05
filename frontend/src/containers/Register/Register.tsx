@@ -8,7 +8,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import styles from './Register.module.scss';
 import { BaseLayout } from '../../layouts';
-import { FormInput } from '../../components/Form';
+import { FormInput } from 'src/components/Form';
 
 const validationSchema = yup.object({
   email: yup.string().trim().required('Email is required'),

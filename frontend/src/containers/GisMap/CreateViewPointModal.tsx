@@ -8,10 +8,10 @@ import { useMutation } from 'react-query';
 import * as React from 'react';
 import { CreateViewPointPayloadRequest, EditViewPointPayloadRequest, ViewPointData } from './models';
 import { OpenLayerMap } from './OpenLayerMap';
-import { toast } from '../../components/Toast';
+import { toast } from 'src/components/Toast';
 import { PathName } from '../../constants/routes';
 import { createViewPoint } from '../../api/view-point';
-import { FormInput } from '../../components/Form';
+import { FormInput } from 'src/components/Form';
 
 type ModalProps = {
   isOpen: boolean;

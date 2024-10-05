@@ -15,7 +15,7 @@ import { DEFAULT_PAGINATION_PARAMS } from '../../constants';
 import { useDebouncedCallback } from '../../shared/hooks/use-debounce-callback';
 import { PathName } from '../../constants/routes';
 import { PaginationQueryParams } from '../../shared/models/requests';
-import { Table } from '../../components/Table';
+import { Table } from 'src/components/Table';
 
 export function UserManagement() {
   const router = useRouter();

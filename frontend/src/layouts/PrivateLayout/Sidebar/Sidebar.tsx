@@ -8,7 +8,7 @@ import { account } from 'src/mocks/account';
 import styles from './Sidebar.module.scss';
 import { CustomSidebarMenu } from './CustomSidebarMenu';
 import { useResponsive } from '../../../shared/hooks/use-responsive';
-import { Scrollbar } from '../../../components/Scrollbar';
+import { Scrollbar } from 'src/components/Scrollbar';
 
 type Props = {
   onClose: () => void;
