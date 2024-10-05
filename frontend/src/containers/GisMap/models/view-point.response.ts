@@ -15,6 +15,7 @@ export type ViewPointCameraData = {
     id: string;
     cameraSource: number;
     cameraUri: string;
+    capturedImage?: string;
     createdAt: string;
     updatedAt: string;
 }

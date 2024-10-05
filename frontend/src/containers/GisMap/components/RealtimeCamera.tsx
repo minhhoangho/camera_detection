@@ -24,7 +24,7 @@ export function RealtimeCamera({
       </div>
       <Card>
         <CardHeader title={title} subheader={viewPoint?.name} />
-        <Box sx={{ p: 3, pb: 1 }}>
+        <Box sx={{ p: 3 }}>
           <img
             src={`${API_BASE_URL}/detector/video/realtime?type=${viewPointCamera.cameraSource}&uri=${viewPointCamera.cameraUri}`}
             alt="video"

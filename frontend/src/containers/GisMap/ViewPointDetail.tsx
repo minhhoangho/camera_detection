@@ -1,16 +1,16 @@
 import { useRouter } from 'next/router';
 import { useMutation, useQuery } from 'react-query';
-import { Box, Button, Container, Grid } from '@mui/material';
+import { Box, Button, Container, Grid, Card } from '@mui/material';
 import * as React from 'react';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import Image from 'next/image';
 import { toast } from 'src/components/Toast';
 import { FormInput } from 'src/components/Form';
 import { Iconify } from 'src/components/Iconify';
 import { FileUpload } from 'src/components/FileUpload';
 import { RealtimeCamera } from './components/RealtimeCamera';
-import { RealtimeCameraRaw } from './components/RealtimeCameraRaw';
 import { OpenLayerMap } from './OpenLayerMap';
 import { ViewPointCameraList } from './components/ViewPointCameraList';
 import {
@@ -118,10 +118,15 @@ export function ViewPointDetail() {
                     viewPointCamera={selectedViewPointCamera}
                     setShowRealtimeCamera={setShowRealtimeCamera}
                   />
-                  <RealtimeCameraRaw
-                    viewPoint={dataDetail as ViewPointData}
-                    viewPointCamera={selectedViewPointCamera}
-                  />
+                  <Card className="mt-3">
+                    <Box sx={{ p: 3}} >
+                      <div>Ảnh</div>
+                      <img
+                        src={selectedViewPointCamera.capturedImage ?? ''}
+                        alt={selectedViewPointCamera.capturedImage ?? 'none'}
+                      ></img>
+                    </Box>
+                  </Card>
                 </>
               ) : (
                 <>
@@ -202,7 +207,7 @@ export function ViewPointDetail() {
                     <span>Ảnh BEV</span>
                   </div>
                   <div>
-                    <FileUpload  />
+                    <FileUpload />
                   </div>
                 </div>
               )}

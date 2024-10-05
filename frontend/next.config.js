@@ -15,17 +15,15 @@ const config = {
         includePaths: [path.join(__dirname)],
     },
     images: {
-        formats: ['image/avif', 'image/webp'],
-        deviceSizes: [768, 1024, 1920],
+        formats: ["image/avif", "image/webp"],
         remotePatterns: [
             {
                 protocol: 'https',
-                hostname: 'example.com',
+                hostname: 'camera-detection.s3.amazonaws.com',
                 port: '',
-                pathname: '/image/upload/**',
+                pathname: '/**',
             },
-        ],
-        domains: ['localhost'],
+        ]
     },
     experimental: {
         esmExternals: false,

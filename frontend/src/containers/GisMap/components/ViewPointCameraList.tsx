@@ -8,14 +8,14 @@ import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { toast } from 'src/components/Toast';
 import { Table } from 'src/components/Table';
+import { getListViewPointCameras } from 'src/api/view-point';
+import { DEFAULT_PAGINATION_PARAMS } from 'src/constants';
+import { PaginationQueryParams } from 'src/shared/models/requests';
 import { UpsertCameraSourceModal } from './UpsertCameraSourceModal';
 import {
   ListViewPointCameraPaginateResponse,
   ViewPointCameraData,
 } from '../models';
-import { getListViewPointCameras } from 'src/api/view-point';
-import { DEFAULT_PAGINATION_PARAMS } from 'src/constants';
-import { PaginationQueryParams } from 'src/shared/models/requests';
 import {
   VIEW_POINT_CAMERA_MANAGEMENT_COLUMNS_LABEL,
   VIEW_POINT_CAMERA_MANAGEMENT_KEY,
