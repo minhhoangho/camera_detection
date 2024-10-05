@@ -72,7 +72,6 @@ class GisMapViewSet(PaginationMixin):
         return Response(data=ViewPointSerializer(gis_vp).data, status=HTTPStatus.OK)
 
     def update_view_point(self, request: Request, pk):
-
         pk = TypeUtils.safe_int(pk)
         if not pk:
             raise AppException(error=ValidationErr.INVALID, params=["pk"])

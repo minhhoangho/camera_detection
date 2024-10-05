@@ -14,6 +14,7 @@ from django.db.models import Q
 
 from src.Apps.base.exceptions import AppException, ApiErr
 from src.Apps.base.utils.type_utils import TypeUtils
+from src.Apps.detector.services.detector_service import DetectorService
 from src.Apps.gis_map.models import GisViewPoint, GisViewPointCamera, GisMapView
 
 UserModel = get_user_model()
@@ -66,24 +67,33 @@ class GisMapService:
     @classmethod
     def create_view_point_camera(cls, payload: dict) -> GisViewPointCamera:
         view_point_id: int = TypeUtils.safe_int(payload.get("view_point_id"))
-        cls.get_view_point_by_id(view_point_id)
+        view_point = cls.get_view_point_by_id(view_point_id)
         camera_source: int = TypeUtils.safe_int(payload.get("camera_source"))
         camera_uri: str = TypeUtils.safe_str(payload.get("camera_uri"))
-        return GisViewPointCamera.objects.create(
+        res = GisViewPointCamera.objects.create(
             view_point_id=view_point_id, camera_source=camera_source, camera_uri=camera_uri
         )
+        cls._save_captured_image(view_point=view_point, cam_detail=res)
+        return GisViewPointCamera.objects.get(id=res.id)
 
     @classmethod
     def edit_view_point_camera(cls, pk: int, payload: dict) -> GisViewPointCamera:
-        cls.get_view_point_camera_detail(pk=pk)
+        cam_detail = cls.get_view_point_camera_detail(pk=pk)
         view_point_id: int = TypeUtils.safe_int(payload.get("view_point_id"))
-        cls.get_view_point_by_id(view_point_id)
+        view_point = cls.get_view_point_by_id(view_point_id)
         camera_source: int = TypeUtils.safe_int(payload.get("camera_source"))
         camera_uri: str = TypeUtils.safe_str(payload.get("camera_uri"))
         GisViewPointCamera.objects.filter(id=pk).update(
             view_point_id=view_point_id, camera_source=camera_source, camera_uri=camera_uri
         )
+        cls._save_captured_image(view_point=view_point, cam_detail=cam_detail)
         return cls.get_view_point_camera_detail(pk=pk)
+
+    @classmethod
+    def _save_captured_image(cls, view_point: GisViewPoint, cam_detail: GisViewPointCamera):
+        file_name = f"{view_point.name}_{cam_detail.id}"
+        s3_url = DetectorService.handle_capture_video_and_upload_s3(video_url=cam_detail.camera_uri, file_name=file_name)
+        GisViewPointCamera.objects.filter(id=cam_detail.id).update(captured_image=s3_url)
 
     @classmethod
     def delete_viewpoint_camera(cls, pk: int):

@@ -20,10 +20,7 @@ class AWSClientManager:
 
     @property
     def session(self):
-        session = getattr(self, "session", None)
-        if session is None:
-            session = self._create_session()
-        return session
+        return self._create_session()
 
     @property
     def client(self):
@@ -31,14 +28,11 @@ class AWSClientManager:
 
     @property
     def resource(self):
-        resource = getattr(self, "resource", None)
-        if resource is None:
-            resource = self.session.resource(
-                service_name=self.service_name,
-                region_name=self.region_name,
-                config=self.config,
-            )
-        return resource
+        return self.session.resource(
+            service_name=self.service_name,
+            region_name=self.region_name,
+            config=self.config,
+        )
 
     def _create_session(self):
         return boto3.Session(

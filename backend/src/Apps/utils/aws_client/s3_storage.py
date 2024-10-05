@@ -62,13 +62,18 @@ class S3Storage(AWSClientManager):
             file_name=file_name,
         )
 
-    def upload_file(self, local_file_path: str, s3_file_path: str):
+    def upload_file(self, local_file_path: str, s3_file_path: str, **kwargs) -> str:
         try:
-            self.bucket.upload_file(local_file_path, self.bucket_name, s3_file_path)
-            return True
+            print("Local file path:", local_file_path)
+            print("S3 file path:", s3_file_path)
+            print("Bucket name:", self.bucket_name)
+            self.bucket.upload_file(local_file_path, s3_file_path, **kwargs)
+            # Construct the S3 URL
+            s3_url = f"https://{self.bucket_name}.s3.amazonaws.com/{s3_file_path}"
+            return s3_url
         except Exception as e:
             AppLog.error_exception(e)
-            return False
+            return ""
 
     def size(self, name: str) -> int:
         return self.bucket.Object(name).content_length
@@ -76,3 +81,4 @@ class S3Storage(AWSClientManager):
     def content(self, name: str, read: bool = True) -> bytes:
         body = self.bucket.Object(name).get()["Body"]
         return body.read() if read else body
+

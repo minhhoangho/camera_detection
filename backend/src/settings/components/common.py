@@ -189,3 +189,4 @@ SWAGGER_SETTINGS = {
         }
     }
 }
+MEDIAFILES_LOCATION = "media"
