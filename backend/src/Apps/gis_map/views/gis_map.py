@@ -72,6 +72,7 @@ class GisMapViewSet(PaginationMixin):
         return Response(data=ViewPointSerializer(gis_vp).data, status=HTTPStatus.OK)
 
     def update_view_point(self, request: Request, pk):
+
         pk = TypeUtils.safe_int(pk)
         if not pk:
             raise AppException(error=ValidationErr.INVALID, params=["pk"])
@@ -119,7 +120,7 @@ class GisMapViewSet(PaginationMixin):
                 result = GisMapService.create_view_point_camera(payload)
         return Response(data=CameraViewPointSerializer(result).data, status=HTTPStatus.OK)
 
-    @action(methods=[HttpMethod.POST], url_path=r"view-points/(?P<pk>\w+)/camera/?P<cam_id>\w+", detail=False)
+    @action(methods=[HttpMethod.DELETE], url_path=r"view-points/(?P<pk>\w+)/camera/(?P<cam_id>\w+)", detail=False)
     def delete_camera_viewpoint(self, request: Request, pk, cam_id):
         view_point_id = TypeUtils.safe_int(pk)
         cam_id = TypeUtils.safe_int(cam_id)

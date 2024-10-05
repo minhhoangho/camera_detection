@@ -46,7 +46,8 @@ INSTALLED_APPS: Tuple[str, ...] = (
     "health_check.cache",
     "health_check.contrib.migrations",
     "rest_framework",
-    "django_q"
+    "django_q",
+    "drf_yasg"
     # "health_check.storage",
     # "health_check.contrib.celery",              # requires celery
     # "health_check.contrib.celery_ping",         # requires celery
@@ -181,3 +182,10 @@ DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 APPEND_SLASH = False
 
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Basic': {
+            'type': 'basic'
+        }
+    }
+}

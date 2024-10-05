@@ -23,11 +23,26 @@ files serving technique in development.
 from django.conf import settings
 from django.urls import include, path
 from django.views.generic import TemplateView
+from drf_yasg import openapi
+from drf_yasg.views import get_schema_view
 from health_check import urls as health_urls
+
 from django.contrib import admin
+from rest_framework import permissions
+
+schema_view = get_schema_view(
+    openapi.Info(
+        title="API documentation",
+        default_version='v1',),
+    public=True,
+    permission_classes=(permissions.AllowAny,),
+)
 
 
 urlpatterns = [
+    # Swagger API documentation:
+    path('docs', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+
     # Health checks:
     path("health", include(health_urls)),
     # admin site
@@ -54,6 +69,8 @@ urlpatterns = [
     path("", include("src.Apps.gis_map.urls")),
     path("", include("src.Apps.detector.urls")),
 ]
+
+
 
 if settings.DEBUG:  # pragma: no cover
     import debug_toolbar  # noqa: WPS433
