@@ -95,7 +95,7 @@ class GisMapViewSet(PaginationMixin):
             raise AppException(error=ValidationErr.INVALID, params=["view_point_id"])
         data, count = GisMapService.list_camera_paginate(view_point_id, page=page, per_page=limit)
         result = self.to_list(
-            items=data,
+            items=CameraViewPointSerializer(data, many=True).data,
             total=count,
             limit=limit,
             offset=offset,
@@ -119,16 +119,36 @@ class GisMapViewSet(PaginationMixin):
                 result = GisMapService.create_view_point_camera(payload)
         return Response(data=CameraViewPointSerializer(result).data, status=HTTPStatus.OK)
 
-    @action(methods=[HttpMethod.DELETE], url_path=r"view-points/(?P<pk>\w+)/camera/(?P<cam_id>\w+)", detail=False)
+
+    @action(methods=[HttpMethod.GET,  HttpMethod.DELETE], url_path=r"view-points/(?P<pk>\w+)/camera/(?P<cam_id>\w+)", detail=False)
+    def camera_viewpoint_operations(self, request: Request, pk, cam_id):
+        view_point_id = TypeUtils.safe_int(pk)
+        cam_id = TypeUtils.safe_int(cam_id)
+        if not view_point_id or not cam_id:
+            raise AppException(error=ValidationErr.INVALID, params=["view_point_id", "cam_id"])
+        if HttpMethod.is_delete(request.method):
+            return self.delete_camera_viewpoint(request, pk, cam_id)
+        if HttpMethod.is_get(request.method):
+            return self.get_camera_viewpoint_detail(request, pk, cam_id)
+        return Response(status=HTTPStatus.NOT_FOUND)
+
+    def get_camera_viewpoint_detail(self, request: Request, pk, cam_id):
+        view_point_id = TypeUtils.safe_int(pk)
+        cam_id = TypeUtils.safe_int(cam_id)
+        if not view_point_id or not cam_id:
+            raise AppException(error=ValidationErr.INVALID, params=["view_point_id", "cam_id"])
+        cam_detail = GisMapService.get_view_point_camera_detail(cam_id)
+        return Response(data=CameraViewPointSerializer(cam_detail).data, status=HTTPStatus.OK)
+
     def delete_camera_viewpoint(self, request: Request, pk, cam_id):
         view_point_id = TypeUtils.safe_int(pk)
         cam_id = TypeUtils.safe_int(cam_id)
         if not view_point_id or not cam_id:
             raise AppException(error=ValidationErr.INVALID, params=["view_point_id", "cam_id"])
-        GisMapService.delete_view_point_camera(cam_id)
+        GisMapService.delete_viewpoint_camera(cam_id)
         return Response(status=HTTPStatus.OK)
 
-    @action(methods=[HttpMethod.POST], url_path=r"view-points/(?P<pk>\w+)/camera/(?P<cam_id>\w+)", detail=False)
+    @action(methods=[HttpMethod.POST], url_path=r"view-points/(?P<pk>\w+)/camera/(?P<cam_id>\w+)/bev", detail=False)
     def save_bev_image(self, request: Request, pk, cam_id):
         cam_id = TypeUtils.safe_int(cam_id)
         bev_url = request.data.get("bev_image", "")

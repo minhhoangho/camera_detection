@@ -116,6 +116,9 @@ class GisMapService:
 
     @classmethod
     def save_bev_view_image(cls, pk: int, bev_image: str, homography_matrix: List[List[float]]):
-        homography_matrix = json.dumps(homography_matrix)
+        test_homomatrix = [[-0.157284657, -3.31660226, 851.87688],
+         [0.131452704, -0.487076251, -478.520093],
+         [-0.00112704092, -0.00881721794, 1.0]]
+        homography_matrix = json.dumps(test_homomatrix)
         GisViewPointCamera.objects.filter(id=pk).update(bev_image=bev_image, homography_matrix=homography_matrix)
         return True

@@ -29,6 +29,10 @@ class CameraViewPointSerializer(serializers.ModelSerializer):
         model = GisViewPointCamera
         fields = "__all__"
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data["homography_matrix"] = eval(data["homography_matrix"])
+        return data
 
 class CUCameraViewPointSerializer(serializers.Serializer):
     id = serializers.IntegerField(required=False)
