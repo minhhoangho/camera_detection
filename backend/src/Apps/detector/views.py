@@ -37,6 +37,8 @@ class DetectorViewSet(viewsets.ViewSet):
         delay = 1 / frame_rate
         while True:
             frame = cap.read()
+            if frame is None:
+                break
             if not view_raw:
                 frame, results = detector.get_prediction_sahi(frame=frame)
             # with app.app_context():
