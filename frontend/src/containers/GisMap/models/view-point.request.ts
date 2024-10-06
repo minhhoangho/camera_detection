@@ -34,3 +34,9 @@ export type UpsertCameraSourcePayloadRequest = {
   cameraSource: number;
   cameraUri: string;
 };
+
+export type BEVAndHomoPayloadRequest = {
+  id: number;
+  bevImage: string;
+  homographyMatrix?: any;
+};

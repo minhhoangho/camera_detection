@@ -6,9 +6,10 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import { useQuery } from 'react-query';
+import classNames from 'classnames';
+import Image from 'next/image';
 import { toast } from 'src/components/Toast';
 import Spinner from 'src/components/Spinner';
-import classNames from 'classnames';
 
 import { getListViewPointCameras } from 'src/api/view-point';
 import styles from './PublicCameraSidebar.module.scss';
@@ -17,7 +18,6 @@ import {
   ViewPointCameraData,
 } from '../../../GisMap/models';
 import { RealtimeCamera } from '../../../GisMap/components/RealtimeCamera';
-import Image from 'next/image';
 
 type Props = {
   onClose: () => void;

@@ -1,19 +1,42 @@
 import React from 'react';
+import { S3Client } from '../../utils/aws/s3-utils';
+import { S3Config } from '../../constants';
+import { toast } from '../Toast';
 
 type FileUploadProps = {
   label?: string;
+  uploadFileCallback: (fileUrl: string) => void;
 };
 
 export const FileUpload = (props: FileUploadProps) => {
-  const handleUpload = (e: any) => {
+  const handleUpload = async (e: any) => {
     const file = e.target.files[0];
+    const fileName = file.name;
+    const params = {
+      ACL: 'public-read',
+      Bucket: S3Config.bucketName,
+      Key: fileName,
+      Body: file,
+    };
+
     if (file) {
-      console.log(file);
+      try {
+        await S3Client.putObject(params).promise();
+        const fileUrl = `https://${S3Config.bucketName}.s3.amazonaws.com/${
+          fileName as string
+        }`;
+        props.uploadFileCallback(fileUrl);
+      } catch (error) {
+        toast('error', 'Error uploading file');
+      }
     }
-  }
+    return true;
+  };
   return (
     <div>
-      <div><span>{props.label ?? ''}</span></div>
+      <div>
+        <span>{props.label ?? ''}</span>
+      </div>
       <label
         htmlFor="uploadFile1"
         className="bg-white text-gray-500 font-semibold text-base rounded max-w-md h-52 flex flex-col items-center justify-center cursor-pointer border-2 border-gray-300 border-dashed mx-auto font-[sans-serif]"
@@ -32,13 +55,20 @@ export const FileUpload = (props: FileUploadProps) => {
             data-original="#000000"
           />
         </svg>
-        Upload file
-        <input type="file" id="uploadFile1" className="hidden" />
-        <p className="text-xs font-medium text-gray-400 mt-2">
+        Upload
+        <input
+          type="file"
+          id="uploadFile1"
+          className="hidden"
+          onChange={handleUpload}
+          onClick={(e) => {
+            e.currentTarget.value = '';
+          }}
+        />
+        <p className="text-xs font-medium text-gray-400 mt-2 px-1">
           PNG, JPG SVG, WEBP, and GIF are Allowed.
         </p>
       </label>
     </div>
-
   );
 };

@@ -5,7 +5,6 @@ import * as React from 'react';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import Image from 'next/image';
 import { toast } from 'src/components/Toast';
 import { FormInput } from 'src/components/Form';
 import { Iconify } from 'src/components/Iconify';
@@ -14,12 +13,19 @@ import { RealtimeCamera } from './components/RealtimeCamera';
 import { OpenLayerMap } from './OpenLayerMap';
 import { ViewPointCameraList } from './components/ViewPointCameraList';
 import {
-  EditViewPointPayloadRequest,
+  BEVAndHomoPayloadRequest,
+  EditViewPointPayloadRequest, UpsertCameraSourcePayloadRequest,
   ViewPointCameraData,
   ViewPointData,
 } from './models';
-import { getDetailViewPoint, updateViewPoint } from '../../api/view-point';
+import {
+  getDetailViewPoint, getViewPointCameraDetail,
+  saveBevImageAndHomographyMatrix,
+  updateViewPoint,
+  upsertNewViewPointCamera,
+} from '../../api/view-point';
 import { BaseLayout, PrivateLayout } from '../../layouts';
+import Image from 'next/image';
 
 export function ViewPointDetail() {
   const [showRealtimeCamera, setShowRealtimeCamera] = React.useState(false);
@@ -70,6 +76,21 @@ export function ViewPointDetail() {
     },
   });
 
+  const { mutate: uploadBevImage } = useMutation({
+    mutationFn: (data: BEVAndHomoPayloadRequest): any =>
+      saveBevImageAndHomographyMatrix(viewPointId, data),
+    onSuccess: () => {
+      toast('success', 'Uploaded Bev image');
+      getViewPointCameraDetail(viewPointId, selectedViewPointCamera.id).then((data) => {
+        setSelectedViewPointCamera(data);
+      });
+    },
+    onError: () => {
+      toast('error', 'Uploading Bev image error');
+    },
+  });
+
+
   const handleSubmitForm = (data: any) => {
     const submitData: EditViewPointPayloadRequest = {
       ...data,
@@ -93,6 +114,13 @@ export function ViewPointDetail() {
     setShowRealtimeCamera(val);
     setSelectedViewPointCamera(viewPointCamera);
   };
+
+  const handleSaveBEVImage = (fileUrl: string) => {
+    uploadBevImage({
+      id: selectedViewPointCamera.id,
+      bevImage: fileUrl,
+    })
+  }
 
   return (
     <BaseLayout>
@@ -206,8 +234,11 @@ export function ViewPointDetail() {
                   <div>
                     <span>Ảnh BEV</span>
                   </div>
-                  <div>
-                    <FileUpload />
+                  <div className="flex">
+                    {selectedViewPointCamera?.bevImage ? (
+                      <img src={selectedViewPointCamera.bevImage} alt="bev-image" className="mr-2 max-w-xl"/>
+                    ) : null}
+                    <FileUpload uploadFileCallback={handleSaveBEVImage}/>
                   </div>
                 </div>
               )}

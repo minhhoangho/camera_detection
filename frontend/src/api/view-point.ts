@@ -1,9 +1,12 @@
 import { request } from '../utils/request';
 import {
+  BEVAndHomoPayloadRequest,
   CreateViewPointPayloadRequest,
   EditViewPointPayloadRequest,
   ListViewPointCameraPaginateResponse,
-  ListViewPointPaginateResponse, UpsertCameraSourcePayloadRequest,
+  ListViewPointPaginateResponse,
+  UpsertCameraSourcePayloadRequest,
+  ViewPointCameraData,
   ViewPointData,
   ViewPointPaginateRequest,
 } from '../containers/GisMap/models';
@@ -31,7 +34,7 @@ export const updateViewPoint = async (
   id: number,
   data: EditViewPointPayloadRequest,
 ) => {
-  console.log(id, data  )
+  console.log(id, data);
   return request.put(`/gis-maps/view-points/${id}`, data);
 };
 
@@ -56,6 +59,30 @@ export const getListViewPointCameras = async (
   );
 };
 
-export const upsertNewViewPointCamera = async (viewpointId: number, payload: UpsertCameraSourcePayloadRequest) => {
+export const getViewPointCameraDetail = async (
+  viewPointId: number,
+  cameraId: number,
+): Promise<ViewPointCameraData> => {
+  return request.get(`/gis-maps/view-points/${viewPointId}/camera/${cameraId}`);
+};
+
+export const upsertNewViewPointCamera = async (
+  viewpointId: number,
+  payload: UpsertCameraSourcePayloadRequest,
+) => {
   return request.post(`/gis-maps/view-points/${viewpointId}/camera`, payload);
+};
+
+export const saveBevImageAndHomographyMatrix = async (
+  viewpointId: number,
+  payload: BEVAndHomoPayloadRequest,
+) => {
+  const data = {
+    bevImage: payload.bevImage,
+    homographyMatrix: payload.homographyMatrix || [],
+  };
+  return request.post(
+    `/gis-maps/view-points/${viewpointId}/camera/${payload.id}/bev`,
+    data,
+  );
 };
