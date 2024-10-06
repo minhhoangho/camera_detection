@@ -126,3 +126,16 @@ class GisMapViewSet(PaginationMixin):
         if not view_point_id or not cam_id:
             raise AppException(error=ValidationErr.INVALID, params=["view_point_id", "cam_id"])
         GisMapService.delete_view_point_camera(cam_id)
+        return Response(status=HTTPStatus.OK)
+
+    @action(methods=[HttpMethod.POST], url_path=r"view-points/(?P<pk>\w+)/camera/(?P<cam_id>\w+)", detail=False)
+    def save_bev_image(self, request: Request, pk, cam_id):
+        cam_id = TypeUtils.safe_int(cam_id)
+        bev_url = request.data.get("bev_image", "")
+        homography_matrix = request.data.get("homography_matrix", "")
+        if not cam_id:
+            raise AppException(error=ValidationErr.INVALID, params=["cam_id"])
+        if not bev_url:
+            raise AppException(error=ValidationErr.INVALID, params=["bev_image"])
+        GisMapService.save_bev_view_image(pk=cam_id, bev_image=bev_url, homography_matrix=homography_matrix)
+        return Response(status=HTTPStatus.OK)

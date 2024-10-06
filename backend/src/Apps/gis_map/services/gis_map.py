@@ -4,6 +4,7 @@ import re
 import tempfile
 from datetime import timedelta
 from typing import Dict, List
+import json
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -111,3 +112,10 @@ class GisMapService:
             GisMapView.objects.filter(view_point_id=view_point_id).update(lat=lat, long=long, zoom=zoom)
             return GisMapView.objects.filter(view_point_id=view_point_id).first()
         return GisMapView.objects.create(lat=lat, long=long, zoom=zoom, view_point_id=view_point_id)
+
+
+    @classmethod
+    def save_bev_view_image(cls, pk: int, bev_image: str, homography_matrix: List[List[float]]):
+        homography_matrix = json.dumps(homography_matrix)
+        GisViewPointCamera.objects.filter(id=pk).update(bev_image=bev_image, homography_matrix=homography_matrix)
+        return True
