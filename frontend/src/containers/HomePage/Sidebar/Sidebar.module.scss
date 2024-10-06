@@ -1,3 +1,28 @@
 .custom-card-border {
   border: solid 1px #e2e8f0 !important;
 }
+
+.custom-card-eye-icon {
+  position: absolute;
+}
+
+.list-content {
+  flex: 1;
+  min-width: 300px;
+}
+
+
+.content-wrapper {
+  @apply transition-all duration-500 ease-in-out ;
+}
+
+
+.camera-content {
+  @apply max-w-0 min-w-0 transition-all duration-500 ease-in-out ;
+}
+
+.active-camera-wrapper {
+  @apply max-w-[100vw] transition-all duration-500 ease-in-out;
+  min-width: calc(50vw - 380px);
+}
+

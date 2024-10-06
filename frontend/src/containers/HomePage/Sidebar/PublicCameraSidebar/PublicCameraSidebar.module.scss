@@ -1,0 +1,7 @@
+.camera-card {
+  @apply cursor-pointer
+}
+
+.active-camera-card {
+  background-color: rgb(59 130 246 / var(--tw-bg-opacity)) !important
+}

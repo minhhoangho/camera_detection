@@ -2,7 +2,7 @@ import {PaginationMeta} from '../../../shared/models/responses';
 
 
 export type ViewPointData = {
-    id: string;
+    id: number;
     lat: number;
     long: number
     name: string;
@@ -12,7 +12,7 @@ export type ViewPointData = {
 }
 
 export type ViewPointCameraData = {
-    id: string;
+    id: number;
     cameraSource: number;
     cameraUri: string;
     capturedImage?: string;

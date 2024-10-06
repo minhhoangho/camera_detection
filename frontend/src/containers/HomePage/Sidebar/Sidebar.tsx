@@ -28,6 +28,8 @@ import { Scrollbar } from 'src/components/Scrollbar';
 import { PathName } from '../../../constants/routes';
 import Spinner from 'src/components/Spinner';
 import styles from './Sidebar.module.scss';
+import { PublicCameraSidebar } from './PublicCameraSidebar/PublicCameraSidebar';
+import classNames from "classnames";
 
 type Props = {
   onClose: () => void;
@@ -38,6 +40,9 @@ export function Sidebar({ open, onClose }: Props): React.ReactElement {
   const router = useRouter();
   const pathname = router.pathname;
   const [keyword, setKeyword] = React.useState<string | null>('');
+  const [activeViewPoint, setActiveViewPoint] =
+    React.useState<ViewPointData | null>(null);
+
 
   const { data, fetchNextPage, isLoading, isFetching } =
     useInfiniteQuery<ListViewPointPaginateResponse>({
@@ -87,14 +92,14 @@ export function Sidebar({ open, onClose }: Props): React.ReactElement {
   const renderResultItem = (item: ViewPointData) => {
     return (
       <Card
-        sx={{ maxWidth: 500 }}
+        sx={{ maxWidth: 500, minWidth: 200 }}
         className="my-4 px-4"
         key={item.id}
         style={{
           background: 'transparent',
         }}
       >
-        <CardActionArea className={styles['custom-card-border']}>
+        <CardActionArea className={styles['custom-card-border']} onClick={() => setActiveViewPoint(item)}>
           <Skeleton variant="rectangular" height={140} animation={false} />
           <CardContent>
             <Typography gutterBottom variant="h5" component="div">
@@ -111,79 +116,96 @@ export function Sidebar({ open, onClose }: Props): React.ReactElement {
 
   const renderContent = (
     <>
-      <div className="mt-2">
-        <Box sx={{ my: 1.5, px: 2 }} className="flex">
-          <Button onClick={() => router.push(PathName.GisLocationManagement)}>
-            <Iconify
-              icon="mdi:user"
-              color="text.disabled"
-              width={20}
-              height={20}
-            />
-            <Typography variant="subtitle2" noWrap>
-              Admin
-            </Typography>
-          </Button>
-        </Box>
-      </div>
-      <div className="search-filter-box">
-        <TextField
-          fullWidth
-          placeholder="Search camera location"
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-          sx={{
-            width: '100%',
-            backgroundColor: 'white',
-            borderRadius: 0,
-          }}
-        />
-      </div>
-
-      <Scrollbar
-        style={{
-          overflowY: 'auto',
-          height: 'calc(100vh - 100px)',
-        }}
-        onScroll={handleScroll}
-      >
-        {!_isEmpty(data?.pages) &&
-          data?.pages.map((page, _index) => {
-            return (
-              <React.Fragment key={_index}>
-                {page.data.map((item) => renderResultItem(item))}
-              </React.Fragment>
-            );
-          })}
-        {(isLoading || isFetching) && (
-          <div className="w-100 flex justify-center">
-            <Spinner />
+      <div className={classNames("flex")}>
+        <div className={styles['list-content']}>
+          <div className="mt-2">
+            <Box sx={{ my: 1.5, px: 2 }} className="flex">
+              <Button
+                onClick={() => router.push(PathName.GisLocationManagement)}
+              >
+                <Iconify
+                  icon="mdi:user"
+                  color="text.disabled"
+                  width={20}
+                  height={20}
+                />
+                <Typography variant="subtitle2" noWrap>
+                  Admin
+                </Typography>
+              </Button>
+            </Box>
           </div>
-        )}
-      </Scrollbar>
+          <div className="search-filter-box px-4">
+            <TextField
+              fullWidth
+              placeholder="Search camera location"
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+              sx={{
+                width: '100%',
+                backgroundColor: 'white',
+                borderRadius: 0,
+              }}
+            />
+          </div>
+          <Scrollbar
+            style={{
+              overflowY: 'auto',
+              height: 'calc(100vh - 100px)',
+            }}
+            onScroll={handleScroll}
+          >
+            {!_isEmpty(data?.pages) &&
+              data?.pages.map((page, _index) => {
+                return (
+                  <React.Fragment key={_index}>
+                    {page.data.map((item) => renderResultItem(item))}
+                  </React.Fragment>
+                );
+              })}
+            {(isLoading || isFetching) && (
+              <div className="w-100 flex justify-center">
+                <Spinner />
+              </div>
+            )}
+          </Scrollbar>
+        </div>
+        <div className={classNames(styles["camera-content"], !!activeViewPoint && styles["active-camera-wrapper"])}>
+          <PublicCameraSidebar
+            onClose={() => setActiveViewPoint(null)}
+            open={!!activeViewPoint}
+            viewPointId={activeViewPoint?.id ?? 0}
+          />
+        </div>
+      </div>
     </>
   );
+
+
   return (
     <Box
       sx={{
-        flexShrink: { lg: 0 },
-        width: { lg: 280 },
+        minWidth: { lg: 280 },
         position: 'absolute',
       }}
     >
       <Drawer
         open={open}
-        onClose={onClose}
+        onClose={() => {
+          onClose();
+          setActiveViewPoint(null);
+        }}
         PaperProps={{
           sx: {
-            width: 280,
+            minWidth: 280,
+            maxWidth: '50vw'
           },
         }}
       >
