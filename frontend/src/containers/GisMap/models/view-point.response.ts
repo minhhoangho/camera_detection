@@ -6,6 +6,7 @@ export type ViewPointData = {
     lat: number;
     long: number
     name: string;
+    thumbnail?: string;
     description: string;
     createdAt: string;
     updatedAt: string;

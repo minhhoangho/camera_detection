@@ -30,6 +30,7 @@ import Spinner from 'src/components/Spinner';
 import styles from './Sidebar.module.scss';
 import { PublicCameraSidebar } from './PublicCameraSidebar/PublicCameraSidebar';
 import classNames from "classnames";
+import Image from 'next/image';
 
 type Props = {
   onClose: () => void;
@@ -100,7 +101,20 @@ export function Sidebar({ open, onClose }: Props): React.ReactElement {
         }}
       >
         <CardActionArea className={styles['custom-card-border']} onClick={() => setActiveViewPoint(item)}>
-          <Skeleton variant="rectangular" height={140} animation={false} />
+
+          {item.thumbnail ? (
+            <div>
+              <Image
+                style={{ height: 140, width: '-webkit-fill-available'}}
+                width={210}
+                height={140}
+                alt={item.name}
+                src={item.thumbnail}
+              />
+            </div>
+          ) : (
+            <Skeleton variant="rectangular" height={140} animation={false} />
+          )}
           <CardContent>
             <Typography gutterBottom variant="h5" component="div">
               {item.name || 'Không có thông tin'}
