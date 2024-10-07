@@ -27,6 +27,7 @@ INSTALLED_APPS: Tuple[str, ...] = (
     "src.Apps.user",
     "src.Apps.gis_map",
     # Default django apps:
+    # "daphne",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -46,8 +47,9 @@ INSTALLED_APPS: Tuple[str, ...] = (
     "health_check.cache",
     "health_check.contrib.migrations",
     "rest_framework",
+    # libs
     "django_q",
-    "drf_yasg"
+    "drf_yasg",
     # "health_check.storage",
     # "health_check.contrib.celery",              # requires celery
     # "health_check.contrib.celery_ping",         # requires celery
@@ -190,3 +192,10 @@ SWAGGER_SETTINGS = {
     }
 }
 MEDIAFILES_LOCATION = "media"
+
+ASGI_APPLICATION = "src.asgi.application"
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}

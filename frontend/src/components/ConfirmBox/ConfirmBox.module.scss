@@ -1,0 +1,244 @@
+.dialog-datepicker {
+  @include min-breakpoint(560px) {
+    min-width: 500px;
+  }
+  .header-content {
+    line-height: 1;
+    padding: 6px 0 0 15px;
+  }
+
+  .popup-container {
+    display: flex;
+    justify-content: space-between;
+
+    @include breakpoint(510px) {
+      display: block;
+    }
+  }
+  .modal-body {
+    padding: 30px 30px 26px;
+  }
+  .datepicker-cus {
+    @include breakpoint(510px) {
+      text-align: center;
+    }
+  }
+}
+
+.edit-joboffer-popup {
+  .modal-header {
+    padding: 30px 28px;
+    .sub-title {
+      color: $gray-500;
+    }
+  }
+  .modal-body {
+    padding: 0;
+    .label-control {
+      color: $gray-500;
+    }
+  }
+  .modal-dialog {
+    .btn-close-modal {
+      z-index: 10;
+
+      &:focus {
+        outline: none;
+      }
+    }
+    @include min-breakpoint(1136px) {
+      max-width: 500px;
+    }
+    @include breakpoint(1136px) {
+      max-width: 500px;
+    }
+    @include breakpoint(520) {
+      max-width: 420px;
+    }
+  }
+  .header-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-left: 22px;
+  }
+  .footer-content {
+    display: flex;
+    justify-content: center;
+    border-top: 1px solid rgba(72, 94, 144, 0.16);
+    padding-top: 17px;
+    padding-bottom: 25px;
+  }
+}
+
+.modal-interview-confirm {
+  min-width: 360px;
+  max-width: 520px;
+  .modal-header {
+    border-bottom: none;
+    justify-content: center;
+    padding-top: 55px;
+    .main-title {
+      color: #000000;
+      font-size: 24px;
+      line-height: 29px;
+    }
+  }
+  .modal-body {
+    .interview-content {
+      font-size: 14px;
+      line-height: 17px;
+      font-family: $sf-text;
+      margin: 0 auto;
+      .interview-timeline {
+        color: $active-03;
+        margin: 0;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      .interviewer-content {
+        color: $color-title;
+        font-weight: normal;
+        margin: 0;
+      }
+      .confirm-message {
+        color: $color-title;
+        font-weight: normal;
+        font-size: 12px;
+        line-height: 14px;
+      }
+    }
+  }
+  .modal-footer {
+    padding: 22px 16px 30px 16px;
+  }
+}
+
+.set-interview-pp,
+.register-interview-feedback-pp,
+.cancellation-interview-pp {
+  .modal-dialog {
+    .btn-close-modal {
+      z-index: 10;
+      &:focus {
+        outline: none;
+      }
+    }
+    .header-title {
+      .main-title {
+        font-size: 18px;
+        line-height: 21px;
+        font-weight: $font-weight-bold;
+        font-family: $sf-text;
+        color: $color-main-title;
+      }
+      .sub-title {
+        font-size: 10px;
+        line-height: 16px;
+        font-weight: normal;
+        font-family: $sf-display;
+        color: $color-sub-title;
+        letter-spacing: -0.5px;
+      }
+    }
+    .tabs-content-extend {
+      height: auto;
+      overflow: visible;
+    }
+    max-width: 1030px;
+  }
+}
+
+.modal-container {
+  .btn-close-modal {
+    outline: none;
+    z-index: 10;
+    &:focus {
+      outline: none;
+    }
+  }
+  .close-icon {
+    font-size: 10.29px;
+  }
+}
+.modal-content {
+  .btn-close-modal {
+    line-height: 16px;
+    right: 30.86px;
+    color: $color-gray-05;
+    z-index: 10;
+    &:focus {
+      outline: none;
+    }
+  }
+  .dailog-message-content {
+    line-height: 1.8;
+  }
+}
+.modal-custom-size {
+  max-width: 1030px;
+  .modal-content {
+    border: none;
+  }
+}
+
+.modal-user-confirm {
+  min-width: 360px;
+  max-width: 520px;
+  z-index: 1060;
+}
+
+.modal-confirm-backdrop {
+  z-index: 1050;
+}
+
+.calendar-event-modal-backdrop {
+  z-index: 1054;
+}
+
+.calendar-event-modal-container {
+  z-index: 1055;
+  .btn-close-modal {
+    color: #fff;
+  }
+  .modal-content {
+    background-color: transparent;
+    overflow: hidden;
+  }
+  .modal-header {
+    background-color: #3788d8;
+    padding-left: 25px;
+    padding-right: 25px;
+  }
+  .modal-body {
+    background-color: #fff;
+    padding: 25px;
+  }
+  .calendar-event-modal {
+    max-width: 500px;
+    .event-title {
+      color: #fff;
+      font-size: 20px;
+      margin: 0;
+    }
+  }
+}
+
+.modal-form-action {
+  .buttons-group {
+    padding-bottom: 10px;
+  }
+  .document-feedback-form {
+    padding-top: 20px;
+  }
+  .tui-editor-defaultUI {
+    .te-editor-section {
+      min-height: 105px;
+    }
+    .CodeMirror-placeholder {
+      white-space: pre-line;
+    }
+  }
+}
+
+

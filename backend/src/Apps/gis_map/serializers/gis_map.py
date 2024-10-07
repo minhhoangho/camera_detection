@@ -8,7 +8,7 @@ class ViewPointSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GisViewPoint
-        fields = "__all__"
+        exclude = ("thumbnail",)
 
 
 class MapViewPointSerializer(serializers.ModelSerializer):
@@ -31,7 +31,8 @@ class CameraViewPointSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        data["homography_matrix"] = eval(data["homography_matrix"])
+        if data.get("homography_matrix"):
+            data["homography_matrix"] = eval(data["homography_matrix"])
         return data
 
 class CUCameraViewPointSerializer(serializers.Serializer):

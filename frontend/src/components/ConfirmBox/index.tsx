@@ -1,57 +1,81 @@
 import React from 'react';
 import classNames from 'classnames';
 import { useTranslation } from 'next-i18next';
-import { Box, Modal, Typography } from '@mui/material';
+import {
+  Box,
+  Modal,
+  Typography,
+  Card,
+  CardHeader,
+  CardContent,
+  CardActions,
+  Button,
+} from '@mui/material';
+
 import useConfirm from 'src/shared/hooks/use-confirm';
 import { ConfirmType } from 'src/constants';
 import Icon from '../Icon';
 
-const ConfirmBox = ({ classNameContent = '', classNameTitle = '' }: { classNameContent?: string, classNameTitle?: string }) => {
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #3f51b5', // Updated border color
+  borderRadius: '8px', // Added border radius
+  boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)', // Updated box shadow
+  pt: 2,
+  px: 4,
+  pb: 3,
+};
+
+const ConfirmBox = ({
+  classNameContent = '',
+  classNameTitle = '',
+}: {
+  classNameContent?: string;
+  classNameTitle?: string;
+}) => {
   const { t } = useTranslation();
   const { confirmBox, onConfirm, onCancel } = useConfirm();
-  const { type, reverse, title, message, confirmButtonLabel, confirmButtonVariant, contentClassName } = confirmBox;
+  const {
+    type,
+    reverse,
+    title,
+    message,
+    confirmButtonLabel,
+    confirmButtonVariant,
+    contentClassName,
+  } = confirmBox;
 
   return (
     <Modal
       open={confirmBox.show}
       onClose={onCancel}
-      closeAfterTransition
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
+      aria-labelledby="parent-modal-title"
+      aria-describedby="parent-modal-description"
     >
-      <Box>
-        <button className='btn-close-modal close pos-absolute tx-15 t-25-f r-20' onClick={onCancel}>
-          <Icon icon='x' />
-        </button>
-        <Typography variant='h6' component='h2'>
-          <div className='d-flex'>
-            <div className='header-content'>
-              <h5 className={classNames('tx-18 tx-sftext-semibold mg-b-0 lh-2', classNameTitle)}>{title}</h5>
-            </div>
+      <Card sx={{ ...style, width: 400 }}>
+        <CardHeader title={title || 'Xác nhận'} />
+        <CardContent>
+          <Typography id="parent-modal-description" className="px-2">
+              {message || 'Bạn có muốn tiếp tục không ?'}
+          </Typography>
+        </CardContent>
+        <CardActions>
+          <div className="flex px-2">
+
+            <Button onClick={onConfirm} color="primary">
+              Xác nhận
+            </Button>
+            <Button onClick={onCancel} color="primary" className="mx-2">
+              Huỷ bỏ
+            </Button>
           </div>
-        </Typography>
-        <Typography className='pd-20'>
-          <div className={classNames('dailog-message-content', classNameContent)}>
-            <p className={classNames('description mg-b-0 text-break', contentClassName)}
-               dangerouslySetInnerHTML={{ __html: message }} />
-          </div>
-        </Typography>
-        <Typography className='justify-content-center'>
-          {type !== ConfirmType.Notify && (
-            <button type='button' className='btn wd-140 btn-sm btn-outline-light'
-                    onClick={reverse ? onConfirm : onCancel}>
-              {t('common:buttons.cancel')}
-            </button>
-          )}
-          <button
-            type='button'
-            className={classNames('btn wd-140 btn-sm', `btn-${confirmButtonVariant}`)}
-            onClick={reverse ? onCancel : onConfirm}
-          >
-            {confirmButtonLabel || t('common:buttons.delete')}
-          </button>
-        </Typography>
-      </Box>
+        </CardActions>
+      </Card>
     </Modal>
   );
 };

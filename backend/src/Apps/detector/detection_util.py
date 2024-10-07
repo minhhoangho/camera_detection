@@ -66,7 +66,7 @@ class DetectionUtil:
             image=frame,
             detection_model=self.detection_model,
         )
-        print("Time taken for prediction", time.time() - start_time)
+        print(f"Time to get prediction: {time.time() - start_time}")
         object_prediction_list: List[ObjectPrediction] = result.object_prediction_list
         list_item = []
         for _box in object_prediction_list:
@@ -99,11 +99,11 @@ class DetectionUtil:
             cv2.circle(cloned_bev_img, (int(x_bev), int(y_bev)), 5, (0, 255, 0), -1)
         return cloned_bev_img
 
-    def count_objects(self, list_item):
+    def count_objects(self, list_item: List[ObjectDetectionResult]) -> dict:
         counter = dict()
         for item in list_item:
-            if item["conf"] > self.threshold:
-                class_name = item['class']
+            if item.conf > self.threshold:
+                class_name = item.class_name
                 if class_name in counter:
                     counter[class_name] += 1
                 else:

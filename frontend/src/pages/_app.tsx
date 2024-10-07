@@ -60,9 +60,9 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element {
             <CookiesProvider>
               <ThemeProvider>
                 <Component {...pageProps} />
+                <ConfirmBox />
               </ThemeProvider>
             </CookiesProvider>
-            <ConfirmBox />
           </RecoilRoot>
           <ToastContainer
             className="global-toast"

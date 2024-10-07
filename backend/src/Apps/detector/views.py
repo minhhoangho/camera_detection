@@ -1,5 +1,8 @@
 import json
 
+from asgiref.sync import async_to_sync, sync_to_async
+from channels.layers import get_channel_layer
+
 from django.http import StreamingHttpResponse
 from requests import Request, Response
 from rest_framework import viewsets
@@ -47,8 +50,6 @@ class DetectorViewSet(viewsets.ViewSet):
                 break
             if not view_raw:
                 frame, results = detector.get_prediction_sahi(frame=frame)
-            # with app.app_context():
-            #     sse.publish({"objects": detector.count_objects(results)}, type='video_tracking')
             ret, buffer = cv2.imencode('.jpg', frame)
             frame = buffer.tobytes()
             yield (b'--frame\r\n'
@@ -60,19 +61,23 @@ class DetectorViewSet(viewsets.ViewSet):
         video_url = camera_viewpoint.camera_uri
         homography_matrix = camera_viewpoint.homography_matrix
         mapping_bev = False
+        bev_image = None
         if homography_matrix:
             mapping_bev = True
             homography_matrix = json.loads(homography_matrix)
             homography_matrix = np.array(homography_matrix)
-        response = requests.get(camera_viewpoint.bev_image)
-
-        img_array = np.array(bytearray(response.content), dtype=np.uint8)
-        bev_image = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
+        if camera_viewpoint.bev_image:
+            response = requests.get(camera_viewpoint.bev_image)
+            img_array = np.array(bytearray(response.content), dtype=np.uint8)
+            bev_image = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
+        else:
+            mapping_bev = False
         cap = CamGear(source=video_url, stream_mode=True, logging=True).start()  # YouTube Video URL as input
         # Define the desired frame rate (frames per second)
         frame_rate = 90
         # Calculate the delay between frames
         delay = 1 / frame_rate
+        channel_layer = get_channel_layer()
         while True:
             frame = cap.read()
             if not frame.any():
@@ -82,8 +87,18 @@ class DetectorViewSet(viewsets.ViewSet):
                                                                        homography_matrix=homography_matrix)
             else:
                 frame, results = detector.get_prediction_sahi(frame=frame)
+
+            # async_to_sync(channel_layer.group_send)(
+            #     'sse_group',
+            #     {
+            #         'type': 'video_tracking',
+            #         'event': {'objects': detector.count_objects(results)}
+            #     }
+            # )
+
             ret, buffer = cv2.imencode('.jpg', frame)
             frame = buffer.tobytes()
+            print("Sending frame")
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
             time.sleep(delay)

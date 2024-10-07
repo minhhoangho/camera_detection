@@ -14,12 +14,14 @@ import { OpenLayerMap } from './OpenLayerMap';
 import { ViewPointCameraList } from './components/ViewPointCameraList';
 import {
   BEVAndHomoPayloadRequest,
-  EditViewPointPayloadRequest, UpsertCameraSourcePayloadRequest,
+  EditViewPointPayloadRequest,
+  UpsertCameraSourcePayloadRequest,
   ViewPointCameraData,
   ViewPointData,
 } from './models';
 import {
-  getDetailViewPoint, getViewPointCameraDetail,
+  getDetailViewPoint,
+  getViewPointCameraDetail,
   saveBevImageAndHomographyMatrix,
   updateViewPoint,
   upsertNewViewPointCamera,
@@ -81,15 +83,16 @@ export function ViewPointDetail() {
       saveBevImageAndHomographyMatrix(viewPointId, data),
     onSuccess: () => {
       toast('success', 'Uploaded Bev image');
-      getViewPointCameraDetail(viewPointId, selectedViewPointCamera.id).then((data) => {
-        setSelectedViewPointCamera(data);
-      });
+      getViewPointCameraDetail(viewPointId, selectedViewPointCamera.id).then(
+        (data) => {
+          setSelectedViewPointCamera(data);
+        },
+      );
     },
     onError: () => {
       toast('error', 'Uploading Bev image error');
     },
   });
-
 
   const handleSubmitForm = (data: any) => {
     const submitData: EditViewPointPayloadRequest = {
@@ -119,8 +122,8 @@ export function ViewPointDetail() {
     uploadBevImage({
       id: selectedViewPointCamera.id,
       bevImage: fileUrl,
-    })
-  }
+    });
+  };
 
   return (
     <BaseLayout>
@@ -147,7 +150,7 @@ export function ViewPointDetail() {
                     setShowRealtimeCamera={setShowRealtimeCamera}
                   />
                   <Card className="mt-3">
-                    <Box sx={{ p: 3}} >
+                    <Box sx={{ p: 3 }}>
                       <div>Ảnh</div>
                       <img
                         src={selectedViewPointCamera.capturedImage ?? ''}
@@ -236,9 +239,13 @@ export function ViewPointDetail() {
                   </div>
                   <div className="flex">
                     {selectedViewPointCamera?.bevImage ? (
-                      <img src={selectedViewPointCamera.bevImage} alt="bev-image" className="mr-2 max-w-xl"/>
+                      <img
+                        src={selectedViewPointCamera.bevImage}
+                        alt="bev-image"
+                        className="mr-2 max-w-xl"
+                      />
                     ) : null}
-                    <FileUpload uploadFileCallback={handleSaveBEVImage}/>
+                    <FileUpload uploadFileCallback={handleSaveBEVImage} />
                   </div>
                 </div>
               )}

@@ -86,3 +86,10 @@ export const saveBevImageAndHomographyMatrix = async (
     data,
   );
 };
+
+
+export const deleteViewPointCamera = async (
+  viewpointId: number, camId: number,
+): Promise<void> => {
+  return request.delete(`/gis-maps/view-points/${viewpointId}/camera/${camId}`);
+};

@@ -5,10 +5,11 @@ import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import { format } from 'date-fns';
 import Tooltip from '@mui/material/Tooltip';
 import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { toast } from 'src/components/Toast';
 import { Table } from 'src/components/Table';
-import { getListViewPointCameras } from 'src/api/view-point';
+import { deleteViewPointCamera, getListViewPointCameras } from 'src/api/view-point';
 import { DEFAULT_PAGINATION_PARAMS } from 'src/constants';
 import { PaginationQueryParams } from 'src/shared/models/requests';
 import { UpsertCameraSourceModal } from './UpsertCameraSourceModal';
@@ -22,15 +23,18 @@ import {
   VIEW_POINT_MANAGEMENT_COLUMNS_LABEL,
   VIEW_POINT_MANAGEMENT_KEY,
 } from '../constants';
+import useConfirm from '../../../shared/hooks/use-confirm';
 
 type ViewPointCameraListProps = {
   viewPointId: number;
   setShowRealtimeCamera: (val: boolean, viewPointCamera: ViewPointCameraData) => void;
 };
+
 export function ViewPointCameraList({ viewPointId, setShowRealtimeCamera }: ViewPointCameraListProps) {
   const [paginationParams, setPaginationParams] = React.useState(
     DEFAULT_PAGINATION_PARAMS,
   );
+  const confirmBox = useConfirm();
 
   const [isOpenUpsert, setIsOpenUpsert] = React.useState(false);
   const [selectedCameraViewPoint, setSelectedCameraViewPoint] =
@@ -75,6 +79,13 @@ export function ViewPointCameraList({ viewPointId, setShowRealtimeCamera }: View
           <VisibilityIcon style={{ fontSize: '20px', outline: 'none' }}
           onClick={() => setShowRealtimeCamera(true, item)}
           />
+        </Tooltip>
+        <Tooltip
+          title="Xoá thông tin"
+          className="cursor-pointer"
+          onClick={() => handleDelete(item)}
+        >
+          <DeleteIcon style={{ fontSize: '20px', outline: 'none' }} />
         </Tooltip>
       </div>
     );
@@ -140,7 +151,7 @@ export function ViewPointCameraList({ viewPointId, setShowRealtimeCamera }: View
         VIEW_POINT_MANAGEMENT_COLUMNS_LABEL[VIEW_POINT_MANAGEMENT_KEY.ACTION],
       sortable: false,
       filterable: false,
-      width: 80,
+      width: 100,
       renderCell: (params: GridRenderCellParams) => {
         return renderActionButton(params.row as ViewPointCameraData);
       },
@@ -149,6 +160,24 @@ export function ViewPointCameraList({ viewPointId, setShowRealtimeCamera }: View
   const handleCreate = () => {
     setIsOpenUpsert(true);
   };
+
+  const handleDelete = async (cam: ViewPointCameraData) => {
+
+    const result = await confirmBox.confirm({
+      title: 'Xác nhận xóa',
+      message: 'Bạn có chắc muốn xóa?',
+      confirmButtonLabel: 'Xóa',
+    });
+    if (result) {
+      try {
+        await deleteViewPointCamera(viewPointId, cam.id);
+      } catch (error) {
+        toast('error', 'Error');
+      }
+      await refetch();
+
+    }
+  }
 
   const handleUpdate = (viewPointCamera: ViewPointCameraData) => {
     setSelectedCameraViewPoint(viewPointCamera);
