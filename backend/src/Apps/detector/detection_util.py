@@ -9,7 +9,7 @@ from sahi import AutoDetectionModel
 from sahi.prediction import PredictionResult, ObjectPrediction
 from sahi.utils.cv import read_image
 from sahi.predict import get_prediction, get_sliced_prediction, predict
-
+import time
 
 @dataclass
 class ObjectDetectionResult:
@@ -55,12 +55,18 @@ class DetectionUtil:
         return frame, list_item
 
     def get_prediction_and_bev_image(self, frame: np.ndarray, bev_image: np.ndarray, homography_matrix: List[List[float]]) -> Tuple[np.ndarray, List[ObjectDetectionResult]]:
-        result: PredictionResult = get_sliced_prediction(
+        start_time = time.time()
+        # result: PredictionResult = get_sliced_prediction(
+        #     image=frame,
+        #     detection_model=self.detection_model,
+        #     slice_width=100,
+        #     slice_height=100,
+        # )
+        result: PredictionResult = get_prediction(
             image=frame,
             detection_model=self.detection_model,
-            slice_width=100,
-            slice_height=100,
         )
+        print("Time taken for prediction", time.time() - start_time)
         object_prediction_list: List[ObjectPrediction] = result.object_prediction_list
         list_item = []
         for _box in object_prediction_list:
@@ -72,8 +78,9 @@ class DetectionUtil:
 
         # Concat frame and bev_image vertically, note that we need to update width of bev_image to match frame
         bev_image = cv2.resize(bev_image, (frame.shape[1], frame.shape[0]))
-        out_frame = np.concatenate((frame, bev_image), axis=0)
-        print("Out frame shape", out_frame.shape)
+        # And padding between frame and bev_image, the padding is white color
+        padding = np.ones((30, frame.shape[1], 3), dtype=np.uint8) * 255
+        out_frame = np.concatenate((frame, padding, bev_image), axis=0)
         return out_frame, list_item
 
     def _map_to_bev(self, bev_img: np.ndarray, homography_matrix: List[List[float]], result: List[ObjectPrediction] ) -> np.ndarray:
