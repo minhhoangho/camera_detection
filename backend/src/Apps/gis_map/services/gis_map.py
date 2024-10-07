@@ -22,6 +22,11 @@ UserModel = get_user_model()
 
 
 class GisMapService:
+
+    @classmethod
+    def all_view_points(cls) -> List[GisViewPoint]:
+        return GisViewPoint.objects.all()
+
     @classmethod
     def list_view_points_paginate(cls, page: int, per_page: int = 10, order_by: str = "-created_at", keyword: str = ""):
         qs = GisViewPoint.objects
@@ -75,6 +80,7 @@ class GisMapService:
             view_point_id=view_point_id, camera_source=camera_source, camera_uri=camera_uri
         )
         cls._save_captured_image(view_point=view_point, cam_detail=res)
+
         return GisViewPointCamera.objects.get(id=res.id)
 
     @classmethod
@@ -95,6 +101,9 @@ class GisMapService:
         file_name = f"{view_point.name}_{cam_detail.id}"
         s3_url = DetectorService.handle_capture_video_and_upload_s3(video_url=cam_detail.camera_uri, file_name=file_name)
         GisViewPointCamera.objects.filter(id=cam_detail.id).update(captured_image=s3_url)
+        if not view_point.thumbnail:
+            view_point.thumbnail = s3_url
+            view_point.save()
 
     @classmethod
     def delete_viewpoint_camera(cls, pk: int):

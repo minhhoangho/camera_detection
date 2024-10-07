@@ -18,6 +18,10 @@ from src.Apps.base.views.mixins import PaginationMixin
 
 
 class GisMapViewSet(PaginationMixin):
+    @action(methods=[HttpMethod.GET], url_path="view-points/all", detail=False)
+    def get_all_view_points(self, request: Request, *args, **kwargs):
+        data = GisMapService.all_view_points()
+        return Response(data=ViewPointSerializer(data, many=True).data, status=HTTPStatus.OK)
 
     @action(methods=[HttpMethod.GET, HttpMethod.POST], url_path="view-points", detail=False)
     def view_points(self, request: Request, *args, **kwargs):

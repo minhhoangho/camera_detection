@@ -9,6 +9,7 @@ class GisViewPoint(UserInteractionModel, AutoTimeStampedModel):
     description = models.TextField(default="")
     lat = models.FloatField()
     long = models.FloatField()
+    thumbnail = models.CharField(max_length=1024, null=True, default="")
 
     class Meta:
         db_table = "gis_view_points"
