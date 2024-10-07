@@ -55,7 +55,12 @@ class DetectionUtil:
         return frame, list_item
 
     def get_prediction_and_bev_image(self, frame: np.ndarray, bev_image: np.ndarray, homography_matrix: List[List[float]]) -> Tuple[np.ndarray, List[ObjectDetectionResult]]:
-        result: PredictionResult = get_sliced_prediction(frame, self.detection_model)
+        result: PredictionResult = get_sliced_prediction(
+            image=frame,
+            detection_model=self.detection_model,
+            slice_width=100,
+            slice_height=100,
+        )
         object_prediction_list: List[ObjectPrediction] = result.object_prediction_list
         list_item = []
         for _box in object_prediction_list:
@@ -68,11 +73,12 @@ class DetectionUtil:
         # Concat frame and bev_image vertically, note that we need to update width of bev_image to match frame
         bev_image = cv2.resize(bev_image, (frame.shape[1], frame.shape[0]))
         out_frame = np.concatenate((frame, bev_image), axis=0)
+        print("Out frame shape", out_frame.shape)
         return out_frame, list_item
 
     def _map_to_bev(self, bev_img: np.ndarray, homography_matrix: List[List[float]], result: List[ObjectPrediction] ) -> np.ndarray:
         cloned_bev_img = bev_img.copy()
-        homography_matrix = np.array(homography_matrix)
+        homography_matrix = np.array(homography_matrix, dtype=np.float32)
         ltwh_list = [box.bbox.to_xywh() for box in result]
         for box in ltwh_list:
             x, y, w, h = box

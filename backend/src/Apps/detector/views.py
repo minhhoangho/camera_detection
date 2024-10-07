@@ -1,3 +1,5 @@
+import json
+
 from django.http import StreamingHttpResponse
 from requests import Request, Response
 from rest_framework import viewsets
@@ -57,8 +59,10 @@ class DetectorViewSet(viewsets.ViewSet):
         camera_viewpoint = GisMapService.get_view_point_camera_detail(cam_id)
         video_url = camera_viewpoint.camera_uri
         homography_matrix = camera_viewpoint.homography_matrix
-        mapping_bev = True
+        mapping_bev = False
         if homography_matrix:
+            mapping_bev = True
+            homography_matrix = json.loads(homography_matrix)
             homography_matrix = np.array(homography_matrix)
         response = requests.get(camera_viewpoint.bev_image)
 
@@ -70,15 +74,14 @@ class DetectorViewSet(viewsets.ViewSet):
         # Calculate the delay between frames
         delay = 1 / frame_rate
         while True:
-            ret, frame = cap.read()
-            if not ret:
+            frame = cap.read()
+            if not frame.any():
                 break
             if mapping_bev:
                 frame, results = detector.get_prediction_and_bev_image(frame=frame, bev_image=bev_image,
                                                                        homography_matrix=homography_matrix)
             else:
                 frame, results = detector.get_prediction_sahi(frame=frame)
-            yield frame
             ret, buffer = cv2.imencode('.jpg', frame)
             frame = buffer.tobytes()
             yield (b'--frame\r\n'
