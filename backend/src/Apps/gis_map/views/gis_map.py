@@ -58,13 +58,22 @@ class GisMapViewSet(PaginationMixin):
             GisMapService.create_or_update_map_view(**map_view)
         return Response(data=ViewPointSerializer(view_point).data, status=HTTPStatus.OK)
 
-    @action(methods=[HttpMethod.PUT, HttpMethod.GET], url_path=r"view-points/(?P<pk>\w+)", detail=False)
+    @action(methods=[HttpMethod.PUT, HttpMethod.GET, HttpMethod.DELETE], url_path=r"view-points/(?P<pk>\w+)", detail=False)
     def view_point_detail(self, request: Request, pk):
         if HttpMethod.is_put(request.method):
             return self.update_view_point(request, pk)
         if HttpMethod.is_get(request.method):
             return self.get_view_point_detail(request, pk)
+        if HttpMethod.is_delete(request.method):
+            return self.delete_view_point(request, pk)
         return Response(status=HTTPStatus.NOT_FOUND)
+
+    def delete_view_point(self, request: Request, pk):
+        pk = TypeUtils.safe_int(pk)
+        if not pk:
+            raise AppException(error=ValidationErr.INVALID, params=["pk"])
+        GisMapService.delete_view_point(pk)
+        return Response(status=HTTPStatus.OK)
 
     def get_view_point_detail(self, request: Request, pk):
         pk = TypeUtils.safe_int(pk)

@@ -122,6 +122,10 @@ class GisMapService:
             return GisMapView.objects.filter(view_point_id=view_point_id).first()
         return GisMapView.objects.create(lat=lat, long=long, zoom=zoom, view_point_id=view_point_id)
 
+    @classmethod
+    def delete_view_point(cls, pk: int):
+        GisViewPoint.objects.filter(id=pk).delete()
+        return True
 
     @classmethod
     def save_bev_view_image(cls, pk: int, bev_image: str, homography_matrix: List[List[float]]):
