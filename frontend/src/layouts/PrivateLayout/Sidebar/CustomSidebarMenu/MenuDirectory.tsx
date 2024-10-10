@@ -4,9 +4,6 @@ import PieChartIcon from '@mui/icons-material/PieChart';
 import HomeIcon from '@mui/icons-material/Home';
 import PersonIcon from '@mui/icons-material/Person';
 import BlockIcon from '@mui/icons-material/Block';
-import NewspaperIcon from '@mui/icons-material/Newspaper';
-import FeedIcon from '@mui/icons-material/Feed';
-import CategoryIcon from '@mui/icons-material/Category';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import PeopleIcon from '@mui/icons-material/People';
@@ -37,25 +34,25 @@ export const MenuDirectory = [
     ],
   },
 
-  {
-    key: MENU_KEY.BLOG,
-    label: MENU_LABEL[MENU_KEY.BLOG] as string,
-    icon: <NewspaperIcon />,
-    children: [
-      {
-        key: MENU_KEY.POST,
-        label: MENU_LABEL[MENU_KEY.POST] as string,
-        icon: <FeedIcon />,
-        url: PathName.Home
-      },
-      {
-        key: MENU_KEY.CATEGORY,
-        label: MENU_LABEL[MENU_KEY.CATEGORY] as string,
-        icon: <CategoryIcon />,
-        url: PathName.Home
-      },
-    ],
-  },
+  // {
+  //   key: MENU_KEY.BLOG,
+  //   label: MENU_LABEL[MENU_KEY.BLOG] as string,
+  //   icon: <NewspaperIcon />,
+  //   children: [
+  //     {
+  //       key: MENU_KEY.POST,
+  //       label: MENU_LABEL[MENU_KEY.POST] as string,
+  //       icon: <FeedIcon />,
+  //       url: PathName.Home
+  //     },
+  //     {
+  //       key: MENU_KEY.CATEGORY,
+  //       label: MENU_LABEL[MENU_KEY.CATEGORY] as string,
+  //       icon: <CategoryIcon />,
+  //       url: PathName.Home
+  //     },
+  //   ],
+  // },
 
   {
     key: MENU_KEY.ADMIN,

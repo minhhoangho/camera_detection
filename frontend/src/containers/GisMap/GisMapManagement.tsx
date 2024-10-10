@@ -25,11 +25,13 @@ import { CreateViewPointModal } from './CreateViewPointModal';
 import { BaseLayout, PrivateLayout } from '../../layouts';
 import { Table } from 'src/components/Table';
 import { toast } from 'src/components/Toast';
-import { listViewPointsPaginate } from '../../api/view-point';
+import { deleteViewPoint, deleteViewPointCamera, listViewPointsPaginate } from '../../api/view-point';
 import { DEFAULT_PAGINATION_PARAMS } from '../../constants';
 import { PaginationQueryParams } from '../../shared/models/requests';
 import { PathName } from '../../constants/routes';
 import { Iconify } from 'src/components/Iconify';
+import useConfirm from '../../shared/hooks/use-confirm';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 export function GisMapViewPointManagement() {
   const router = useRouter();
@@ -38,10 +40,11 @@ export function GisMapViewPointManagement() {
     DEFAULT_PAGINATION_PARAMS,
   );
   const [keyword, setKeyword] = React.useState<string | null>('');
+  const confirmBox = useConfirm();
   const {
     data: dataListResponse,
     isFetching,
-    // refetch,
+    refetch,
     isLoading,
   } = useQuery<ListViewPointPaginateResponse>({
     queryKey: ['getListViewPointPaginate', paginationParams],
@@ -67,18 +70,42 @@ export function GisMapViewPointManagement() {
   //   //  eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [paginationParams.limit, paginationParams.offset]);
 
+  const handleDelete = async(id: number) => {
+    const result = await confirmBox.confirm({
+      title: 'Xác nhận xóa',
+      message: 'Bạn có chắc muốn xóa?',
+      confirmButtonLabel: 'Xóa',
+    });
+    if (result) {
+      try {
+        await deleteViewPoint(id);
+      } catch (error) {
+        toast('error', 'Error');
+      }
+      await refetch();
+    }
+  }
+
   const renderActionButton = (params: GridRenderCellParams<any, any>) => {
     return (
-      <div className="flex justify-end gap-x-6">
+      <div className="flex">
         <Tooltip title="Chỉnh sửa">
           <Button
             onClick={() =>
               // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
               router.push(`${PathName.GisLocationManagement}/${params.row.id}`)
             }
-            style={{ padding: 0 }}
+            style={{ padding: 0, minWidth: 0 }}
           >
             <EditIcon style={{ fontSize: '20px', outline: 'none' }} />
+          </Button>
+        </Tooltip>
+        <Tooltip title="Xoá">
+          <Button
+            onClick={() => handleDelete(params.id)}
+            style={{ padding: 0 , minWidth: 0}}
+          >
+            <DeleteIcon style={{ fontSize: '20px', outline: 'none' }} />
           </Button>
         </Tooltip>
       </div>

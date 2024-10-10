@@ -34,9 +34,9 @@ export const updateViewPoint = async (
   id: number,
   data: EditViewPointPayloadRequest,
 ) => {
-  console.log(id, data);
   return request.put(`/gis-maps/view-points/${id}`, data);
 };
+
 
 export const getDetailViewPoint = async (
   id: number,
