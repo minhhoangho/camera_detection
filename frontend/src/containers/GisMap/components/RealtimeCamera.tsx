@@ -25,7 +25,7 @@ export function RealtimeCamera({
   //
   useEffect(() => {
     // Create WebSocket connection.
-    socketRef.current = new WebSocket(`${SOCKET_BASE_URL}/sse/`);
+    socketRef.current = new WebSocket(`${SOCKET_BASE_URL}/sse/vehicle_count/`);
 
     // Connection opened
     socketRef.current.onopen = (e) => {

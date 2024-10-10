@@ -1,8 +1,8 @@
 import json
 
-from asgiref.sync import async_to_sync, sync_to_async
+from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
-
+import asyncio
 from django.http import StreamingHttpResponse
 from requests import Request, Response
 from rest_framework import viewsets
@@ -79,22 +79,24 @@ class DetectorViewSet(viewsets.ViewSet):
         delay = 1 / frame_rate
         channel_layer = get_channel_layer()
         while True:
-            frame = cap.read()
-            if not frame.any():
+            success, frame = cap.read()
+            if not success:
                 break
+
             if mapping_bev:
                 frame, results = detector.get_prediction_and_bev_image(frame=frame, bev_image=bev_image,
                                                                        homography_matrix=homography_matrix)
             else:
                 frame, results = detector.get_prediction_sahi(frame=frame)
 
-            # async_to_sync(channel_layer.group_send)(
-            #     'sse_group',
-            #     {
-            #         'type': 'video_tracking',
-            #         'event': {'objects': detector.count_objects(results)}
-            #     }
-            # )
+            # asyncio.run(self.send_event(channel_layer, results))
+            async_to_sync(channel_layer.group_send)(
+                "vehicle_count_group",
+                {
+                    'type': 'send_vehicle_count',
+                    'count': detector.count_objects(results)
+                }
+            )
 
             ret, buffer = cv2.imencode('.jpg', frame)
             frame = buffer.tobytes()
@@ -102,3 +104,12 @@ class DetectorViewSet(viewsets.ViewSet):
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
             time.sleep(delay)
+
+    async def send_event(self, channel_layer, results):
+        await channel_layer.group_send(
+            'vehicle_count_group',
+            {
+                'type': 'send_vehicle_count',
+                'event': {'objects': detector.count_objects(results)}
+            }
+        )
