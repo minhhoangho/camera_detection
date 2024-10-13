@@ -25,32 +25,10 @@ export function RealtimeCamera({
   //
   useEffect(() => {
     // Create WebSocket connection.
-    socketRef.current = new WebSocket(`${SOCKET_BASE_URL}/sse/vehicle_count/`);
-
     // Connection opened
-    socketRef.current.onopen = (e) => {
-      console.log("[open] Connection established");
-    };
+    socket.on('connect', () => {
 
-    // Listen for messages
-    socketRef.current.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log(`[message] Data received from server: ${data}`);
-    };
-
-    // Connection closed
-    socketRef.current.onclose = (event) => {
-      if (event.wasClean) {
-        console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
-      } else {
-        console.error('[close] Connection died');
-      }
-    };
-
-    // Handle errors
-    socketRef.current.onerror = (error) => {
-      console.error(`[error] ${error.message}`);
-    };
+    })
 
     // Cleanup on component unmount
     return () => {

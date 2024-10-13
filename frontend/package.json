@@ -51,6 +51,7 @@
     "recoil": "0.7.7",
     "redux-saga": "1.1.3",
     "sass": "1.63.4",
+    "socket.io-client": "^4.8.0",
     "tinycolor2": "^1.6.0",
     "universal-cookie": "4.0.4",
     "yup": "1.2.0"
