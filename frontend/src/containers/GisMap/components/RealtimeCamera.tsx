@@ -3,9 +3,10 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import * as React from 'react';
 import Typography from '@mui/material/Typography';
 import { useEffect, useRef, useState } from 'react';
-import { API_BASE_URL, SOCKET_BASE_URL } from '../../../constants';
+import { API_BASE_URL } from '../../../constants';
 import { ViewPointCameraData, ViewPointData } from '../models';
 import { DETECTION_CLASS_NAME } from '../../../constants/detection';
+import { socketClient } from '../../../utils/socket';
 
 type RealtimeCameraProps = {
   viewPoint?: ViewPointData;
@@ -26,13 +27,13 @@ export function RealtimeCamera({
   useEffect(() => {
     // Create WebSocket connection.
     // Connection opened
-    socket.on('connect', () => {
-
+    socketClient.on('connection', () => {
+      console.log("Socket onnn ")
     })
 
     // Cleanup on component unmount
     return () => {
-      socketRef.current.close();
+      socketClient.close();
     };
   }, []);
 

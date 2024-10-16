@@ -79,8 +79,9 @@ class DetectorViewSet(viewsets.ViewSet):
         delay = 1 / frame_rate
         channel_layer = get_channel_layer()
         while True:
-            success, frame = cap.read()
-            if not success:
+            frame = cap.read()
+            # check for frame if Nonetype
+            if frame is None:
                 break
 
             if mapping_bev:
