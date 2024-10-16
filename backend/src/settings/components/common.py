@@ -22,6 +22,7 @@ SECRET_KEY = config("DJANGO_SECRET_KEY")
 INSTALLED_APPS: Tuple[str, ...] = (
     "channels",
     # Your apps go here:
+    "src",
     "src.Apps.queue",
     "src.Apps.system",
     "src.Apps.playground",

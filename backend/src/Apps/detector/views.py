@@ -1,9 +1,11 @@
 import json
+from typing import AsyncGenerator
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 import asyncio
 from django.http import StreamingHttpResponse
+from django.views.decorators import gzip
 from requests import Request, Response
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -18,6 +20,7 @@ from src.Apps.base.utils.type_utils import TypeUtils
 from src.Apps.detector.detection_util import DetectionUtil
 import time
 
+from src.Apps.gis_map.models import GisViewPointCamera
 from src.Apps.gis_map.services.gis_map import GisMapService
 
 detector = DetectionUtil(os.path.join(settings.BASE_DIR, "../models", "yolov8m.pt"))
@@ -29,12 +32,6 @@ class DetectorViewSet(viewsets.ViewSet):
     def view_raw_realtime(self, request: Request, *args, **kwargs):
         video_url = TypeUtils.safe_str(request.query_params.get("uri"))
         return StreamingHttpResponse(self.handle_frames(video_url, view_raw=True),
-                                     content_type="multipart/x-mixed-replace; boundary=frame")
-
-    @action(methods=[HttpMethod.GET], url_path="video/realtime", detail=False)
-    def detect_video_realtime(self, request: Request, *args, **kwargs):
-        cam_id = TypeUtils.safe_str(request.query_params.get("cam_id"))
-        return StreamingHttpResponse(self.process_video(cam_id),
                                      content_type="multipart/x-mixed-replace; boundary=frame")
 
     def handle_frames(self, video_url: str, view_raw=False):
@@ -56,8 +53,27 @@ class DetectorViewSet(viewsets.ViewSet):
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
             time.sleep(delay)
 
-    def process_video(self, cam_id: int):
-        camera_viewpoint = GisMapService.get_view_point_camera_detail(cam_id)
+
+
+    # @gzip.gzip_page
+    @action(methods=[HttpMethod.GET], url_path="video/realtime", detail=False)
+    def detect_video_realtime(self, request: Request, *args, **kwargs):
+        ae = request.META.get("HTTP_ACCEPT_ENCODING", "")
+        cam_id = TypeUtils.safe_str(request.query_params.get("cam_id"))
+        return StreamingHttpResponse(self.process_video(cam_id),
+                                     content_type="multipart/x-mixed-replace; boundary=frame")
+
+    # def stream_video(self, cam_id: int):
+    #     async_gen = self.process_video(cam_id)
+    #     for frame in async_to_sync(self.iterate_async_gen)(async_gen):
+    #         yield frame
+    #
+    # async def iterate_async_gen(self, async_gen):
+    #     for item in async_gen:
+    #         yield item
+
+    async def process_video(self, cam_id: int) -> AsyncGenerator[bytes, None]:
+        camera_viewpoint = await GisViewPointCamera.objects.filter(id=cam_id).afirst()
         video_url = camera_viewpoint.camera_uri
         homography_matrix = camera_viewpoint.homography_matrix
         mapping_bev = False
@@ -90,27 +106,18 @@ class DetectorViewSet(viewsets.ViewSet):
             else:
                 frame, results = detector.get_prediction_sahi(frame=frame)
 
-            # asyncio.run(self.send_event(channel_layer, results))
-            async_to_sync(channel_layer.group_send)(
-                "vehicle_count_group",
-                {
-                    'type': 'send_vehicle_count',
-                    'count': detector.count_objects(results)
-                }
-            )
-
             ret, buffer = cv2.imencode('.jpg', frame)
             frame = buffer.tobytes()
-            print("Sending frame")
+            await self.send_event(channel_layer, results)
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-            time.sleep(delay)
+            await asyncio.sleep(delay)
 
     async def send_event(self, channel_layer, results):
         await channel_layer.group_send(
             'vehicle_count_group',
             {
-                'type': 'send_vehicle_count',
-                'event': {'objects': detector.count_objects(results)}
+                'type': 'send_event',
+                'event': {'count': detector.count_objects(results)}
             }
         )

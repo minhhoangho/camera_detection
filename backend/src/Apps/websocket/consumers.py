@@ -3,6 +3,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 
 class SSEConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+        print("Connected")
         await self.channel_layer.group_add("vehicle_count_group", self.channel_name)
         await self.accept()
 

@@ -27,7 +27,7 @@ export function RealtimeCamera({
   useEffect(() => {
     // Create WebSocket connection.
     // Connection opened
-    socketClient.on('connection', () => {
+    socketClient.on('connect', () => {
       console.log("Socket onnn ")
     })
 
