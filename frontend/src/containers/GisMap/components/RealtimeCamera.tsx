@@ -3,10 +3,11 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import * as React from 'react';
 import Typography from '@mui/material/Typography';
 import { useEffect, useRef, useState } from 'react';
-import { API_BASE_URL } from '../../../constants';
+import { API_BASE_URL, SOCKET_BASE_URL } from '../../../constants';
 import { ViewPointCameraData, ViewPointData } from '../models';
 import { DETECTION_CLASS_NAME } from '../../../constants/detection';
-import { socketClient } from '../../../utils/socket';
+// import { socketClient } from '../../../utils/socket';
+import { useWebsocket } from '../../../shared/hooks/use-websocket';
 
 type RealtimeCameraProps = {
   viewPoint?: ViewPointData;
@@ -21,35 +22,27 @@ export function RealtimeCamera({
   const title = 'Realtime Camera';
   const [showCamImgTag, setShowCamImgTag] = React.useState(true);
   const [objects, setObjects] = useState(DETECTION_CLASS_NAME);
+  const [total, setTotal] = useState(0);
+  const [isConnected, message, send] = useWebsocket(`${SOCKET_BASE_URL}/ws/`);
 
-  const socketRef = useRef(null);
-  //
   useEffect(() => {
-    // Create WebSocket connection.
-    // Connection opened
-    socketClient.on('connect', () => {
-      console.log("Socket onnn ")
-    })
+    if (isConnected) {
+      console.log('Connected to WebSocket');
+    }
 
-    // Cleanup on component unmount
-    return () => {
-      socketClient.close();
-    };
-  }, []);
-
-  // useEffect(() => {
-  //   const eventSource = new EventSource(`${SOCKET_BASE_URL}/sse`);
-  //
-  //   eventSource.addEventListener('video_tracking', event => {
-  //     const eventData = JSON.parse(event.data);
-  //     console.log("Event data: ", eventData)
-  //     setObjects(eventData.objects)
-  //   });
-  //
-  //   return () => {
-  //     eventSource.close();
-  //   };
-  // }, []);
+    if (message) {
+      const messageJson = JSON.parse(message);
+      const objectCount: Record<string, number> = messageJson?.event?.count;
+      setObjects(objectCount as any);
+      if (typeof objectCount === 'object') {
+        const _total = Object.values(objectCount).reduce(
+          (a: number, b: number) => a + b,
+          0,
+        );
+        setTotal(_total);
+      }
+    }
+  }, [isConnected, send, message, objects]);
 
   return (
     <Box>
@@ -70,12 +63,18 @@ export function RealtimeCamera({
         </div>
         {/*<CardHeader title={title} subheader={viewPoint?.name} />*/}
         <Box sx={{ p: 2 }}>
-          {showCamImgTag && (
-            <img
-              src={`${API_BASE_URL}/detector/video/realtime?type=${viewPointCamera.cameraSource}&uri=${viewPointCamera.cameraUri}&cam_id=${viewPointCamera.id}`}
-              alt="video"
-            />
-          )}
+          <div>
+            <p>Tổng phương tiện: {total}</p>
+          </div>
+          <div>
+            {showCamImgTag && (
+              <img
+                src={`${API_BASE_URL}/detector/video/realtime?type=${viewPointCamera.cameraSource}&uri=${viewPointCamera.cameraUri}&cam_id=${viewPointCamera.id}`}
+                alt="video"
+              />
+            )}
+          </div>
+
         </Box>
       </Card>
     </Box>

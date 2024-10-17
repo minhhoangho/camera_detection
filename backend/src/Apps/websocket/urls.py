@@ -1,6 +1,7 @@
-from django.urls import re_path
-from . import consumers
+from django.urls import path, re_path
+from src.Apps.websocket.consumers import SocketConsumer
 
 websocket_urlpatterns = [
-    re_path(r'socket.io/$', consumers.SSEConsumer.as_asgi()),
+    # path('wws/', SocketConsumer.as_asgi(), name="SocketConsumer"),
+    re_path(r'ws/$', SocketConsumer.as_asgi()),
 ]
