@@ -104,6 +104,8 @@ class DetectionUtil:
         for item in list_item:
             if item.conf > self.threshold:
                 class_name = item.class_name
+                if class_name == "person":
+                    continue
                 if class_name in counter:
                     counter[class_name] += 1
                 else:

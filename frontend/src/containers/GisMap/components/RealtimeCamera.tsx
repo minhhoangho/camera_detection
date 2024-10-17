@@ -42,7 +42,7 @@ export function RealtimeCamera({
         setTotal(_total);
       }
     }
-  }, [isConnected, send, message, objects]);
+  }, [isConnected, message]);
 
   return (
     <Box>
