@@ -48,6 +48,7 @@ INSTALLED_APPS: Tuple[str, ...] = (
     "health_check.db",
     "health_check.cache",
     "health_check.contrib.migrations",
+    "adrf",
     "rest_framework",
     # libs
     "django_q",

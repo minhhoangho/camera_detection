@@ -134,3 +134,15 @@ class TypeUtils:
         with suppress(Exception):
             return json_loads(val, object_pairs_hook=dict_raise_on_duplicates)
         return {} if default is None else default
+
+
+    @classmethod
+    def safe_bool(cls, val, default=False):
+        TRUE_VALUES = ("yes", "true", "on", "1")
+        FALSE_VALUES = ("no", "false", "off", "0")
+        val = str(val).lower()
+        if val in TRUE_VALUES:
+            return True
+        elif val in FALSE_VALUES:
+            return False
+        return default

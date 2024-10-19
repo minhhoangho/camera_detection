@@ -22,7 +22,6 @@ MIL_UTC_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 USER_ACCESS_DATE_FORMAT = "%b %d, %Y  %I:%M%P"
 TIME_AM = "am"
 TIME_PM = "pm"
-US_ARIZONA_DEFAULT = "US/Arizona"
 
 
 class DateTimeUtils:

@@ -2,7 +2,7 @@ import { Box, Card } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import * as React from 'react';
 import Typography from '@mui/material/Typography';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { API_BASE_URL, SOCKET_BASE_URL } from '../../../constants';
 import { ViewPointCameraData, ViewPointData } from '../models';
 import { DETECTION_CLASS_NAME } from '../../../constants/detection';
@@ -20,8 +20,10 @@ export function RealtimeCamera({
   setShowRealtimeCamera,
 }: RealtimeCameraProps) {
   const title = 'Realtime Camera';
+  const uuid = React.useRef(new Date().getTime());
   const [showCamImgTag, setShowCamImgTag] = React.useState(true);
-  const [objects, setObjects] = useState(DETECTION_CLASS_NAME);
+  const [objects, setObjects] =
+    useState<Record<string, number>>(DETECTION_CLASS_NAME);
   const [total, setTotal] = useState(0);
   const [isConnected, message, send] = useWebsocket(`${SOCKET_BASE_URL}/ws/`);
 
@@ -32,14 +34,18 @@ export function RealtimeCamera({
 
     if (message) {
       const messageJson = JSON.parse(message);
-      const objectCount: Record<string, number> = messageJson?.event?.count;
-      setObjects(objectCount as any);
-      if (typeof objectCount === 'object') {
-        const _total = Object.values(objectCount).reduce(
-          (a: number, b: number) => a + b,
-          0,
-        );
-        setTotal(_total);
+      const objectCount: Record<string, number> =
+        messageJson?.data?.object_count_map;
+      const cameraId = messageJson?.data?.camera_id;
+      if (Number(cameraId) === viewPointCamera.id) {
+        setObjects(objectCount);
+        if (typeof objectCount === 'object') {
+          const _total = Object.values(objectCount).reduce(
+            (a: number, b: number) => a + b,
+            0,
+          );
+          setTotal(_total);
+        }
       }
     }
   }, [isConnected, message]);
@@ -69,12 +75,11 @@ export function RealtimeCamera({
           <div>
             {showCamImgTag && (
               <img
-                src={`${API_BASE_URL}/detector/video/realtime?type=${viewPointCamera.cameraSource}&uri=${viewPointCamera.cameraUri}&cam_id=${viewPointCamera.id}`}
+                src={`${API_BASE_URL}/detector/video/realtime?type=${viewPointCamera.cameraSource}&uri=${viewPointCamera.cameraUri}&cam_id=${viewPointCamera.id}&uuid=${uuid.current}`}
                 alt="video"
               />
             )}
           </div>
-
         </Box>
       </Card>
     </Box>
