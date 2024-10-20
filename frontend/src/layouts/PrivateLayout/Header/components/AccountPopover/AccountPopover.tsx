@@ -12,6 +12,8 @@ import IconButton from '@mui/material/IconButton';
 import { account } from 'src/mocks/account';
 import CookiesStorage from '../../../../../utils/cookie-storage';
 import { useRouter } from 'next/router';
+import { userState } from '../../../../../app-recoil/atoms/user';
+import { useRecoilValue } from 'recoil';
 
 // ----------------------------------------------------------------------
 
@@ -35,6 +37,7 @@ const MENU_OPTIONS = [
 export function AccountPopover() {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const router = useRouter();
+  const currentUser = useRecoilValue(userState);
 
   const handleOpen = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -94,10 +97,10 @@ export function AccountPopover() {
       >
         <Box sx={{ my: 1.5, px: 2 }}>
           <Typography variant="subtitle2" noWrap>
-            {account.displayName}
+            {currentUser.firstName}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {account.email}
+            {currentUser.email}
           </Typography>
         </Box>
 

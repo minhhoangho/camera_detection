@@ -25,6 +25,10 @@ class AuthViewSet(viewsets.ViewSet):
             raise AppException(error=ApiErr.AUTHENTICATION_FAILED, status_code=status.HTTP_401_UNAUTHORIZED)
         exp = datetime.utcnow() + timedelta(seconds=settings.JWT_TOKEN_EXPIRED_TIME)
 
+        if not user.first_name and user.username:
+            user.first_name = user.username
+            user.save()
+
         user_data = UserSerializer(user).data
 
         payload = {

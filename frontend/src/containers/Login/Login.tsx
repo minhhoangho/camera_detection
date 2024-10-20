@@ -59,10 +59,10 @@ export function Login() {
     },
   });
 
-  const handleLoginGoogle = () => {
-    // eslint-disable-next-line no-console
-    console.log('Handle login Google');
-  };
+  // const handleLoginGoogle = () => {
+  //   // eslint-disable-next-line no-console
+  //   console.log('Handle login Google');
+  // };
 
   const handleLogin = (data: Record<string, any>) => {
     loginMutate(data as LoginPayloadRequest);
