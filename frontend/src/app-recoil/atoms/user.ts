@@ -18,7 +18,6 @@ export type UserInfo = {
   email: string;
 };
 
-export const userState = atom<UserInfo | null>({
+export const userState = atom<UserInfo>({
   key: userStateKey,
-  default: null,
 });
