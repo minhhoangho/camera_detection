@@ -13,3 +13,8 @@ export const listUserPaginate = async ({
   const keywordParam = `keyword=${keyword ?? ''}`;
   return request.get(`/users/?${offsetParam}&${limitParam}&${keywordParam}`);
 };
+
+
+export const getMe = async (): Promise<any> => {
+  return request.get('/users/me');
+}

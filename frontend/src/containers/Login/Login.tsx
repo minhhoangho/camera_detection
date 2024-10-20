@@ -1,7 +1,6 @@
 import * as React from 'react';
 import * as yup from 'yup';
 import { useRouter } from 'next/router';
-import Image from 'next/image';
 
 import { Button } from '@mui/material';
 import { useForm } from 'react-hook-form';
@@ -10,10 +9,10 @@ import { useMutation } from 'react-query';
 import { useState } from 'react';
 import { FormInput } from 'src/components/Form/FormInput';
 import { BaseLayout } from 'src/layouts';
+import { toast } from 'src/components/Toast';
 import styles from './Login.module.scss';
 import { LoginPayloadRequest, LoginResponse } from './models';
 import { login } from '../../api/auth';
-import { toast } from 'src/components/Toast';
 import { PathName } from '../../constants/routes';
 import CookiesStorage from '../../utils/cookie-storage';
 import { CookieKey } from '../../constants';
@@ -35,19 +34,18 @@ export function Login() {
   const { mutate: loginMutate } = useMutation({
     mutationFn: (data: LoginPayloadRequest): Promise<LoginResponse> =>
       login(data),
-    onSuccess: ({ accessToken, exp }: LoginResponse) => {
-      const expirationTime =
-        (new Date(exp as string).getTime() - new Date().getTime()) / 1000;
+    onSuccess: ({ accessToken, expirationTime, user }: LoginResponse) => {
       CookiesStorage.setCookieData(
         CookieKey.AccessToken,
         accessToken,
-        expirationTime,
+        expirationTime - 10,
       );
-      // CookiesStorage.setCookieData(
-      //   CookieKey.RefreshToken,
-      //   refreshToken,
-      //   expirationTime * 10,
-      // );
+      CookiesStorage.setCookieData(
+        CookieKey.UserInfo,
+        user,
+        expirationTime - 10,
+      );
+
       setIsLoading(false);
       toast('success', 'Login sucessfully');
       if (redirectUrl) {
@@ -75,7 +73,7 @@ export function Login() {
         <div className={styles['login-box']}>
           <div className={styles['logo']}>
             <h1 className="text-5xl" onClick={() => router.replace('/')}>
-              Login Page
+              Đăng nhập
             </h1>
           </div>
           <div className={styles['email-password-block']}>
@@ -110,35 +108,19 @@ export function Login() {
               </div>
             </form>
           </div>
-          <div className="my-3">or</div>
-          <div className={styles['sign-with-google']}>
-            <Button
-              className={styles['google-login-button']}
-              onClick={handleLoginGoogle}
-            >
-              <Image
-                src="/static/images/google.png"
-                alt=""
-                width={20}
-                height={20}
-                className="mr-4"
-              />
-              Sign in with Google
-            </Button>
-          </div>
-          <div className="mt-3">
-            <p>
-              <span>Don&apos;t have account ?</span>
-              <span>
-                <a
-                  onClick={() => router.replace('/register')}
-                  className="cursor-pointer ml-1 text-blue-600"
-                >
-                  Sign up now
-                </a>
-              </span>
-            </p>
-          </div>
+          {/*<div className="mt-3">*/}
+          {/*  <p>*/}
+          {/*    <span>Don&apos;t have account ?</span>*/}
+          {/*    <span>*/}
+          {/*      <a*/}
+          {/*        onClick={() => router.replace('/register')}*/}
+          {/*        className="cursor-pointer ml-1 text-blue-600"*/}
+          {/*      >*/}
+          {/*        Sign up now*/}
+          {/*      </a>*/}
+          {/*    </span>*/}
+          {/*  </p>*/}
+          {/*</div>*/}
         </div>
       </div>
     </BaseLayout>

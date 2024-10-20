@@ -28,6 +28,7 @@ python manage.py runserver
 
 Now, you can visit http://localhost:8000 in your browser to view the application.
 
+Admin Account: admin@gmail.com/123456
 
 ### Authors
 Hoang Ho Minh - minhhoangho99@gmail.com

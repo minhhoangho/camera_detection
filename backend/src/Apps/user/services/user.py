@@ -12,6 +12,8 @@ from django.core.paginator import EmptyPage, Paginator
 from django.db import transaction
 from django.db.models import Q
 
+from src.Apps.user.serializers.user import UserSerializer
+
 UserModel = get_user_model()
 
 
@@ -33,3 +35,10 @@ class UserService:
     def create(cls, data: Dict) -> UserModel:
         user = UserModel.objects.create(**data)
         return user
+
+    @classmethod
+    def get_user_by_id(cls, user_id: int) -> dict:
+        user: UserModel =  UserModel.objects.filter(id=user_id).first()
+        if not user:
+            return {}
+        return UserSerializer(user).data

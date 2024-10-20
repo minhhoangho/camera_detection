@@ -8,3 +8,4 @@ from rest_framework.exceptions import ValidationError
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
+        exclude = ("password", "is_superuser", "is_staff", "is_active", "last_login")

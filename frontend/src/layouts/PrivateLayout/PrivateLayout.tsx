@@ -51,7 +51,6 @@ export function PrivateLayout({ children }: Props): React.ReactElement {
   }, [userData]);
 
   React.useEffect(() => {
-    console.log("isAuthenticated", isAuthenticated)
     if (!isAuthenticated) {
       router.push({
         pathname: '/login',
@@ -60,14 +59,14 @@ export function PrivateLayout({ children }: Props): React.ReactElement {
         },
       });
     } else {
-      if (userData) {
+        // if (!userData) {
         // if (
         //   userData?.role?.key !== UserRole.Admin &&
         //   router.pathname.includes('/admin')
         // ) {
         //   router.push('/404');
         // }
-      }
+        // }
 
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore

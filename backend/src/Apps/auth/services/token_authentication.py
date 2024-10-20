@@ -4,6 +4,7 @@ from rest_framework.exceptions import AuthenticationFailed
 
 from src.Apps.auth.exception import AuthErr
 from src.Apps.base.exceptions import AppException
+from src.Apps.user.services.user import UserService
 
 
 class AppAuthentication(authentication.BaseAuthentication):
@@ -11,14 +12,15 @@ class AppAuthentication(authentication.BaseAuthentication):
     def authenticate(self, request):
         """Authenticate"""
         auth = self.get_authorization_header(request).split()
-        if not auth or auth[0].lower() != "bearer":
+
+        if not auth or auth[0].decode().lower() != "bearer":
             return None
 
         try:
             token = auth[1].decode()
         except UnicodeError:
             raise AppException(status_code=status.HTTP_401_UNAUTHORIZED, error=AuthErr.TOKEN_CONTAINS_INVALID_CHARACTERS)
-
+        print("Check token >>>>>")
         return self.jwt_authentication(token, request)
         # if is_bearer_request:
         #     return self.authenticate_bearer_credentials(token, request)
@@ -34,11 +36,16 @@ class AppAuthentication(authentication.BaseAuthentication):
         opts = {"verify_aud": False, "verify_iat": False}
         try:
             payload = jwt.decode(token, options={**opts, "verify_signature": False})
-        except jwt.DecodeError:
+        except jwt.DecodeError as e:
             return None
         except Exception:
             raise AuthenticationFailed()
-        print(payload)
+        if 'user_id' in payload:
+            user_id = payload.get('user_id')
+            user = UserService.get_user_by_id(user_id)
+            return user, token
+
+        return None, token
 
 
     def get_authorization_header(self, request):

@@ -3,8 +3,6 @@ import addSeconds from 'date-fns/addSeconds';
 import { getCurrentDomain } from 'src/utils';
 import { CookieKey } from 'src/constants';
 
-
-
 const cookies = new Cookies();
 const CookiesStorage = {
   getCookieData(key: string) {
@@ -13,8 +11,8 @@ const CookiesStorage = {
 
   setCookieData(
     key: string,
-    data: string | number | null | undefined,
-    expirationTime?: number,
+    data: string | number | null | undefined | Record<string, any>,
+    expirationTime: number,
     path?: string,
   ) {
     const domain = getCurrentDomain();

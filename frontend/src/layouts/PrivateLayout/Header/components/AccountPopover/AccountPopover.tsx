@@ -10,6 +10,8 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 
 import { account } from 'src/mocks/account';
+import CookiesStorage from '../../../../../utils/cookie-storage';
+import { useRouter } from 'next/router';
 
 // ----------------------------------------------------------------------
 
@@ -32,10 +34,16 @@ const MENU_OPTIONS = [
 
 export function AccountPopover() {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-
+  const router = useRouter();
 
   const handleOpen = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
+  };
+
+  const handleLogout = () => {
+    CookiesStorage.clearSession();
+    handleClose();
+    router.replace('/login');
   };
 
   const handleClose = () => {
@@ -106,7 +114,7 @@ export function AccountPopover() {
         <MenuItem
           disableRipple
           disableTouchRipple
-          onClick={handleClose}
+          onClick={handleLogout}
           sx={{ typography: 'body2', color: 'error.main', py: 1.5 }}
         >
           Logout

@@ -7,7 +7,8 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from src.Apps.base.views.mixins import PaginationMixin
-from src.Apps.user.services.user import UserService
+from src.Apps.user.serializers.user import UserSerializer
+from src.Apps.user.services.user import UserService, UserModel
 
 
 class UserViewSet(PaginationMixin):
@@ -20,8 +21,14 @@ class UserViewSet(PaginationMixin):
                               with_paginate=True)
         return Response(data=result, status=HTTPStatus.OK)
 
-
     def create(self, request: Request, *args, **kwargs):
         data = request.data
         user = UserService.create(data)
         return Response(data=user, status=HTTPStatus.CREATED)
+
+    @action(detail=False, methods=["GET"], url_path="me")
+    def get_me(self, request: Request, *args, **kwargs):
+        user = request.user
+        if isinstance(user, UserModel):
+            user = UserSerializer(user).data
+        return Response(data=user, status=HTTPStatus.OK)
