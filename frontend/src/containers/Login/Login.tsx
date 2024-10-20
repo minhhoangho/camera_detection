@@ -18,6 +18,7 @@ import { PathName } from '../../constants/routes';
 import CookiesStorage from '../../utils/cookie-storage';
 import { CookieKey } from '../../constants';
 import { userState } from '../../app-recoil/atoms/user';
+import { UserData } from '../UserManagement/models';
 
 export function Login() {
   const router = useRouter();
@@ -52,7 +53,7 @@ export function Login() {
 
       setIsLoading(false);
       toast('success', 'Login sucessfully');
-      setCurrentUser(user)
+      setCurrentUser(user as UserData)
 
       if (redirectUrl) {
         router.push(redirectUrl);

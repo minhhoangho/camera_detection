@@ -1,4 +1,5 @@
 import { atom } from 'recoil';
+import { UserData } from '../../containers/UserManagement/models';
 
 export const userStateKey = 'User';
 
@@ -18,6 +19,6 @@ export type UserInfo = {
   email: string;
 };
 
-export const userState = atom<UserInfo>({
+export const userState = atom<UserInfo | UserData>({
   key: userStateKey,
 });
