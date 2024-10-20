@@ -145,6 +145,3 @@ class DetectorViewSet(viewsets.ViewSet):
             }
         )
 
-    async def disconnect_event(self, event):
-        print("Handle disconnect event")
-        channel_name = event.get("channel_name")
