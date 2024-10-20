@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation } from 'react-query';
 import { useState } from 'react';
+import { useSetRecoilState } from 'recoil';
 import { FormInput } from 'src/components/Form/FormInput';
 import { BaseLayout } from 'src/layouts';
 import { toast } from 'src/components/Toast';
@@ -16,11 +17,14 @@ import { login } from '../../api/auth';
 import { PathName } from '../../constants/routes';
 import CookiesStorage from '../../utils/cookie-storage';
 import { CookieKey } from '../../constants';
+import { userState } from '../../app-recoil/atoms/user';
 
 export function Login() {
   const router = useRouter();
   const redirectUrl = router.query['redirectUrl'] as string;
   const [isLoading, setIsLoading] = useState(false);
+  const setCurrentUser = useSetRecoilState(userState)
+
 
   const validationSchema = yup.object({
     email: yup.string().trim().email().required('Email is required'),
@@ -48,6 +52,8 @@ export function Login() {
 
       setIsLoading(false);
       toast('success', 'Login sucessfully');
+      setCurrentUser(user)
+
       if (redirectUrl) {
         router.push(redirectUrl);
       } else {
