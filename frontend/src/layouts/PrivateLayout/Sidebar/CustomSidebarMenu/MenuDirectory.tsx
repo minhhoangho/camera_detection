@@ -59,12 +59,13 @@ export const MenuDirectory = [
     label: MENU_LABEL[MENU_KEY.ADMIN] as string,
     icon: <AdminPanelSettingsIcon />,
     children: [
+      // {
+      //   key: MENU_KEY.USER_MANAGEMENT,
+      //   label: MENU_LABEL[MENU_KEY.USER_MANAGEMENT] as string,
+      //   icon: <PeopleIcon />,
+      //   url: PathName.UserManagement
+      // },
       {
-        key: MENU_KEY.USER_MANAGEMENT,
-        label: MENU_LABEL[MENU_KEY.USER_MANAGEMENT] as string,
-        icon: <PeopleIcon />,
-        url: PathName.UserManagement
-      }, {
         key: MENU_KEY.GIS_MANAGEMENT,
         label: MENU_LABEL[MENU_KEY.GIS_MANAGEMENT] as string,
         icon: <MapIcon />,

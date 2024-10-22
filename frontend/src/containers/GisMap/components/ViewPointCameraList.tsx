@@ -24,6 +24,7 @@ import {
   VIEW_POINT_MANAGEMENT_KEY,
 } from '../constants';
 import useConfirm from '../../../shared/hooks/use-confirm';
+import { Iconify } from '../../../components/Iconify';
 
 type ViewPointCameraListProps = {
   viewPointId: number;
@@ -112,9 +113,17 @@ export function ViewPointCameraList({ viewPointId, setShowRealtimeCamera }: View
       filterable: false,
       width: 80,
       renderCell: (params: GridRenderCellParams<any, any>) => {
-        const sourceEnum: Record<number, string> = {
-          0: 'RTSP',
-          1: 'Youtube',
+        const sourceEnum: Record<number, React.ReactElement> = {
+          0: (
+            <span className='flex'>
+          <span className='mr-1'>RTSP</span><Iconify icon="icon-park:camera-one" width={20} height={20} />
+        </span>
+          ),
+          1: (
+            <span  className='flex'>
+          <span className='mr-1'>Youtube</span> <Iconify icon="logos:youtube-icon" width={20} height={20} />
+        </span>
+          ),
         };
         return <span className="">{sourceEnum[params.row.cameraSource]}</span>;
       },

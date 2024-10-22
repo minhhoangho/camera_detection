@@ -91,7 +91,9 @@ export function NotificationPopover() {
 
 
   const handleOpen = (event: MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
+    // eslint-disable-next-line no-console
+    console.log("Temporary disabled ", event);
+    // setAnchorEl(event.currentTarget);
   };
 
   const handleClose = () => {

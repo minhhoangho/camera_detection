@@ -15,6 +15,10 @@ import Tooltip from '@mui/material/Tooltip';
 import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import { format } from 'date-fns';
 import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { toast } from 'src/components/Toast';
+import { Table } from 'src/components/Table';
+import { Iconify } from 'src/components/Iconify';
 import { ListViewPointPaginateResponse } from './models';
 import {
   VIEW_POINT_MANAGEMENT_COLUMNS_LABEL,
@@ -23,15 +27,12 @@ import {
 import styles from './GisMap.module.scss';
 import { CreateViewPointModal } from './CreateViewPointModal';
 import { BaseLayout, PrivateLayout } from '../../layouts';
-import { Table } from 'src/components/Table';
-import { toast } from 'src/components/Toast';
-import { deleteViewPoint, deleteViewPointCamera, listViewPointsPaginate } from '../../api/view-point';
+import { deleteViewPoint, listViewPointsPaginate } from '../../api/view-point';
 import { DEFAULT_PAGINATION_PARAMS } from '../../constants';
 import { PaginationQueryParams } from '../../shared/models/requests';
 import { PathName } from '../../constants/routes';
-import { Iconify } from 'src/components/Iconify';
 import useConfirm from '../../shared/hooks/use-confirm';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { useDebounce } from '../../shared/hooks/use-debounce';
 
 export function GisMapViewPointManagement() {
   const router = useRouter();
@@ -40,6 +41,7 @@ export function GisMapViewPointManagement() {
     DEFAULT_PAGINATION_PARAMS,
   );
   const [keyword, setKeyword] = React.useState<string | null>('');
+  const debounceValue = useDebounce(keyword, 1000);
   const confirmBox = useConfirm();
   const {
     data: dataListResponse,
@@ -47,7 +49,7 @@ export function GisMapViewPointManagement() {
     refetch,
     isLoading,
   } = useQuery<ListViewPointPaginateResponse>({
-    queryKey: ['getListViewPointPaginate', paginationParams],
+    queryKey: ['getListViewPointPaginate', paginationParams, debounceValue],
     queryFn: () =>
       listViewPointsPaginate({
         keyword: keyword ?? '',
@@ -127,7 +129,7 @@ export function GisMapViewPointManagement() {
         VIEW_POINT_MANAGEMENT_COLUMNS_LABEL[VIEW_POINT_MANAGEMENT_KEY.NAME],
       sortable: false,
       filterable: false,
-      width: 150,
+      width: 250,
       renderCell: (params: GridRenderCellParams<any, any>) => {
         return (
           <span
@@ -150,7 +152,7 @@ export function GisMapViewPointManagement() {
         ],
       sortable: false,
       filterable: false,
-      width: 150,
+      width: 300,
     },
     {
       field: VIEW_POINT_MANAGEMENT_KEY.LAT,
@@ -158,7 +160,11 @@ export function GisMapViewPointManagement() {
         VIEW_POINT_MANAGEMENT_COLUMNS_LABEL[VIEW_POINT_MANAGEMENT_KEY.LAT],
       sortable: false,
       filterable: false,
-      width: 200,
+      valueFormatter: (params) => {
+        const value = params?.value;
+        return value ? parseFloat(value as string).toFixed(6) : '';
+      },
+      width: 100,
     },
     {
       field: VIEW_POINT_MANAGEMENT_KEY.LONG,
@@ -166,7 +172,11 @@ export function GisMapViewPointManagement() {
         VIEW_POINT_MANAGEMENT_COLUMNS_LABEL[VIEW_POINT_MANAGEMENT_KEY.LONG],
       sortable: false,
       filterable: false,
-      width: 200,
+      valueFormatter: (params) => {
+        const value = params?.value;
+        return value ? parseFloat(value as string).toFixed(6) : '';
+      },
+      width: 100,
     },
     {
       field: VIEW_POINT_MANAGEMENT_KEY.CREATED_AT,
@@ -203,9 +213,9 @@ export function GisMapViewPointManagement() {
     setIsOpenCreate(true);
   };
 
-  const onFilterName = () => {
+  const onFilterName = (event) => {
     // eslint-disable-next-line no-console
-    console.log('Filter name');
+    setKeyword(event?.target.value);
   };
 
   return (

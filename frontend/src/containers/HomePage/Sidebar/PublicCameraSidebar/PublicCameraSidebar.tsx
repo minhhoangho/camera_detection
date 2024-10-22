@@ -18,6 +18,7 @@ import {
   ViewPointCameraData,
 } from '../../../GisMap/models';
 import { RealtimeCamera } from '../../../GisMap/components/RealtimeCamera';
+import { Iconify } from '../../../../components/Iconify';
 
 type Props = {
   onClose: () => void;
@@ -56,9 +57,17 @@ export function PublicCameraSidebar({
 
   const renderCameraItemCard = (camera: ViewPointCameraData) => {
     const isActive = activeCamera?.id === camera.id;
-    const sourceEnum: Record<number, string> = {
-      0: 'RTSP',
-      1: 'Youtube',
+    const sourceEnum: Record<number, React.ReactElement> = {
+      0: (
+        <span className='flex'>
+          <span className='mr-1'>RTSP</span><Iconify icon="icon-park:camera-one" width={20} height={20} />
+        </span>
+      ),
+      1: (
+        <span  className='flex'>
+          <span className='mr-1'>Youtube</span> <Iconify icon="logos:youtube-icon" width={20} height={20} />
+        </span>
+      ),
     };
     return (
       <Card
@@ -73,7 +82,7 @@ export function PublicCameraSidebar({
       >
         <CardActionArea>
           <CardContent>
-            <Typography variant="h6">
+            <Typography variant="body2" className='mb-2'>
               {sourceEnum[camera.cameraSource]}
             </Typography>
             <Image
