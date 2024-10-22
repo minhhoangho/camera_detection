@@ -40,12 +40,12 @@ export function CreateViewPointModal({ onClose, isOpen }: ModalProps) {
       createViewPoint(data),
     onSuccess: (data: ViewPointData) => {
       setIsLoading(false);
-      toast('success', 'Create view point');
+      toast('success', 'Đã tạo thông tin đia điê');
       const redirectUrl = `${PathName.GisLocationManagement}/${data.id}`;
       router.push(redirectUrl);
     },
     onError: () => {
-      toast('error', 'Create view point error');
+      toast('error', 'Có lỗi xảy ra, vui lòng thử lại sau');
       setIsLoading(false);
     },
   });
@@ -83,7 +83,7 @@ export function CreateViewPointModal({ onClose, isOpen }: ModalProps) {
         }}
       >
         <div className="modal-header flex justify-between mb-2">
-          <span className="modal-title">Create new view point</span>
+          <span className="modal-title">Tạo thông tin</span>
           <button
             type="button"
             className="close bg-transparent border-none cursor-pointer"

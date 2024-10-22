@@ -72,11 +72,11 @@ export function ViewPointDetail() {
     mutationFn: (data: EditViewPointPayloadRequest): any =>
       updateViewPoint(viewPointId, data),
     onSuccess: async () => {
-      toast('success', 'Updated view point');
+      toast('success', 'Đã cập nhật thông tin địa điểm');
       await refetchDetail();
     },
     onError: () => {
-      toast('error', 'Update view point error');
+      toast('error', 'Có lỗi xảy ra, vui lòng thử lại sau');
     },
   });
 
@@ -93,6 +93,7 @@ export function ViewPointDetail() {
     },
     onError: () => {
       toast('error', 'Uploading Bev image error');
+      toast('error', 'Có lỗi xảy ra, vui lòng thử lại sau');
     },
   });
 

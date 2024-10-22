@@ -58,7 +58,7 @@ export function GisMapViewPointManagement() {
           limit: paginationParams.limit,
         },
       }),
-    onError: () => toast('error', 'Error'),
+    onError: () => toast('error', 'Có lỗi xảy ra, vui lòng thử lại sau'),
     // cacheTime: 0,
   });
 
@@ -72,7 +72,7 @@ export function GisMapViewPointManagement() {
   //   //  eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [paginationParams.limit, paginationParams.offset]);
 
-  const handleDelete = async(id: number) => {
+  const handleDelete = async (id: number) => {
     const result = await confirmBox.confirm({
       title: 'Xác nhận xóa',
       message: 'Bạn có chắc muốn xóa?',
@@ -82,11 +82,12 @@ export function GisMapViewPointManagement() {
       try {
         await deleteViewPoint(id);
       } catch (error) {
-        toast('error', 'Error');
+        toast('error', 'Có lỗi xảy ra, vui lòng thử lại sau');
+
       }
       await refetch();
     }
-  }
+  };
 
   const renderActionButton = (params: GridRenderCellParams<any, any>) => {
     return (
@@ -105,7 +106,7 @@ export function GisMapViewPointManagement() {
         <Tooltip title="Xoá">
           <Button
             onClick={() => handleDelete(params.id)}
-            style={{ padding: 0 , minWidth: 0}}
+            style={{ padding: 0, minWidth: 0 }}
           >
             <DeleteIcon style={{ fontSize: '20px', outline: 'none' }} />
           </Button>

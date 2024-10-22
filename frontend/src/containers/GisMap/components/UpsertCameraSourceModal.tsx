@@ -52,11 +52,13 @@ export function UpsertCameraSourceModal({
       upsertNewViewPointCamera(viewPointId, data),
     onSuccess: () => {
       setIsLoading(false);
-      toast('success', 'Updated camera source');
+      toast('success', 'Cập nhật thành công');
       onClose?.();
     },
     onError: () => {
       toast('error', 'Update camera source error');
+      toast('error', 'Có lỗi xảy ra, vui lòng thử lại sau');
+
       setIsLoading(false);
       onClose?.();
     },
