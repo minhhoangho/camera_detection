@@ -24,7 +24,7 @@ import time
 from src.Apps.gis_map.models import GisViewPointCamera
 from src.Apps.gis_map.services.gis_map import GisMapService
 
-detector = DetectionUtil(os.path.join(settings.BASE_DIR, "../models", "yolov8m.pt"))
+detector = DetectionUtil(os.path.join(settings.BASE_DIR, "../models", "yolov8s.pt"))
 from src.Apps.base.constants.http import HttpMethod
 from src.Apps.websocket.shared_state import connection_status
 

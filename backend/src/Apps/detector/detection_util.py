@@ -19,17 +19,18 @@ class ObjectDetectionResult:
 
 
 class DetectionUtil:
-    def __init__(self, ckpt: str) -> None:
-        ckpt_path = ckpt or os.path.join("./models", "yolov8.pt")
+    def __init__(self, ckpt: str, model_type:str="yolov8") -> None:
+        self.ckpt_path = ckpt or os.path.join("./models", "yolov8.pt")
         # self.model = YOLO(ckpt_path)
-        self.model = YOLO(ckpt_path)
+        self.model = YOLO(self.ckpt_path)
         self.threshold = 0.3
         self.detection_model = AutoDetectionModel.from_pretrained(
-            model_type='yolov8',
-            model_path=ckpt_path,
+            model_type=model_type,
+            model_path=self.ckpt_path,
             confidence_threshold=0.3,
             device="cpu",
         )
+
 
         self.class_dict = self.model.names
 
