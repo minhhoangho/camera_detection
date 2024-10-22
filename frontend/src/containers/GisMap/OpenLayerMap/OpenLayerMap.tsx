@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect } from 'react';
 import View from 'ol/View';
 import Map from 'ol/Map';
 import TileLayer from 'ol/layer/Tile';
@@ -35,7 +35,9 @@ export function OpenLayerMap({
   onUpdateLatLong,
   center,
 }: OpenLayerMapProps) {
-  const mapRef = useRef(null);
+  const mapRef = useRef<HTMLDivElement | null | undefined>(null);
+  const vectorSourceRef = useRef(new VectorSource());
+
   // Generate random start and end points within the map bounds
   // const generateRandomPoint = (extent) => {
   //   const [minX, minY, maxX, maxY]: [number, number, number, number] = extent;
@@ -45,23 +47,22 @@ export function OpenLayerMap({
   // };
 
   const addCenterPoint = (map: Map, center: CenterProps) => {
-    const centerSource = new VectorSource();
     const centerLayer = new VectorLayer({
-      source: centerSource,
+      source: vectorSourceRef.current,
       style: new Style({
         image: new Circle({
-          radius: 20,
+          radius: 10,
           fill: new Fill({ color: 'blue' }),
-          stroke: new Stroke({ color: 'black', width: 1 }),
+          stroke: new Stroke({ color: 'blue', width: 1 }),
         }),
       }),
     });
     map.addLayer(centerLayer);
     // Create a feature for the center point and add it to the source
-    const centerFeature = new Feature({
+    const centerPoint = new Feature({
       geometry: new Point(fromLonLat(center)),
     });
-    centerSource.addFeature(centerFeature);
+    vectorSourceRef.current.addFeature(centerPoint);
   };
 
   useEffect(() => {
@@ -90,31 +91,43 @@ export function OpenLayerMap({
 
     addCenterPoint(map, center);
 
-    // Generate random traffic flows
-    const numberOfFlows = 100; // Number of traffic flows to generate
-
-    // Create a vector source and layer to display traffic flow points
-    const vectorSource = new VectorSource();
-    const vectorLayer = new VectorLayer({
-      source: vectorSource,
-      style: new Style({
-        image: new Circle({
-          radius: 3,
-          fill: new Fill({ color: 'red' }),
-        }),
-      }),
-    });
-    map.addLayer(vectorLayer);
-
     map.on('click', function (event) {
       const coordinates = event.coordinate; // Get clicked coordinates
       const lonLat = toLonLat(coordinates); // Transform coordinates to EPSG:4326
+      const long: number = lonLat[0] as number;
+      const lat: number = lonLat[1] as number;
 
-      onUpdateLatLong?.(lonLat[1] as number, lonLat[0] as number);
+      onUpdateLatLong?.(long, lat);
+
+      const newPoint = new Feature({
+        geometry: new Point(fromLonLat([long, lat])),
+      });
+      // Clear previous features
+      vectorSourceRef.current.clear();
+      vectorSourceRef.current.addFeature(newPoint);
     });
 
+
+
+
+
+    // Generate random traffic flows
+    // const numberOfFlows = 100; // Number of traffic flows to generate
+
+    // const vectorSource = new VectorSource();
+    // const vectorLayer = new VectorLayer({
+    //   source: vectorSourceRef.current,
+    //   style: new Style({
+    //     image: new Circle({
+    //       radius: 3,
+    //       fill: new Fill({ color: 'red' }),
+    //     }),
+    //   }),
+    // });
+    // map.addLayer(vectorLayer);
+
     // Generate random traffic flows and add them to the vector source
-    const mapExtent = map.getView().calculateExtent();
+    // const mapExtent = map.getView().calculateExtent();
     // console.log("mapExtent >> ", mapExtent )
     // for (let i = 0; i < numberOfFlows; i++) {
     //   const startPoint = generateRandomPoint(mapExtent);
@@ -126,10 +139,18 @@ export function OpenLayerMap({
     //   vectorSource.addFeature(flow);
     // }
 
+
+
+
+
     return () => {
-      map.setTarget(null);
+      map.setTarget(undefined);
     };
   }, [center, onUpdateLatLong]);
+
+
+
+
 
   return <div ref={mapRef} style={{ width, height }} />;
 }

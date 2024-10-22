@@ -3,7 +3,7 @@ import { useMutation, useQuery } from 'react-query';
 import { Box, Button, Container, Grid, Card } from '@mui/material';
 import * as React from 'react';
 import * as yup from 'yup';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { toast } from 'src/components/Toast';
 import { FormInput } from 'src/components/Form';
@@ -28,6 +28,7 @@ import {
 } from '../../api/view-point';
 import { BaseLayout, PrivateLayout } from '../../layouts';
 import Image from 'next/image';
+import getFieldValue from 'react-hook-form/dist/logic/getFieldValue';
 
 export function ViewPointDetail() {
   const [showRealtimeCamera, setShowRealtimeCamera] = React.useState(false);
@@ -45,6 +46,7 @@ export function ViewPointDetail() {
   const { control, handleSubmit, setValue } = useForm({
     resolver: yupResolver(validationSchema),
   });
+  // const [long, lat] = useWatch({control, name: ['long', 'lat']});
 
   const {
     data: dataDetail,
@@ -228,6 +230,7 @@ export function ViewPointDetail() {
                   width={'--webkit-fill-available'}
                   height={500}
                   onUpdateLatLong={updateFormLatLong}
+                  // center={[long, lat]}
                   center={[dataDetail?.long ?? 0, dataDetail?.lat ?? 0]}
                 />
               )}

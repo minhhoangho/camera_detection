@@ -139,7 +139,7 @@ export function HomeMap(props: MapProps) {
     return () => {
       map.setTarget(undefined);
     };
-  }, [geoPoints]);
+  }, [center, geoPoints, zoom]);
   console.log("Zoom: ", zoom);
   return (
     <div className={styles['home-map_container']}>
