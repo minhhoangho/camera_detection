@@ -67,7 +67,7 @@ export function OpenLayerMap({
 
   useEffect(() => {
     const map = new Map({
-      target: mapRef.current,
+      // target: mapRef.current,
       layers: [
         new TileLayer({
           source: new OSM(),
@@ -88,6 +88,7 @@ export function OpenLayerMap({
         zoom: 19, // Initial zoom level
       }),
     });
+    mapRef.current && map.setTarget(mapRef.current);
 
     addCenterPoint(map, center);
 
@@ -97,7 +98,7 @@ export function OpenLayerMap({
       const long: number = lonLat[0] as number;
       const lat: number = lonLat[1] as number;
 
-      onUpdateLatLong?.(long, lat);
+      onUpdateLatLong?.(lat, long);
 
       const newPoint = new Feature({
         geometry: new Point(fromLonLat([long, lat])),
@@ -107,49 +108,10 @@ export function OpenLayerMap({
       vectorSourceRef.current.addFeature(newPoint);
     });
 
-
-
-
-
-    // Generate random traffic flows
-    // const numberOfFlows = 100; // Number of traffic flows to generate
-
-    // const vectorSource = new VectorSource();
-    // const vectorLayer = new VectorLayer({
-    //   source: vectorSourceRef.current,
-    //   style: new Style({
-    //     image: new Circle({
-    //       radius: 3,
-    //       fill: new Fill({ color: 'red' }),
-    //     }),
-    //   }),
-    // });
-    // map.addLayer(vectorLayer);
-
-    // Generate random traffic flows and add them to the vector source
-    // const mapExtent = map.getView().calculateExtent();
-    // console.log("mapExtent >> ", mapExtent )
-    // for (let i = 0; i < numberOfFlows; i++) {
-    //   const startPoint = generateRandomPoint(mapExtent);
-    //   const endPoint = generateRandomPoint(mapExtent);
-    //   const flow = new Feature({
-    //     geometry: new Point(startPoint),
-    //   });
-    //   flow.setProperties({ endPoint });
-    //   vectorSource.addFeature(flow);
-    // }
-
-
-
-
-
     return () => {
       map.setTarget(undefined);
     };
   }, [center, onUpdateLatLong]);
-
-
-
 
 
   return <div ref={mapRef} style={{ width, height }} />;
