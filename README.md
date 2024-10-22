@@ -45,6 +45,6 @@ To install and run this project locally, follow these steps:
 
 
 ### Screenshots
-![img.png](img.png)
+![img.png](research/notebook/img.png)
 
 ![img_1.png](img_1.png)

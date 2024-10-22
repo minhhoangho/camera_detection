@@ -10,7 +10,7 @@ from ultralytics.engine.results import Results
 
 
 def init_model() -> YOLO:
-    model = YOLO(os.path.join("./models", "yolov8m.pt"))
+    model = YOLO(os.path.join("../../models", "yolov8m.pt"))
     return model
 
 def predict_obj(model: YOLO,frame):
