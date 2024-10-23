@@ -3,7 +3,7 @@ import { useMutation, useQuery } from 'react-query';
 import { Box, Button, Container, Grid, Card } from '@mui/material';
 import * as React from 'react';
 import * as yup from 'yup';
-import { useForm, useWatch } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { toast } from 'src/components/Toast';
 import { FormInput } from 'src/components/Form';
@@ -15,7 +15,6 @@ import { ViewPointCameraList } from './components/ViewPointCameraList';
 import {
   BEVAndHomoPayloadRequest,
   EditViewPointPayloadRequest,
-  UpsertCameraSourcePayloadRequest,
   ViewPointCameraData,
   ViewPointData,
 } from './models';
