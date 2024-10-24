@@ -13,7 +13,6 @@ export const useWebsocket = (url: string) => {
     socket.onclose = () => setIsReady(false)
     socket.onmessage = (event) => setVal(event.data)
 
-    // @ts-ignore
     ws.current = socket
 
     return () => {

@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 import { useEffect, useState } from 'react';
 import { API_BASE_URL, SOCKET_BASE_URL } from '../../../constants';
 import { ViewPointCameraData, ViewPointData } from '../models';
-import { DETECTION_CLASS_NAME } from '../../../constants/detection';
+// import { DETECTION_CLASS_NAME } from '../../../constants/detection';
 // import { socketClient } from '../../../utils/socket';
 import { useWebsocket } from '../../../shared/hooks/use-websocket';
 
@@ -22,10 +22,10 @@ export function RealtimeCamera({
   const title = 'Realtime Camera';
   const uuid = React.useRef(new Date().getTime());
   const [showCamImgTag, setShowCamImgTag] = React.useState(true);
-  const [objects, setObjects] =
-    useState<Record<string, number>>(DETECTION_CLASS_NAME);
+  // const [objects, setObjects] =
+  //   useState<Record<string, number>>(DETECTION_CLASS_NAME);
   const [total, setTotal] = useState(0);
-  const [isConnected, message, send] = useWebsocket(`${SOCKET_BASE_URL}/ws/`);
+  const [isConnected, message, _] = useWebsocket(`${SOCKET_BASE_URL}/ws/`);
 
   useEffect(() => {
     if (isConnected) {
@@ -38,7 +38,7 @@ export function RealtimeCamera({
         messageJson?.data?.object_count_map;
       const cameraId = messageJson?.data?.camera_id;
       if (Number(cameraId) === viewPointCamera.id) {
-        setObjects(objectCount);
+        // setObjects(objectCount);
         if (typeof objectCount === 'object') {
           const _total = Object.values(objectCount).reduce(
             (a: number, b: number) => a + b,

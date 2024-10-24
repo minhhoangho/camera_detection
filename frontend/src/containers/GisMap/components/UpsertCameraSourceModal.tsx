@@ -7,12 +7,12 @@ import { useMutation } from 'react-query';
 import * as React from 'react';
 import { toast } from 'src/components/Toast';
 import { FormInput } from 'src/components/Form';
+import { FormSelect } from 'src/components/Form/FormSelect';
 import {
   UpsertCameraSourcePayloadRequest,
   ViewPointCameraData,
 } from '../models';
 import { upsertNewViewPointCamera } from '../../../api/view-point';
-import { FormSelect } from 'src/components/Form/FormSelect';
 import Spinner from '../../../components/Spinner';
 
 type ModalProps = {

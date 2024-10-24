@@ -1,5 +1,4 @@
 import { Box, Card, CardHeader } from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { API_BASE_URL } from '../../../constants';
 import { ViewPointCameraData, ViewPointData } from '../models';
 

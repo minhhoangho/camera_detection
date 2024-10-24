@@ -2,6 +2,7 @@ import merge from 'lodash/merge';
 
 import { alpha, useTheme } from '@mui/material/styles';
 
+import { ApexOptions } from 'apexcharts';
 import { useResponsive } from 'src/shared/hooks/use-responsive';
 
 // ----------------------------------------------------------------------
@@ -15,20 +16,20 @@ export function useChart(options: Record<string, any>) {
     show: true,
     label: 'Total',
     color: theme.palette.text.secondary,
-    fontSize: theme.typography.subtitle2.fontSize,
-    fontWeight: theme.typography.subtitle2.fontWeight,
-    lineHeight: theme.typography.subtitle2.lineHeight,
+    fontSize: theme.typography.subtitle2.fontSize as string,
+    fontWeight: theme.typography.subtitle2.fontWeight as string,
+    lineHeight: theme.typography.subtitle2.lineHeight as string,
   };
 
   const LABEL_VALUE = {
     offsetY: 8,
-    color: theme.palette.text.primary,
-    fontSize: theme.typography.h3.fontSize,
-    fontWeight: theme.typography.h3.fontWeight,
-    lineHeight: theme.typography.h3.lineHeight,
+    color: theme.palette.text.primary ,
+    fontSize: theme.typography.h3.fontSize as string,
+    fontWeight: theme.typography.h3.fontWeight as string,
+    lineHeight: theme.typography.h3.lineHeight as string,
   };
 
-  const baseOptions = {
+  const baseOptions: ApexOptions = {
     // Colors
     colors: [
       theme.palette.primary.main,
@@ -116,7 +117,6 @@ export function useChart(options: Record<string, any>) {
 
     // Tooltip
     tooltip: {
-      theme: false,
       x: {
         show: true,
       },
@@ -125,7 +125,7 @@ export function useChart(options: Record<string, any>) {
     // Legend
     legend: {
       show: true,
-      fontSize: 13,
+      fontSize: '13',
       position: 'top',
       horizontalAlign: 'right',
       markers: {

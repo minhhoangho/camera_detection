@@ -1,8 +1,6 @@
 import { Box } from '@mui/material';
-import { Header } from '../../containers/HomePage/Header';
 import * as React from 'react';
 import { useResponsive } from '../../shared/hooks/use-responsive';
-import { Sidebar } from '../../containers/HomePage/Sidebar';
 
 
 type Props = {

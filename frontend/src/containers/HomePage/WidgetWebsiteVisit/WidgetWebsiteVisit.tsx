@@ -16,7 +16,6 @@ export function WidgetWebsiteVisit({
   ...other
 }: Props) {
   const { labels, colors, series, options } = chart;
-
   const chartOptions = useChart({
     colors,
     plotOptions: {
@@ -52,6 +51,7 @@ export function WidgetWebsiteVisit({
 
       <Box sx={{ p: 3, pb: 1 }}>
         <Chart
+          theme={chartOptions.theme}
           type="line"
           series={series}
           options={chartOptions}

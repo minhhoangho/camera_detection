@@ -23,11 +23,8 @@ import {
   getViewPointCameraDetail,
   saveBevImageAndHomographyMatrix,
   updateViewPoint,
-  upsertNewViewPointCamera,
 } from '../../api/view-point';
 import { BaseLayout, PrivateLayout } from '../../layouts';
-import Image from 'next/image';
-import getFieldValue from 'react-hook-form/dist/logic/getFieldValue';
 
 export function ViewPointDetail() {
   const [showRealtimeCamera, setShowRealtimeCamera] = React.useState(false);

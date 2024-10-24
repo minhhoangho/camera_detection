@@ -6,12 +6,12 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useMutation } from 'react-query';
 import * as React from 'react';
-import { CreateViewPointPayloadRequest, EditViewPointPayloadRequest, ViewPointData } from './models';
-import { OpenLayerMap } from './OpenLayerMap';
+import { FormInput } from 'src/components/Form';
 import { toast } from 'src/components/Toast';
+import { CreateViewPointPayloadRequest, ViewPointData } from './models';
+import { OpenLayerMap } from './OpenLayerMap';
 import { PathName } from '../../constants/routes';
 import { createViewPoint } from '../../api/view-point';
-import { FormInput } from 'src/components/Form';
 
 type ModalProps = {
   isOpen: boolean;

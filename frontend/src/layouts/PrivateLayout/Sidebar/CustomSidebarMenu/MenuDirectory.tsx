@@ -6,7 +6,6 @@ import PersonIcon from '@mui/icons-material/Person';
 import BlockIcon from '@mui/icons-material/Block';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
-import PeopleIcon from '@mui/icons-material/People';
 import _get from 'lodash/get';
 import _map from 'lodash/map';
 import _isEmpty from 'lodash/isEmpty';

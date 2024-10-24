@@ -1,8 +1,8 @@
 import { useTheme } from '@mui/material/styles';
-import { useResponsive } from '../../../shared/hooks/use-responsive';
 import { AppBar, Box, IconButton, Toolbar } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { SearchBox } from './SearchBox';
+import { useResponsive } from '../../../shared/hooks/use-responsive';
 
 type Props = {
   onOpenNav: () => void;

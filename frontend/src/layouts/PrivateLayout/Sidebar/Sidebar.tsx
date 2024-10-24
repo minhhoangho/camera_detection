@@ -7,8 +7,8 @@ import Image from 'next/image';
 import { account } from 'src/mocks/account';
 import { Scrollbar } from 'src/components/Scrollbar';
 import { CustomSidebarMenu } from './CustomSidebarMenu';
-import { useResponsive } from '../../../shared/hooks/use-responsive';
 import styles from './Sidebar.module.scss';
+import { useResponsive } from '../../../shared/hooks/use-responsive';
 
 type Props = {
   onClose: () => void;

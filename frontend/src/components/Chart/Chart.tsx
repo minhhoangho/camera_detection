@@ -4,7 +4,7 @@ import { alpha, styled } from '@mui/material/styles';
 
 import dynamic from 'next/dynamic';
 import { bgBlur } from 'src/theme/css';
-import { ApexChart } from './types';
+import { ApexChartProps } from './types';
 import { CustomThemeType } from '../../theme/types';
 
 const ApexChart: JSX.Element | ComponentType = dynamic(
@@ -15,7 +15,7 @@ const ApexChart: JSX.Element | ComponentType = dynamic(
 );
 
 // ----------------------------------------------------------------------
-const Chart = styled(ApexChart)(({ theme }: ApexChart & { theme: CustomThemeType}) => ({
+const Chart = styled(ApexChart)(({ theme }: ApexChartProps & { theme: CustomThemeType}) => ({
   '& .apexcharts-canvas': {
     // Tooltip
     '& .apexcharts-tooltip': {

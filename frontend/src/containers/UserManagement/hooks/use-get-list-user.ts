@@ -1,6 +1,6 @@
 import { useQuery } from 'react-query';
-import { listUserPaginate } from '../../../api/user';
 import { toast } from 'src/components/Toast';
+import { listUserPaginate } from '../../../api/user';
 import { ListUserPaginateRequest, ListUserPaginateResponse } from '../models';
 
 export function useGetListUser(params: ListUserPaginateRequest) {

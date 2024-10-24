@@ -1,8 +1,5 @@
 import React from 'react';
-import classNames from 'classnames';
-import { useTranslation } from 'next-i18next';
 import {
-  Box,
   Modal,
   Typography,
   Card,
@@ -12,9 +9,8 @@ import {
   Button,
 } from '@mui/material';
 
+import classNames from 'classnames';
 import useConfirm from 'src/shared/hooks/use-confirm';
-import { ConfirmType } from 'src/constants';
-import Icon from '../Icon';
 
 const style = {
   position: 'absolute',
@@ -38,15 +34,15 @@ const ConfirmBox = ({
   classNameContent?: string;
   classNameTitle?: string;
 }) => {
-  const { t } = useTranslation();
+  // const { t } = useTranslation();
   const { confirmBox, onConfirm, onCancel } = useConfirm();
   const {
-    type,
-    reverse,
+    // type,
+    // reverse,
     title,
     message,
     confirmButtonLabel,
-    confirmButtonVariant,
+    // confirmButtonVariant,
     contentClassName,
   } = confirmBox;
 
@@ -58,17 +54,16 @@ const ConfirmBox = ({
       aria-describedby="parent-modal-description"
     >
       <Card sx={{ ...style, width: 400 }}>
-        <CardHeader title={title || 'Xác nhận'} />
+        <CardHeader title={title || classNameTitle || 'Xác nhận'} />
         <CardContent>
-          <Typography id="parent-modal-description" className="px-2">
-              {message || 'Bạn có muốn tiếp tục không ?'}
+          <Typography id="parent-modal-description" className={classNames('px-2', contentClassName)}>
+              {message || classNameContent || 'Bạn có muốn tiếp tục không ?'}
           </Typography>
         </CardContent>
         <CardActions>
           <div className="flex px-2">
-
             <Button onClick={onConfirm} color="primary">
-              Xác nhận
+              {confirmButtonLabel || 'Xác nhận'}
             </Button>
             <Button onClick={onCancel} color="primary" className="mx-2">
               Huỷ bỏ

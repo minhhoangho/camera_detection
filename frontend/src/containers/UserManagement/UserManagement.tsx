@@ -5,6 +5,7 @@ import Tooltip from '@mui/material/Tooltip';
 import EditIcon from '@mui/icons-material/Edit';
 import { useRouter } from 'next/router';
 import { format } from 'date-fns';
+import { Table } from 'src/components/Table';
 import { useGetListUser } from './hooks/use-get-list-user';
 import {
   USER_MANAGEMENT_COLUMNS_LABEL,
@@ -15,7 +16,6 @@ import { DEFAULT_PAGINATION_PARAMS } from '../../constants';
 import { useDebouncedCallback } from '../../shared/hooks/use-debounce-callback';
 import { PathName } from '../../constants/routes';
 import { PaginationQueryParams } from '../../shared/models/requests';
-import { Table } from 'src/components/Table';
 
 export function UserManagement() {
   const router = useRouter();
