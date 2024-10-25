@@ -13,6 +13,7 @@ from src.Apps.gis_map.serializers.gis_map import (
     ViewPointSerializer,
     CUViewPointSerializer, CUCameraViewPointSerializer, CameraViewPointSerializer,
 )
+from src.Apps.gis_map.services.analytic import AnalyticService
 from src.Apps.gis_map.services.gis_map import GisMapService
 from src.Apps.base.views.mixins import PaginationMixin
 
@@ -172,3 +173,9 @@ class GisMapViewSet(PaginationMixin):
             raise AppException(error=ValidationErr.INVALID, params=["bev_image"])
         GisMapService.save_bev_view_image(pk=cam_id, bev_image=bev_url, homography_matrix=homography_matrix)
         return Response(status=HTTPStatus.OK)
+
+
+    @action(methods=[HttpMethod.GET], url_path=r"analytic", detail=False)
+    def analytic_all_location(self, request: Request):
+        data = AnalyticService.analytic_all_location()
+        return Response(data=dict(analytic_data=data), status=HTTPStatus.OK)

@@ -1,6 +1,5 @@
 import { Box, Card, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
-import { fShortenNumber } from '../../../utils/format-number';
 
 type Props = {
   title: string;
@@ -26,10 +25,8 @@ export function WidgetSummary({
       }}
     >
       {icon && <Box sx={{ width: 64, height: 64 }}>{icon}</Box>}
-
       <Stack spacing={0.5}>
-        <Typography variant="h4">{fShortenNumber(total)}</Typography>
-
+        <Typography variant="h4">{total}</Typography>
         <Typography variant="subtitle2" sx={{ color: `text.${color}` }}>
           {title}
         </Typography>

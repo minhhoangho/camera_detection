@@ -27,11 +27,12 @@ class AnalyticService:
         return res
 
 
-    def analytic_all_location(self):
+    @classmethod
+    def analytic_all_location(cls):
         view_points = GisMapService.all_view_points()
         res = []
         for view_point in view_points:
-            data = self.analytic_by_location(view_point.id)
+            data = cls.analytic_by_location(view_point.id)
             res.append({
                 "view_point": ViewPointSerializer(view_point).data,
                 "data": data
