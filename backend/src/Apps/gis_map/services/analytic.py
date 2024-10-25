@@ -9,8 +9,8 @@ class AnalyticService:
     def analytic_by_location(cls, view_point_id):
         collection = Firestore.get_collection("analytic")
         now = datetime.utcnow()
-        start_time = now - timedelta(minutes=5)
-        end_time = now + timedelta(minutes=5)
+        start_time = now - timedelta(minutes=3)
+        end_time = now + timedelta(minutes=3)
 
         end_time =  end_time.timestamp()
         start_time = start_time.timestamp()
@@ -19,7 +19,6 @@ class AnalyticService:
             .where("timestamp", ">=", start_time) \
             .where("timestamp", "<=", end_time)
         docs = query.get()
-        print("Docs", docs)
         res = {}
         for doc in docs:
             object_count_map = doc.to_dict().get("object_count_map", {})

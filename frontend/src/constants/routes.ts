@@ -10,6 +10,7 @@ export const PathName = {
 
   UserManagement: '/admin/user-management',
   GisLocationManagement: '/admin/gis-map',
+  Analytic: '/admin/analytic',
 
   // Common page
   NotFound: '/not-found',

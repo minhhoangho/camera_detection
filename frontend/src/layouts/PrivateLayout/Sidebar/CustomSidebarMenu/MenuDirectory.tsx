@@ -76,7 +76,7 @@ export const MenuDirectory = [
     key: MENU_KEY.ANALYTIC,
     label: MENU_LABEL[MENU_KEY.ANALYTIC] as string,
     icon: <AnalyticsIcon />,
-    url: PathName.Home
+    url: PathName.Analytic
   },
 ];
 
