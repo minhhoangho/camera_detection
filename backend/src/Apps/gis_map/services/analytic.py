@@ -12,10 +12,14 @@ class AnalyticService:
         start_time = now - timedelta(minutes=5)
         end_time = now + timedelta(minutes=5)
 
+        end_time =  end_time.timestamp()
+        start_time = start_time.timestamp()
+
         query = collection.where("view_point_id", "==", view_point_id) \
             .where("timestamp", ">=", start_time) \
             .where("timestamp", "<=", end_time)
         docs = query.get()
+        print("Docs", docs)
         res = {}
         for doc in docs:
             object_count_map = doc.to_dict().get("object_count_map", {})
