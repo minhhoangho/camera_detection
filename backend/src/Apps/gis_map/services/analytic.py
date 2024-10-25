@@ -1,9 +1,10 @@
+from src.Apps.gis_map.serializers.gis_map import ViewPointSerializer
+from src.Apps.gis_map.services.gis_map import GisMapService
 from src.Apps.utils.firebase_client.firestore import Firestore
 from datetime import datetime, timedelta
 
 
 class AnalyticService:
-
     @classmethod
     def analytic_by_location(cls, view_point_id):
         collection = Firestore.get_collection("analytic")
@@ -26,3 +27,14 @@ class AnalyticService:
         return res
 
 
+    def analytic_all_location(self):
+        view_points = GisMapService.all_view_points()
+        res = []
+        for view_point in view_points:
+            data = self.analytic_by_location(view_point.id)
+            res.append({
+                "view_point": ViewPointSerializer(view_point).data,
+                "data": data
+            })
+
+        return res
