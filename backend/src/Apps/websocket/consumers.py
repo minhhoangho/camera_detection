@@ -1,7 +1,8 @@
 import json
 
-from asgiref.sync import async_to_sync
 from channels.generic.websocket import JsonWebsocketConsumer, AsyncWebsocketConsumer
+
+
 from src.Apps.websocket.shared_state import connection_status
 
 
@@ -21,6 +22,7 @@ class SocketConsumer(AsyncWebsocketConsumer):
 
 
     async def send_event(self, event):
+        from src.Apps.utils.firebase_client.firestore import Firestore
         data = event.get("data", {})
         print("Set unique id ", data.get("unique_id"))
         connection_status[data.get("unique_id")] = self.channel_name
@@ -28,5 +30,10 @@ class SocketConsumer(AsyncWebsocketConsumer):
             "type": "send_event",
             "data": data
         }))
+
+        # Call firebase and save data:
+        timestamp = data.get("timestamp")
+        if timestamp and int(timestamp) % 10 == 0:
+            Firestore.save_data("analytic", data)
 
 

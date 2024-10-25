@@ -17,6 +17,7 @@ from src.Apps.base.exceptions import AppException, ApiErr
 from src.Apps.base.utils.type_utils import TypeUtils
 from src.Apps.detector.services.detector_service import DetectorService
 from src.Apps.gis_map.models import GisViewPoint, GisViewPointCamera, GisMapView
+from src.Apps.utils.firebase_client.firestore import Firestore
 
 UserModel = get_user_model()
 
@@ -65,7 +66,7 @@ class GisMapService:
     @classmethod
     def get_view_point_camera_detail(cls, pk: int, raise_exception: bool = True) -> GisViewPointCamera:
         cm = GisViewPointCamera.objects.filter(id=pk).first()
-        if not cm:
+        if not cm and raise_exception:
             raise AppException(error=ApiErr.NOT_FOUND, params="View Point Camera")
 
         return cm

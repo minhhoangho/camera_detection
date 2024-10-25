@@ -21,7 +21,7 @@ from src.Apps.base.utils.type_utils import TypeUtils
 from src.Apps.detector.detection_util import DetectionUtil, ObjectDetectionResult
 import time
 
-from src.Apps.gis_map.models import GisViewPointCamera
+from src.Apps.gis_map.models import GisViewPointCamera, GisViewPoint
 from src.Apps.gis_map.services.gis_map import GisMapService
 
 detector = DetectionUtil(os.path.join(settings.BASE_DIR, "../models", "yolov8s.pt"))
@@ -75,6 +75,7 @@ class DetectorViewSet(viewsets.ViewSet):
         unique_id = f"{request_id}_{cam_id}"
 
         camera_viewpoint = await GisViewPointCamera.objects.filter(id=cam_id).afirst()
+        view_point =  await GisViewPoint.objects.filter(id=camera_viewpoint.view_point_id).afirst()
         video_url = camera_viewpoint.camera_uri
         homography_matrix = camera_viewpoint.homography_matrix
         mapping_bev = False
@@ -119,6 +120,9 @@ class DetectorViewSet(viewsets.ViewSet):
                     channel_layer=channel_layer,
                     results=results,
                     camera_id=cam_id,
+                    camera_uri=video_url,
+                    view_point_id=view_point.id,
+                    timestamp=int(time.time()),
                     unique_id=unique_id
                 )
 
@@ -140,6 +144,9 @@ class DetectorViewSet(viewsets.ViewSet):
                 'data': {
                     'unique_id': kwargs.get('unique_id'),
                     'camera_id': kwargs.get('camera_id'),
+                    'camera_uri': kwargs.get('camera_uri'),
+                    'view_point_id': kwargs.get('view_point_id'),
+                    'timestamp': kwargs.get('timestamp'),
                     'object_count_map': detector.count_objects(results)
                 }
             }

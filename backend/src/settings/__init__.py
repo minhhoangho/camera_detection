@@ -21,6 +21,7 @@ environ.setdefault("DJANGO_ENV", "development")
 _ENV = environ["DJANGO_ENV"]
 
 _base_settings = (
+    "components/firebase.py",
     "components/common.py",
     "components/authentication.py",
     "components/database.py",

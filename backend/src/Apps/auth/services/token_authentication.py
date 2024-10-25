@@ -20,7 +20,6 @@ class AppAuthentication(authentication.BaseAuthentication):
             token = auth[1].decode()
         except UnicodeError:
             raise AppException(status_code=status.HTTP_401_UNAUTHORIZED, error=AuthErr.TOKEN_CONTAINS_INVALID_CHARACTERS)
-        print("Check token >>>>>")
         return self.jwt_authentication(token, request)
         # if is_bearer_request:
         #     return self.authenticate_bearer_credentials(token, request)
