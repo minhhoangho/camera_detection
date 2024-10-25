@@ -33,7 +33,7 @@ class SocketConsumer(AsyncWebsocketConsumer):
 
         # Call firebase and save data:
         timestamp = data.get("timestamp")
-        if timestamp and int(timestamp) % 10 == 0:
+        if timestamp and int(timestamp) % 5 == 0:
             Firestore.save_data("analytic", data)
 
 
