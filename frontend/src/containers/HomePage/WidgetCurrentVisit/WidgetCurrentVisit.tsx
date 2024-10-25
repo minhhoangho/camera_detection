@@ -91,11 +91,11 @@ export function WidgetCurrentVisit({
       <CardHeader title={title} subheader={subheader} sx={{ mb: 5 }} />
 
       <StyledChart
-        dir='ltr'
-        type='pie'
+        dir="ltr"
+        type="pie"
         series={chartSeries}
         options={chartOptions}
-        width='100%'
+        width="100%"
         height={280}
       />
     </Card>
