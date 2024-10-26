@@ -30,7 +30,7 @@ export function fData(number: number | string) {
   return result(format, '.0');
 }
 
-function result(format, key = '.00') {
+function result(format: any, key = '.00') {
   const isInteger = format.includes(key);
 
   return isInteger ? format.replace(key, '') : format;
