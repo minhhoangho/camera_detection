@@ -22,7 +22,7 @@ import { Scrollbar } from 'src/components/Scrollbar';
 import Spinner from 'src/components/Spinner';
 import { Iconify } from 'src/components/Iconify';
 import { PublicCameraSidebar } from './PublicCameraSidebar/PublicCameraSidebar';
-import styles from './Sidebar.module.scss';
+import styles from './HomeSidebar.module.scss';
 import {
   ListViewPointPaginateResponse,
   ViewPointData,
@@ -37,7 +37,7 @@ type Props = {
   open: boolean;
 };
 
-export function Sidebar({ open, onClose }: Props): React.ReactElement {
+export function HomeSidebar({ open, onClose }: Props): React.ReactElement {
   const router = useRouter();
   const pathname = router.pathname;
   const [keyword, setKeyword] = React.useState<string | null>('');

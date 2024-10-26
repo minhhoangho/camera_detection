@@ -59,13 +59,15 @@ export function PublicCameraSidebar({
     const isActive = activeCamera?.id === camera.id;
     const sourceEnum: Record<number, React.ReactElement> = {
       0: (
-        <span className='flex'>
-          <span className='mr-1'>RTSP</span><Iconify icon="icon-park:camera-one" width={20} height={20} />
+        <span className="flex">
+          <span className="mr-1">RTSP</span>
+          <Iconify icon="icon-park:camera-one" width={20} height={20} />
         </span>
       ),
       1: (
-        <span  className='flex'>
-          <span className='mr-1'>Youtube</span> <Iconify icon="logos:youtube-icon" width={20} height={20} />
+        <span className="flex">
+          <span className="mr-1">Youtube</span>{' '}
+          <Iconify icon="logos:youtube-icon" width={20} height={20} />
         </span>
       ),
     };
@@ -82,23 +84,25 @@ export function PublicCameraSidebar({
       >
         <CardActionArea>
           <CardContent>
-            <Typography variant="body2" className='mb-2'>
+            <Typography variant="body2" className="mb-2">
               {sourceEnum[camera.cameraSource]}
             </Typography>
-            <Image
-              src={camera.capturedImage as string}
-              alt={camera.cameraUri}
-              placeholder="blur"
-              sizes="100vw"
-              width={200}
-              height={200}
-              style={{
-                width: '100%',
-                height: 'auto',
-              }}
-              blurDataURL="data:..."
-              quality={100}
-            />
+            {camera.capturedImage && (
+              <Image
+                src={camera.capturedImage}
+                alt={camera.cameraUri}
+                placeholder="blur"
+                sizes="100vw"
+                width={200}
+                height={200}
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                }}
+                blurDataURL="data:..."
+                quality={100}
+              />
+            )}
           </CardContent>
         </CardActionArea>
       </Card>
