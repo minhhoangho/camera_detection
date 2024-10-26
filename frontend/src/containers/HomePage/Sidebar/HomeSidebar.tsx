@@ -135,7 +135,7 @@ export function HomeSidebar({ open, onClose }: Props): React.ReactElement {
           <div className="mt-2">
             <Box sx={{ my: 1.5, px: 2 }} className="flex">
               <Button
-                onClick={() => router.push(PathName.GisLocationManagement)}
+                onClick={() => router.push(PathName.Analytic)}
               >
                 <Iconify
                   icon="mdi:user"

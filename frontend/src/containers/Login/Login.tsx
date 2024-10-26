@@ -58,7 +58,7 @@ export function Login() {
       if (redirectUrl) {
         router.push(redirectUrl);
       } else {
-        router.push(PathName.GisLocationManagement);
+        router.push(PathName.Analytic);
       }
     },
     onError: () => {
