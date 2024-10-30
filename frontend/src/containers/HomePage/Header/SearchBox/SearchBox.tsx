@@ -11,26 +11,21 @@ import { useTheme } from '@mui/material/styles';
 import _isEmpty from 'lodash/isEmpty';
 import _debounce from 'lodash/debounce';
 import { Iconify } from 'src/components/Iconify';
+import { useSelectLocation } from '../../hooks/use-select-location';
+import { GeoProperty, selectedLocationState } from '../../recoil/locationState';
+import { useRecoilState } from 'recoil';
 
 const SEARCH_API_ENDPOINT = 'https://api.geoapify.com/v1/geocode/autocomplete';
 const GEOAPIFY_API_KEY = 'c03ef2b9bca04d8ba477409f929517f9';
 
-type GeoProperty = {
-  long: number;
-  lat: number;
-  country: string;
-  state: string;
-  region: string;
-  addressLine1: string;
-  addressLine2: string;
-  addressFormated: string;
-  geoapifyID: string;
-};
+
 
 export function SearchBox() {
   const theme = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<GeoProperty[]>([]);
+  const [_, setSelectedLocation] = useRecoilState(selectedLocationState);
+
   const handleSearchLocationByText = async (text: string) => {
     const res = await fetch(
       `${SEARCH_API_ENDPOINT}?text=${text}&apiKey=${GEOAPIFY_API_KEY}`,
@@ -92,6 +87,12 @@ export function SearchBox() {
     }
   }, [searchQuery, debouncedSearch]);
 
+  const handleClickLocation = (item: GeoProperty) => {
+    setSelectedLocation(item);
+    // setSearchQuery('');
+    // setSearchResults([]);
+  }
+
   return (
     <div style={{ position: 'relative', flexGrow: 1, maxWidth: 400 }}>
       <TextField
@@ -125,17 +126,24 @@ export function SearchBox() {
             zIndex: theme.zIndex.appBar + 2,
           }}
         >
-          {searchResults.map((res: GeoProperty) => (
-            <ListItem key={res.geoapifyID}>
+          {searchResults.map((res: GeoProperty, index) => (
+            <ListItem key={`search-result-${index}`}
+                      sx={{
+                        cursor: 'pointer',
+                        '&:hover': {
+                          backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                        },
+                      }}
+                      onClick={() => handleClickLocation(res)}>
               <ListItemText>
-                <div className="flex">
-                  <Iconify
-                    icon="basil:location-outline"
-                    color="text.disabled"
-                    width={20}
-                    height={20}
-                  />
-                  <span className="ml-2">{res.addressFormated}</span>
+                <div className="flex" >
+                 <div className="my-2"> <Iconify
+                   icon="basil:location-outline"
+                   color="text.disabled"
+                   width={20}
+                   height={20}
+                 /></div>
+                  <p className="ml-2 my-1">{res.addressFormated}</p>
                 </div>
               </ListItemText>
             </ListItem>
