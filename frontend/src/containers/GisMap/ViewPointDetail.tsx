@@ -227,7 +227,6 @@ export function ViewPointDetail() {
                   width={'--webkit-fill-available'}
                   height={500}
                   onUpdateLatLong={updateFormLatLong}
-                  // center={[long, lat]}
                   center={[dataDetail?.long ?? 0, dataDetail?.lat ?? 0]}
                 />
               )}

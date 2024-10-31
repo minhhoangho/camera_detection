@@ -8,18 +8,17 @@ import {
   Typography,
 } from '@mui/material';
 import React from 'react';
-// import {OpenLayerMap} from "./OpenLayerMap";
 import { useQuery } from 'react-query';
 import { useRouter } from 'next/router';
 import Tooltip from '@mui/material/Tooltip';
-import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
+import { GridCellParams, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import { format } from 'date-fns';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { toast } from 'src/components/Toast';
 import { Table } from 'src/components/Table';
 import { Iconify } from 'src/components/Iconify';
-import { ListViewPointPaginateResponse } from './models';
+import { ListViewPointPaginateResponse, ViewPointData } from './models';
 import {
   VIEW_POINT_MANAGEMENT_COLUMNS_LABEL,
   VIEW_POINT_MANAGEMENT_KEY,
@@ -89,7 +88,7 @@ export function GisMapViewPointManagement() {
     }
   };
 
-  const renderActionButton = (params: GridRenderCellParams<any, any>) => {
+  const renderActionButton = (params: GridCellParams<ViewPointData>) => {
     return (
       <div className="flex">
         <Tooltip title="Chỉnh sửa">
@@ -105,7 +104,7 @@ export function GisMapViewPointManagement() {
         </Tooltip>
         <Tooltip title="Xoá">
           <Button
-            onClick={() => handleDelete(params.id)}
+            onClick={() => handleDelete(params.row.id)}
             style={{ padding: 0, minWidth: 0 }}
           >
             <DeleteIcon style={{ fontSize: '20px', outline: 'none' }} />
@@ -115,7 +114,7 @@ export function GisMapViewPointManagement() {
     );
   };
 
-  const columns: GridColDef[] = [
+  const columns: GridColDef<ViewPointData>[] = [
     {
       field: VIEW_POINT_MANAGEMENT_KEY.ID,
       headerName:
@@ -214,7 +213,9 @@ export function GisMapViewPointManagement() {
     setIsOpenCreate(true);
   };
 
-  const onFilterName = (event) => {
+  const onFilterName = (event: {
+    target: { value: React.SetStateAction<string | null> };
+  }) => {
     // eslint-disable-next-line no-console
     setKeyword(event?.target.value);
   };

@@ -9,7 +9,7 @@ import * as React from 'react';
 import { FormInput } from 'src/components/Form';
 import { toast } from 'src/components/Toast';
 import { CreateViewPointPayloadRequest, ViewPointData } from './models';
-import { OpenLayerMap } from './OpenLayerMap';
+import { OpenLayerMapManagement } from './OpenLayerMap';
 import { PathName } from '../../constants/routes';
 import { createViewPoint } from '../../api/view-point';
 
@@ -152,7 +152,7 @@ export function CreateViewPointModal({ onClose, isOpen }: ModalProps) {
             </Box>
           </Grid>
           <Grid item xs={8}>
-            <OpenLayerMap
+            <OpenLayerMapManagement
               width={'-webkit-fill-available'}
               height={400}
               onUpdateLatLong={updateFormLatLong}

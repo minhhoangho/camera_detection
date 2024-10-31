@@ -29,12 +29,12 @@ type OpenLayerMapProps = {
   onUpdateLatLong?: (lat: number, long: number) => void;
 };
 
-export function OpenLayerMap({
-  width,
-  height,
-  onUpdateLatLong,
-  center,
-}: OpenLayerMapProps) {
+export function OpenLayerMapManagement({
+                               width,
+                               height,
+                               onUpdateLatLong,
+                               center,
+                             }: OpenLayerMapProps) {
   const mapRef = useRef<HTMLDivElement | null | undefined>(null);
   const vectorSourceRef = useRef(new VectorSource());
 

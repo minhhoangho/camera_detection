@@ -1,1 +1,2 @@
-export * from './GisMap'
+export * from './GisMapManagement'
+export * from './ViewPointDetail'
