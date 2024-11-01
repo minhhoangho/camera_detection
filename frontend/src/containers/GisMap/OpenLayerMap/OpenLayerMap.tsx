@@ -39,12 +39,12 @@ export function OpenLayerMap({
                                geoData,
   zoom
 }: OpenLayerMapProps) {
-  const mapRef = useRef<HTMLDivElement | null | undefined>(null);
+  const mapContainer = useRef<HTMLDivElement | null | undefined>(null);
+  const mapRef = useRef<Map | null>(null);
   const [hoverPoint, setHoverPoint] = useState<ViewPointData | null>(null);
 
   useEffect(() => {
-    const map = new Map({
-      // target: mapRef.current,
+    mapRef.current = new Map({
       layers: [
         new TileLayer({
           source: new OSM(),
@@ -65,7 +65,7 @@ export function OpenLayerMap({
         zoom: zoom, // Initial zoom level
       }),
     });
-    mapRef.current && map.setTarget(mapRef.current);
+    mapContainer.current && mapRef.current.setTarget(mapContainer.current);
 
     const pointStyle = new Style({
       image: new Icon({
@@ -103,12 +103,12 @@ export function OpenLayerMap({
         return mapStyles[feature.get('type')];
       },
     });
-    map.addLayer(vectorLayer);
-    map.on('pointermove', (evt) => {
-      const feature = map.forEachFeatureAtPixel(evt.pixel, (feature) => {
+    mapRef.current.addLayer(vectorLayer);
+    mapRef.current.on('pointermove', (evt) => {
+      const feature = mapRef.current.forEachFeatureAtPixel(evt.pixel, (feature) => {
         return feature;
       });
-      map.getTargetElement().style.cursor = feature ? 'pointer' : '';
+      mapRef.current.getTargetElement().style.cursor = feature ? 'pointer' : '';
       // Show the tooltip information of the feature
       if (feature) {
         const data: ViewPointData = feature.get('data');
@@ -129,14 +129,14 @@ export function OpenLayerMap({
         }
       }
     });
-    map.on('click', (evt) => {
-      const feature = map.forEachFeatureAtPixel(evt.pixel, (feature) => {
+    mapRef.current.on('click', (evt) => {
+      const feature = mapRef.current.forEachFeatureAtPixel(evt.pixel, (feature) => {
         return feature;
       });
 
       if (feature?.get('data')) {
         const data: ViewPointData = feature.get('data');
-        map.getView().animate({
+        mapRef.current.getView().animate({
           center: fromLonLat([data.long, data.lat]),
           duration: 1800,
           zoom: 20,
@@ -144,13 +144,13 @@ export function OpenLayerMap({
       }
     });
     return () => {
-      map.setTarget(undefined);
+      mapRef.current.setTarget(undefined);
     };
   }, [center, geoData, zoom]);
 
   return (
     <div className={styles['openlayer']}>
-      <div ref={mapRef} style={{ width, height }} />;
+      <div ref={mapContainer} style={{ width, height }} />;
       <div className={styles['hoverInformation']} id="hover-information-id">
         {hoverPoint ? (
           <Card className="mt-3">
