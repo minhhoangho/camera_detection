@@ -7,12 +7,15 @@ from ultralytics import YOLO
 from ultralytics.engine.results import Results
 from sahi import AutoDetectionModel
 from sahi.prediction import PredictionResult, ObjectPrediction
-from sahi.utils.cv import read_image
-from sahi.predict import get_prediction, get_sliced_prediction, predict
+from sahi.predict import get_prediction
 import time
+
+from src.Apps.detector.constants.coco_class import VEHICLE_CLASS_IDS
+
 
 @dataclass
 class ObjectDetectionResult:
+    id: int
     class_name: str
     conf: float
     xyxy: Tuple[int, int, int, int]
@@ -51,6 +54,8 @@ class DetectionUtil:
         list_item = []
         for _box in object_prediction_list:
             res: ObjectDetectionResult = self._handle_box_sahi(_box)
+            if res.id not in VEHICLE_CLASS_IDS:
+                continue
             list_item.append(res)
             self._draw_bounding_box(frame, res)
         return frame, list_item
@@ -72,6 +77,8 @@ class DetectionUtil:
         list_item = []
         for _box in object_prediction_list:
             res: ObjectDetectionResult = self._handle_box_sahi(_box)
+            if res.id not in VEHICLE_CLASS_IDS:
+                continue
             list_item.append(res)
             self._draw_bounding_box(frame, res)
 
@@ -105,8 +112,6 @@ class DetectionUtil:
         for item in list_item:
             if item.conf > self.threshold:
                 class_name = item.class_name
-                if class_name == "person":
-                    continue
                 if class_name in counter:
                     counter[class_name] += 1
                 else:
@@ -134,17 +139,20 @@ class DetectionUtil:
         conf = box.conf[0].item()
 
         return ObjectDetectionResult(
+            id=class_id +1,
             class_name=self.class_dict[class_id],
             conf=conf,
             xyxy=cords,
         )
 
     def _handle_box_sahi(self, box: ObjectPrediction) -> ObjectDetectionResult:
+        _id = box.category.id
         cords = box.bbox.to_xyxy()
         class_name = box.category.name
         conf = box.score.value
 
         return ObjectDetectionResult(
+            id=_id,
             class_name=class_name,
             conf=conf,
             xyxy=cords,
