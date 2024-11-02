@@ -28,11 +28,10 @@ detector = DetectionUtil(os.path.join(settings.BASE_DIR, "../models", "yolov8s.p
 from src.Apps.base.constants.http import HttpMethod
 from src.Apps.websocket.shared_state import connection_status
 
+
 class DetectorViewSet(viewsets.ViewSet):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-
 
     @action(methods=[HttpMethod.GET], url_path="video/realtime/raw", detail=False)
     def view_raw_realtime(self, request: Request, *args, **kwargs):
@@ -75,7 +74,7 @@ class DetectorViewSet(viewsets.ViewSet):
         unique_id = f"{request_id}_{cam_id}"
 
         camera_viewpoint = await GisViewPointCamera.objects.filter(id=cam_id).afirst()
-        view_point =  await GisViewPoint.objects.filter(id=camera_viewpoint.view_point_id).afirst()
+        view_point = await GisViewPoint.objects.filter(id=camera_viewpoint.view_point_id).afirst()
         video_url = camera_viewpoint.camera_uri
         homography_matrix = camera_viewpoint.homography_matrix
         mapping_bev = False
@@ -151,4 +150,3 @@ class DetectorViewSet(viewsets.ViewSet):
                 }
             }
         )
-

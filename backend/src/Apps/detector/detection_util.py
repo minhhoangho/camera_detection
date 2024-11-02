@@ -11,18 +11,12 @@ from sahi.predict import get_prediction
 import time
 
 from src.Apps.detector.constants.coco_class import VEHICLE_CLASS_IDS
-
-
-@dataclass
-class ObjectDetectionResult:
-    id: int
-    class_name: str
-    conf: float
-    xyxy: Tuple[int, int, int, int]
+from src.Apps.detector.dataclass.object_detection_result import ObjectDetectionResult
+from src.Apps.detector.services.detector_service import DetectorService
 
 
 class DetectionUtil:
-    def __init__(self, ckpt: str, model_type:str="yolov8") -> None:
+    def __init__(self, ckpt: str, model_type: str = "yolov8") -> None:
         self.ckpt_path = ckpt or os.path.join("./models", "yolov8.pt")
         # self.model = YOLO(ckpt_path)
         self.model = YOLO(self.ckpt_path)
@@ -33,7 +27,6 @@ class DetectionUtil:
             confidence_threshold=0.3,
             device="cpu",
         )
-
 
         self.class_dict = self.model.names
 
@@ -60,7 +53,9 @@ class DetectionUtil:
             self._draw_bounding_box(frame, res)
         return frame, list_item
 
-    def get_prediction_and_bev_image(self, frame: np.ndarray, bev_image: np.ndarray, homography_matrix: List[List[float]]) -> Tuple[np.ndarray, List[ObjectDetectionResult]]:
+    def get_prediction_and_bev_image(self, frame: np.ndarray, bev_image: np.ndarray,
+                                     homography_matrix: List[List[float]]) -> Tuple[
+        np.ndarray, List[ObjectDetectionResult]]:
         start_time = time.time()
         # result: PredictionResult = get_sliced_prediction(
         #     image=frame,
@@ -74,38 +69,26 @@ class DetectionUtil:
         )
         print(f"Time to get prediction: {time.time() - start_time}")
         object_prediction_list: List[ObjectPrediction] = result.object_prediction_list
-        list_item = []
+        list_result: List[ObjectDetectionResult] = []
         for _box in object_prediction_list:
             res: ObjectDetectionResult = self._handle_box_sahi(_box)
             if res.id not in VEHICLE_CLASS_IDS:
                 continue
-            list_item.append(res)
+            list_result.append(res)
             self._draw_bounding_box(frame, res)
 
-        bev_image = self._map_to_bev(bev_image, homography_matrix, object_prediction_list)
+        bev_image = DetectorService.map_to_bev_image(
+            bev_image,
+            homography_matrix,
+            list_result
+        )
 
         # Concat frame and bev_image vertically, note that we need to update width of bev_image to match frame
         bev_image = cv2.resize(bev_image, (frame.shape[1], frame.shape[0]))
         # And padding between frame and bev_image, the padding is white color
         padding = np.ones((30, frame.shape[1], 3), dtype=np.uint8) * 255
         out_frame = np.concatenate((frame, padding, bev_image), axis=0)
-        return out_frame, list_item
-
-    def _map_to_bev(self, bev_img: np.ndarray, homography_matrix: List[List[float]], result: List[ObjectPrediction] ) -> np.ndarray:
-        cloned_bev_img = bev_img.copy()
-        homography_matrix = np.array(homography_matrix, dtype=np.float32)
-        ltwh_list = [box.bbox.to_xywh() for box in result]
-        for box in ltwh_list:
-            x, y, w, h = box
-            if w * h < 10: # Skip small boxes
-                continue
-            x_center = float(x + w / 2)
-            y_center = float(y + h / 2)
-            wrl = np.array(homography_matrix).dot(np.array([[x_center], [y_center], [1]]))
-            wrl = wrl / wrl[2] # Normalize ratio
-            x_bev, y_bev = wrl[0], wrl[1]
-            cv2.circle(cloned_bev_img, (int(x_bev), int(y_bev)), 5, (0, 255, 0), -1)
-        return cloned_bev_img
+        return out_frame, list_result
 
     def count_objects(self, list_item: List[ObjectDetectionResult]) -> dict:
         counter = dict()
@@ -139,7 +122,7 @@ class DetectionUtil:
         conf = box.conf[0].item()
 
         return ObjectDetectionResult(
-            id=class_id +1,
+            id=class_id + 1,
             class_name=self.class_dict[class_id],
             conf=conf,
             xyxy=cords,

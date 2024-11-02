@@ -123,6 +123,8 @@ export function ViewPointDetail() {
       bevImage: fileUrl,
       zoom: 19,
     }
+    // From zoom and bev image, how can I detect realword coordinates of the image?
+
     uploadBevImage(payload);
   };
 
