@@ -15,9 +15,11 @@ import { Box, Card, Skeleton, Typography } from '@mui/material';
 import CardActionArea from '@mui/material/CardActionArea';
 import Image from 'next/image';
 import CardContent from '@mui/material/CardContent';
-import styles from './OpenLayerMap.module.scss'
+import styles from './OpenLayerMap.module.scss';
 import { CenterProps } from '../types';
 import { ViewPointData } from '../models';
+import { mapFocusState } from '../../../app-recoil/atoms/map';
+import { useRecoilValue } from 'recoil';
 // Import OpenLayers CSS
 
 // const DEFAULT_GEO = [12047000, 1812900]; // (long, lat) Da nang location
@@ -36,12 +38,13 @@ export function OpenLayerMap({
   width,
   height,
   center,
-                               geoData,
-  zoom
+  geoData,
+  zoom,
 }: OpenLayerMapProps) {
   const mapContainer = useRef<HTMLDivElement | null | undefined>(null);
   const mapRef = useRef<Map | null>(null);
   const [hoverPoint, setHoverPoint] = useState<ViewPointData | null>(null);
+  const mapFocus = useRecoilValue(mapFocusState);
 
   useEffect(() => {
     mapRef.current = new Map({
@@ -73,15 +76,6 @@ export function OpenLayerMap({
         width: 30,
         anchor: [0.5, 1],
         src: '/static/icons/marker/location_marker.png',
-        // src: '/static/icons/marker/cctv-camera.png',
-        // img: (
-        //   <Image
-        //     src="/static/icons/marker/location_marker.png"
-        //     alt=""
-        //     height={30}
-        //     width={30}
-        //   />
-        // ),
       }),
     });
     const mapStyles: { [key: string]: Style } = {
@@ -105,10 +99,15 @@ export function OpenLayerMap({
     });
     mapRef.current.addLayer(vectorLayer);
     mapRef.current.on('pointermove', (evt) => {
-      const feature = mapRef.current.forEachFeatureAtPixel(evt.pixel, (feature) => {
-        return feature;
-      });
-      mapRef.current.getTargetElement().style.cursor = feature ? 'pointer' : '';
+      const feature = mapRef.current?.forEachFeatureAtPixel(
+        evt.pixel,
+        (feature) => {
+          return feature;
+        },
+      );
+      if (mapRef.current) {
+        mapRef.current.getTargetElement().style.cursor = feature ? 'pointer' : '';
+      }
       // Show the tooltip information of the feature
       if (feature) {
         const data: ViewPointData = feature.get('data');
@@ -130,23 +129,38 @@ export function OpenLayerMap({
       }
     });
     mapRef.current.on('click', (evt) => {
-      const feature = mapRef.current.forEachFeatureAtPixel(evt.pixel, (feature) => {
-        return feature;
-      });
+      const feature = mapRef.current?.forEachFeatureAtPixel(
+        evt.pixel,
+        (feature) => {
+          return feature;
+        },
+      );
 
       if (feature?.get('data')) {
         const data: ViewPointData = feature.get('data');
-        mapRef.current.getView().animate({
-          center: fromLonLat([data.long, data.lat]),
-          duration: 1800,
-          zoom: 20,
-        });
+        zoomTo(data.long, data.lat, 20);
       }
     });
     return () => {
       mapRef.current.setTarget(undefined);
     };
   }, [center, geoData, zoom]);
+
+  const zoomTo = (long: number, lat: number, zoom: number) => {
+    mapRef.current?.getView().animate({
+      center: fromLonLat([long, lat]),
+      duration: 1800,
+      zoom,
+    });
+  }
+
+
+  useEffect(() => {
+    if (mapFocus) {
+      zoomTo(mapFocus.long, mapFocus.lat, mapFocus.zoom);
+    }
+  }, [mapFocus]);
+
 
   return (
     <div className={styles['openlayer']}>

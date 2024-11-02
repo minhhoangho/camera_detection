@@ -31,6 +31,8 @@ import {
 import { DEFAULT_PAGINATION_PARAMS } from '../../../constants';
 import { listViewPointsPaginate } from '../../../api/view-point';
 import { PathName } from '../../../constants/routes';
+import { mapFocusState } from '../../../app-recoil/atoms/map';
+import { useSetRecoilState } from 'recoil';
 
 type Props = {
   onClose: () => void;
@@ -43,6 +45,8 @@ export function HomeSidebar({ open, onClose }: Props): React.ReactElement {
   const [keyword, setKeyword] = React.useState<string | null>('');
   const [activeViewPoint, setActiveViewPoint] =
     React.useState<ViewPointData | null>(null);
+  const setMapFocus = useSetRecoilState(mapFocusState);
+
 
 
   const { data, fetchNextPage, isLoading, isFetching } =
@@ -90,6 +94,16 @@ export function HomeSidebar({ open, onClose }: Props): React.ReactElement {
     }
   };
 
+
+  const setActiveViewPointAndZoom = (viewPointItem: ViewPointData) => {
+    setActiveViewPoint(viewPointItem)
+    setMapFocus({
+      lat: viewPointItem.lat,
+      long: viewPointItem.long - 0.001,
+      zoom: 20
+    })
+  }
+
   const renderResultItem = (item: ViewPointData) => {
     return (
       <Card
@@ -100,8 +114,7 @@ export function HomeSidebar({ open, onClose }: Props): React.ReactElement {
           background: 'transparent',
         }}
       >
-        <CardActionArea className={styles['custom-card-border']} onClick={() => setActiveViewPoint(item)}>
-
+        <CardActionArea className={styles['custom-card-border']} onClick={() => setActiveViewPointAndZoom(item)}>
           {item.thumbnail ? (
             <div>
               <Image

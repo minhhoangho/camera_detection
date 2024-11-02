@@ -139,7 +139,10 @@ class GisMapService:
                            [0.131452704, -0.487076251, -478.520093],
                            [-0.00112704092, -0.00881721794, 1.0]]
         homography_matrix = json.dumps(test_homomatrix)
-        GisViewPointCamera.objects.filter(id=pk).update(bev_image=bev_image, homography_matrix=homography_matrix)
+        metadata: dict = cls.calculate_bev_metadata(pk=pk).__dict__
+        GisViewPointCamera.objects.filter(id=pk).update(
+            bev_image=bev_image, homography_matrix=homography_matrix, bev_image_metadata=json.dumps(metadata)
+        )
         return True
 
     @classmethod

@@ -24,7 +24,7 @@ BENCHMARK_MODELS = [
 
 ]
 
-IMG_PATH = '../img/cam_bv_c.jpg'
+IMG_PATH = '../img/cam_cong_nguyen_hue.jpg'
 # IMG_PATH = '../img/cau_rong.jpg'
 
 if __name__ == "__main__":

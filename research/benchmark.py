@@ -5,7 +5,7 @@ import time
 import cv2
 
 BASE_DIR = Path(__file__).parent.parent
-IMG_PATH = '../img/cam_bv_c.jpg'
+IMG_PATH = '../img/cam_cong_nguyen_hue.jpg'
 IMG_PATH = '../img/cau_rong.jpg'
 
 

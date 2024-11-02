@@ -77,7 +77,7 @@ export function OpenLayerMapManagement({
       ],
       view: new View({
         center: fromLonLat(center), // Center coordinates of New York in EPSG:3857 projection
-        zoom: 19, // Initial zoom level
+        zoom: 20, // Initial zoom level
       }),
     });
     mapRef.current && map.setTarget(mapRef.current);
