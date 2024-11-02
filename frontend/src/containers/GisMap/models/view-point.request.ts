@@ -40,4 +40,5 @@ export type BEVAndHomoPayloadRequest = {
   bevImage: string;
   zoom: number;
   homographyMatrix?: any;
+  imageCoordinates?: any;
 };

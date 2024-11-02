@@ -82,14 +82,7 @@ class DetectorService:
             wrl = wrl / wrl[2]  # Normalize ratio
             x_bev, y_bev = wrl[0], wrl[1]
             # Calculate the real-world coordinates
-            x_ratio = x_bev / image_width
-            y_ratio = y_bev / image_height
-            x_diff = x_ratio - 0.5
-            y_diff = y_ratio - 0.5
-            x_diff = x_diff * 2 * 0.5
-            y_diff = y_diff * 2 * 0.5
-            x_long = center_long + x_diff
-            y_lat = center_lat + y_diff
+
 
 
             list_point_coordinates.append((x_bev, y_bev))

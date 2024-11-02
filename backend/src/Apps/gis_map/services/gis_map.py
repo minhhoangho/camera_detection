@@ -134,19 +134,25 @@ class GisMapService:
         return True
 
     @classmethod
-    def save_bev_view_image(cls, pk: int, bev_image: str, homography_matrix: List[List[float]]):
+    def save_bev_view_image(cls,
+                            pk: int,
+                            bev_image: str,
+                            homography_matrix: List[List[float]],
+                            zoom: float,
+                            image_coordinates: dict
+                            ):
         test_homomatrix = [[-0.157284657, -3.31660226, 851.87688],
                            [0.131452704, -0.487076251, -478.520093],
                            [-0.00112704092, -0.00881721794, 1.0]]
         homography_matrix = json.dumps(test_homomatrix)
-        metadata: dict = cls.calculate_bev_metadata(pk=pk).__dict__
+        metadata: dict = cls.calculate_bev_metadata(pk=pk, image_coordinates=image_coordinates).__dict__
         GisViewPointCamera.objects.filter(id=pk).update(
             bev_image=bev_image, homography_matrix=homography_matrix, bev_image_metadata=json.dumps(metadata)
         )
         return True
 
     @classmethod
-    def calculate_bev_metadata(cls, pk: int) -> BevImageMetaData:
+    def calculate_bev_metadata(cls, pk: int, image_coordinates) -> BevImageMetaData:
         cam_detail = cls.get_view_point_camera_detail(pk=pk)
         if not cam_detail.bev_image:
             raise AppException(error=ApiErr.INVALID, params="BEV Image")
@@ -157,4 +163,4 @@ class GisMapService:
         bev_image = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
         height, width, _ = bev_image.shape
         center = [view_point.long, view_point.lat]
-        return BevImageMetaData(width=width, height=height, center_long_lat=center)
+        return BevImageMetaData(width=width, height=height, center_long_lat=center, image_coordinates=image_coordinates)

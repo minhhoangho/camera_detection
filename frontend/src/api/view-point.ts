@@ -80,6 +80,8 @@ export const saveBevImageAndHomographyMatrix = async (
   const data = {
     bevImage: payload.bevImage,
     homographyMatrix: payload.homographyMatrix || [],
+    zoom: payload.zoom,
+    imageCoordinates: payload.imageCoordinates
   };
   return request.post(
     `/gis-maps/view-points/${viewpointId}/camera/${payload.id}/bev`,

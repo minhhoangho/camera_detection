@@ -5,12 +5,21 @@ import * as React from 'react';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useRecoilValue } from 'recoil';
 import { toast } from 'src/components/Toast';
 import { FormInput } from 'src/components/Form';
 import { Iconify } from 'src/components/Iconify';
 import { FileUpload } from 'src/components/FileUpload';
+import {
+  getDetailViewPoint,
+  getViewPointCameraDetail,
+  saveBevImageAndHomographyMatrix,
+  updateViewPoint,
+} from 'src/api/view-point';
+import { BaseLayout, PrivateLayout } from 'src/layouts';
+import { getImageCoordinates } from 'src/utils/gis-map';
 import { RealtimeCamera } from './components/RealtimeCamera';
-import {  OpenLayerMapManagement } from './OpenLayerMap';
+import { OpenLayerMapManagement } from './OpenLayerMap';
 import { ViewPointCameraList } from './components/ViewPointCameraList';
 import {
   BEVAndHomoPayloadRequest,
@@ -18,15 +27,10 @@ import {
   ViewPointCameraData,
   ViewPointData,
 } from './models';
-import {
-  getDetailViewPoint,
-  getViewPointCameraDetail,
-  saveBevImageAndHomographyMatrix,
-  updateViewPoint,
-} from '../../api/view-point';
-import { BaseLayout, PrivateLayout } from '../../layouts';
+import { bevCoordinateState } from '../../app-recoil/atoms/map';
 
 export function ViewPointDetail() {
+  const bevCoordinate = useRecoilValue(bevCoordinateState);
   const [showRealtimeCamera, setShowRealtimeCamera] = React.useState(false);
   const [selectedViewPointCamera, setSelectedViewPointCamera] = React.useState(
     {} as ViewPointCameraData,
@@ -122,9 +126,8 @@ export function ViewPointDetail() {
       id: selectedViewPointCamera.id,
       bevImage: fileUrl,
       zoom: 19,
-    }
-    // From zoom and bev image, how can I detect realword coordinates of the image?
-
+      imageCoordinates: bevCoordinate
+    };
     uploadBevImage(payload);
   };
 

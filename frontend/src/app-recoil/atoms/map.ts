@@ -1,6 +1,5 @@
 import { atom } from 'recoil';
 
-const mapFocusStateKey = 'mapFocusState';
 
 export type MapFocusPros = {
   lat: number;
@@ -9,6 +8,13 @@ export type MapFocusPros = {
 };
 
 export const mapFocusState = atom<MapFocusPros | null>({
-  key: mapFocusStateKey,
+  key: 'mapFocusState',
   default: null,
 });
+
+
+
+export const bevCoordinateState = atom<any> ({
+  key: 'bevCoordinateState',
+  default: null,
+})

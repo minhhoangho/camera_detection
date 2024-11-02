@@ -167,11 +167,18 @@ class GisMapViewSet(PaginationMixin):
         cam_id = TypeUtils.safe_int(cam_id)
         bev_url = request.data.get("bev_image", "")
         homography_matrix = request.data.get("homography_matrix", "")
+        zoom = request.data.get("zoom", 0),
+        image_coordinates = request.data.get("image_coordinates", {})
         if not cam_id:
             raise AppException(error=ValidationErr.INVALID, params=["cam_id"])
         if not bev_url:
             raise AppException(error=ValidationErr.INVALID, params=["bev_image"])
-        GisMapService.save_bev_view_image(pk=cam_id, bev_image=bev_url, homography_matrix=homography_matrix)
+        GisMapService.save_bev_view_image(pk=cam_id,
+                                          bev_image=bev_url,
+                                          homography_matrix=homography_matrix,
+                                          zoom=zoom,
+                                          image_coordinates=image_coordinates
+                                          )
         return Response(status=HTTPStatus.OK)
 
 
