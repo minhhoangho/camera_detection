@@ -10,7 +10,7 @@ import { FormInput } from 'src/components/Form';
 import { Iconify } from 'src/components/Iconify';
 import { FileUpload } from 'src/components/FileUpload';
 import { RealtimeCamera } from './components/RealtimeCamera';
-import { OpenLayerMap } from './OpenLayerMap';
+import {  OpenLayerMapManagement } from './OpenLayerMap';
 import { ViewPointCameraList } from './components/ViewPointCameraList';
 import {
   BEVAndHomoPayloadRequest,
@@ -118,10 +118,12 @@ export function ViewPointDetail() {
   };
 
   const handleSaveBEVImage = (fileUrl: string) => {
-    uploadBevImage({
+    const payload: BEVAndHomoPayloadRequest = {
       id: selectedViewPointCamera.id,
       bevImage: fileUrl,
-    });
+      zoom: 19,
+    }
+    uploadBevImage(payload);
   };
 
   return (
@@ -223,7 +225,7 @@ export function ViewPointDetail() {
             </Grid>
             <Grid item xs={6}>
               {!isLoading && (
-                <OpenLayerMap
+                <OpenLayerMapManagement
                   width={'--webkit-fill-available'}
                   height={500}
                   onUpdateLatLong={updateFormLatLong}

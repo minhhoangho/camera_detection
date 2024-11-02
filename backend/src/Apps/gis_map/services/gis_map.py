@@ -6,6 +6,9 @@ from datetime import timedelta
 from typing import Dict, List
 import json
 
+import cv2
+import numpy as np
+import requests
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.files.storage import default_storage
@@ -16,6 +19,7 @@ from django.db.models import Q
 from src.Apps.base.exceptions import AppException, ApiErr
 from src.Apps.base.utils.type_utils import TypeUtils
 from src.Apps.detector.services.detector_service import DetectorService
+from src.Apps.gis_map.dataclass.bev_metadata import BevImageMetaData
 from src.Apps.gis_map.models import GisViewPoint, GisViewPointCamera, GisMapView
 from src.Apps.utils.firebase_client.firestore import Firestore
 
@@ -100,7 +104,8 @@ class GisMapService:
     @classmethod
     def _save_captured_image(cls, view_point: GisViewPoint, cam_detail: GisViewPointCamera):
         file_name = f"{view_point.name}_{cam_detail.id}"
-        s3_url = DetectorService.handle_capture_video_and_upload_s3(video_url=cam_detail.camera_uri, file_name=file_name)
+        s3_url = DetectorService.handle_capture_video_and_upload_s3(video_url=cam_detail.camera_uri,
+                                                                    file_name=file_name)
         GisViewPointCamera.objects.filter(id=cam_detail.id).update(captured_image=s3_url)
         if not view_point.thumbnail:
             view_point.thumbnail = s3_url
@@ -131,8 +136,22 @@ class GisMapService:
     @classmethod
     def save_bev_view_image(cls, pk: int, bev_image: str, homography_matrix: List[List[float]]):
         test_homomatrix = [[-0.157284657, -3.31660226, 851.87688],
-         [0.131452704, -0.487076251, -478.520093],
-         [-0.00112704092, -0.00881721794, 1.0]]
+                           [0.131452704, -0.487076251, -478.520093],
+                           [-0.00112704092, -0.00881721794, 1.0]]
         homography_matrix = json.dumps(test_homomatrix)
         GisViewPointCamera.objects.filter(id=pk).update(bev_image=bev_image, homography_matrix=homography_matrix)
         return True
+
+    @classmethod
+    def calculate_bev_metadata(cls, pk: int) -> BevImageMetaData:
+        cam_detail = cls.get_view_point_camera_detail(pk=pk)
+        if not cam_detail.bev_image:
+            raise AppException(error=ApiErr.INVALID, params="BEV Image")
+        view_point = cls.get_view_point_by_id(cam_detail.view_point_id)
+
+        response = requests.get(cam_detail.bev_image)
+        img_array = np.array(bytearray(response.content), dtype=np.uint8)
+        bev_image = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
+        height, width, _ = bev_image.shape
+        center = [view_point.long, view_point.lat]
+        return BevImageMetaData(width=width, height=height, center_long_lat=center)

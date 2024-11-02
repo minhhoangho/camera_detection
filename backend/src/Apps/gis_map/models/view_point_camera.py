@@ -12,6 +12,7 @@ class GisViewPointCamera(UserInteractionModel, AutoTimeStampedModel):
     captured_image = models.CharField(null=True, default='', max_length=1024)
     bev_image = models.CharField(null=True, default='', max_length=1024)
     homography_matrix = models.TextField(null=True, default='')
+    bev_image_metadata = models.TextField(null=True, default='')
 
     class Meta:
         db_table = "gis_view_point_cameras"

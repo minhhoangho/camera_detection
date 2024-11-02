@@ -111,7 +111,7 @@ export function MapTiler({ geoData, center, zoom }: Props) {
             // These options control the flight curve, making it move
             // slowly and zoom out almost completely before starting
             // to pan.
-            speed: 0.5, // make the flying slow
+            speed: 0.8, // make the flying slow
             curve: 1, // change the speed at which it zooms out
 
             // This can be any easing function: it takes a number between
