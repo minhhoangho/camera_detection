@@ -13,6 +13,7 @@ if __name__ == '__main__':
     detectors = [
         YOLO(os.path.join(BASE_DIR, "models", "yolo11n.pt")),
         YOLO(os.path.join(BASE_DIR, "models", "yolo11s.pt")),
+        YOLO(os.path.join(BASE_DIR, "models", "yolo11s.pt")),
     ]
     input_img = cv2.imread(IMG_PATH)
     for detector in detectors:

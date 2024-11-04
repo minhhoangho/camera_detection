@@ -14,22 +14,24 @@ export const MENU_KEY = {
   CATEGORY: 'category',
 
   GIS_MANAGEMENT: 'gis_management',
+  MODEL_BENCHMARK: 'model_benchmark',
 
   ANALYTIC: 'analytic',
 };
 
 export const MENU_LABEL = {
-  [MENU_KEY.OVERVIEW]: 'Overview',
-  [MENU_KEY.HOME]: 'Home',
-  [MENU_KEY.UPDATE_INFO]: 'My info',
+  [MENU_KEY.OVERVIEW]: 'Tổng quan',
+  [MENU_KEY.HOME]: 'Trang chủ',
+  [MENU_KEY.UPDATE_INFO]: 'Thông tin',
   [MENU_KEY.ADMIN]: 'Admin',
   [MENU_KEY.USER_MANAGEMENT]: 'Users',
-  [MENU_KEY.ANALYTIC]: 'Analytics',
+  [MENU_KEY.ANALYTIC]: 'Phân tích',
+  [MENU_KEY.MODEL_BENCHMARK]: 'Benchmark',
 
   [MENU_KEY.BLOG]: 'Blog',
   [MENU_KEY.POST]: 'Posts',
 
-  [MENU_KEY.GIS_MANAGEMENT]: 'GIS Map',
+  [MENU_KEY.GIS_MANAGEMENT]: 'Bản đồ GIS',
 
   [MENU_KEY.CATEGORY]: 'Category',
 };

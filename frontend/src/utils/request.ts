@@ -55,3 +55,14 @@ request.interceptors.response.use(
     return Promise.reject(errorResponse?.data);
   },
 );
+
+
+export const requestFile = axios.create({
+  baseURL: API_BASE_URL,
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'multipart/form-data',
+  },
+  paramsSerializer: (params) =>
+    qs.stringify(params, { arrayFormat: 'brackets' }),
+})

@@ -4,6 +4,7 @@ import PieChartIcon from '@mui/icons-material/PieChart';
 import HomeIcon from '@mui/icons-material/Home';
 import PersonIcon from '@mui/icons-material/Person';
 import BlockIcon from '@mui/icons-material/Block';
+import AutoGraphIcon from '@mui/icons-material/AutoGraph';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import _get from 'lodash/get';
@@ -11,7 +12,7 @@ import _map from 'lodash/map';
 import _isEmpty from 'lodash/isEmpty';
 import { MenuItemInterface, MenuItemMapInterface } from './types';
 import { MENU_KEY, MENU_LABEL } from './constants';
-import { PathName } from '../../../../constants/routes';
+import { PathName } from 'src/constants/routes';
 export const MenuDirectory = [
   {
     key: MENU_KEY.OVERVIEW,
@@ -58,12 +59,12 @@ export const MenuDirectory = [
     label: MENU_LABEL[MENU_KEY.ADMIN] as string,
     icon: <AdminPanelSettingsIcon />,
     children: [
-      // {
-      //   key: MENU_KEY.USER_MANAGEMENT,
-      //   label: MENU_LABEL[MENU_KEY.USER_MANAGEMENT] as string,
-      //   icon: <PeopleIcon />,
-      //   url: PathName.UserManagement
-      // },
+      {
+        key: MENU_KEY.MODEL_BENCHMARK,
+        label: MENU_LABEL[MENU_KEY.MODEL_BENCHMARK] as string,
+        icon: <AutoGraphIcon/>,
+        url: PathName.ModelBenchmark
+      },
       {
         key: MENU_KEY.GIS_MANAGEMENT,
         label: MENU_LABEL[MENU_KEY.GIS_MANAGEMENT] as string,
