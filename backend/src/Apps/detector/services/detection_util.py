@@ -15,10 +15,9 @@ from src.Apps.detector.dataclass.object_detection_result import ObjectDetectionR
 from src.Apps.detector.services.detector_service import DetectorService
 
 
-class DetectionUtil:
+class Yolov8Detector:
     def __init__(self, ckpt: str, model_type: str = "yolov8") -> None:
         self.ckpt_path = ckpt or os.path.join("./models", "yolov8.pt")
-        # self.model = YOLO(ckpt_path)
         self.model = YOLO(self.ckpt_path)
         self.threshold = 0.3
         self.detection_model = AutoDetectionModel.from_pretrained(

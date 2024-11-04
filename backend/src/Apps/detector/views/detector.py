@@ -2,12 +2,10 @@ import json
 import uuid
 from typing import AsyncGenerator
 
-from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 import asyncio
 from django.http import StreamingHttpResponse
-from django.views.decorators import gzip
-from requests import Request, Response
+from requests import Request
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from vidgear.gears import CamGear
@@ -18,13 +16,12 @@ import requests
 import numpy as np
 
 from src.Apps.base.utils.type_utils import TypeUtils
-from src.Apps.detector.detection_util import DetectionUtil, ObjectDetectionResult
+from src.Apps.detector.services.detection_util import Yolov8Detector, ObjectDetectionResult
 import time
 
 from src.Apps.gis_map.models import GisViewPointCamera, GisViewPoint
-from src.Apps.gis_map.services.gis_map import GisMapService
 
-detector = DetectionUtil(os.path.join(settings.BASE_DIR, "../models", "yolov8s.pt"))
+detector = Yolov8Detector(os.path.join(settings.BASE_DIR, "../models", "yolov8s.pt"))
 from src.Apps.base.constants.http import HttpMethod
 from src.Apps.websocket.shared_state import connection_status
 
