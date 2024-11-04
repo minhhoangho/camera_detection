@@ -59,7 +59,8 @@ class GisMapViewSet(PaginationMixin):
             GisMapService.create_or_update_map_view(**map_view)
         return Response(data=ViewPointSerializer(view_point).data, status=HTTPStatus.OK)
 
-    @action(methods=[HttpMethod.PUT, HttpMethod.GET, HttpMethod.DELETE], url_path=r"view-points/(?P<pk>\w+)", detail=False)
+    @action(methods=[HttpMethod.PUT, HttpMethod.GET, HttpMethod.DELETE], url_path=r"view-points/(?P<pk>\w+)",
+            detail=False)
     def view_point_detail(self, request: Request, pk):
         if HttpMethod.is_put(request.method):
             return self.update_view_point(request, pk)
@@ -133,8 +134,8 @@ class GisMapViewSet(PaginationMixin):
                 result = GisMapService.create_view_point_camera(payload)
         return Response(data=CameraViewPointSerializer(result).data, status=HTTPStatus.OK)
 
-
-    @action(methods=[HttpMethod.GET,  HttpMethod.DELETE], url_path=r"view-points/(?P<pk>\w+)/camera/(?P<cam_id>\w+)", detail=False)
+    @action(methods=[HttpMethod.GET, HttpMethod.DELETE], url_path=r"view-points/(?P<pk>\w+)/camera/(?P<cam_id>\w+)",
+            detail=False)
     def camera_viewpoint_operations(self, request: Request, pk, cam_id):
         view_point_id = TypeUtils.safe_int(pk)
         cam_id = TypeUtils.safe_int(cam_id)
@@ -167,7 +168,7 @@ class GisMapViewSet(PaginationMixin):
         cam_id = TypeUtils.safe_int(cam_id)
         bev_url = request.data.get("bev_image", "")
         homography_matrix = request.data.get("homography_matrix", "")
-        zoom = request.data.get("zoom", 0),
+        zoom = TypeUtils.safe_float(request.data.get("zoom", 0), 0)
         image_coordinates = request.data.get("image_coordinates", {})
         if not cam_id:
             raise AppException(error=ValidationErr.INVALID, params=["cam_id"])
@@ -180,7 +181,6 @@ class GisMapViewSet(PaginationMixin):
                                           image_coordinates=image_coordinates
                                           )
         return Response(status=HTTPStatus.OK)
-
 
     @action(methods=[HttpMethod.GET], url_path=r"analytic", detail=False)
     def analytic_all_location(self, request: Request):
