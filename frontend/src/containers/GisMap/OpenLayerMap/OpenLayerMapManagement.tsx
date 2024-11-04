@@ -54,17 +54,37 @@ export function OpenLayerMapManagement({
   const mapInstanceRef = useRef<Map | null>(null);
   const drawVectorLayer = useRef<VectorLayer<VectorSource> | null>(null);
   const vectorSourceDrawRef = useRef(new VectorSource());
+  const drawInteractionRef = useRef<Draw | null>(null);
 
   const markPointLayer = useRef<VectorLayer<VectorSource> | null>(null);
   const vectorSourceMarkerRef = useRef(new VectorSource());
   const setBevCoordinate = useSetRecoilState(bevCoordinateState);
 
+
+  const handleMapOnClick = useCallback((event)  =>{
+    const coordinates = event.coordinate; // Get clicked coordinates
+    const lonLat = toLonLat(coordinates); // Transform coordinates to EPSG:4326
+    const long: number = lonLat[0] as number;
+    const lat: number = lonLat[1] as number;
+
+    onUpdateLatLong?.(lat, long);
+
+    const newPoint = new Feature({
+      geometry: new Point(fromLonLat([long, lat])),
+    });
+    // Clear previous features
+    vectorSourceMarkerRef.current.clear();
+    vectorSourceMarkerRef.current.addFeature(newPoint);
+  }, [mode])
+
+
   const markPointHandler = useCallback(
-    (map: Map) => {
+    (map: Map, _mode) => {
       if (!map) return;
       if (isEmpty(center)) return;
-      if (mode !== MODE.MARK_POINT) return null;
+      if (_mode !== MODE.MARK_POINT) return null;
       markPointLayer.current = new VectorLayer({
+        className: 'mark-point-layer',
         source: vectorSourceMarkerRef.current,
         style: new Style({
           image: new Circle({
@@ -81,48 +101,37 @@ export function OpenLayerMapManagement({
         geometry: new Point(fromLonLat(center)),
       });
       vectorSourceMarkerRef.current.addFeature(centerPoint);
-      map.on('click', function (event) {
-        if (mode !== MODE.MARK_POINT) return;
-        const coordinates = event.coordinate; // Get clicked coordinates
-        const lonLat = toLonLat(coordinates); // Transform coordinates to EPSG:4326
-        const long: number = lonLat[0] as number;
-        const lat: number = lonLat[1] as number;
-
-        onUpdateLatLong?.(lat, long);
-
-        const newPoint = new Feature({
-          geometry: new Point(fromLonLat([long, lat])),
-        });
-        // Clear previous features
-        vectorSourceMarkerRef.current.clear();
-        vectorSourceMarkerRef.current.addFeature(newPoint);
-      });
+      map.on('click', handleMapOnClick);
       return null;
     },
     [center, mode, onUpdateLatLong],
   );
 
   const drawHandler = useCallback(
-    (map: Map) => {
-      if (mode !== MODE.DRAW) return null;
+    (map: Map, _mode) => {
+      if (_mode !== MODE.DRAW) return null;
+      console.log("Inner drawHandler ", _mode)
       // Create a vector layer to hold the drawn features
       drawVectorLayer.current = new VectorLayer({
+        className: 'draw-layer',
         source: vectorSourceDrawRef.current,
       });
       map.addLayer(drawVectorLayer.current);
 
       // Create a draw interaction
-      const drawInteraction = new Draw({
+      drawInteractionRef.current = new Draw({
         source: vectorSourceDrawRef.current,
         type: 'Circle',
         geometryFunction: createBox(),
       });
 
       // Add the draw interaction to the map
-      map.addInteraction(drawInteraction);
+      map.addInteraction(drawInteractionRef.current);
 
       // Optional: handle the draw event to do something with the drawn feature
-      drawInteraction.on('drawend', function (event) {
+      drawInteractionRef.current.on('drawend', function (event) {
+        console.log("drawInteraction drawend ", mode)
+
         // Clear previous features
         // drawVectorSource.clear();
         const feature = event.feature;
@@ -159,8 +168,10 @@ export function OpenLayerMapManagement({
       });
       return null;
     },
-    [mode, setBevCoordinate],
+    [mode],
   );
+
+
 
   useEffect(() => {
     console.log('Rerender when center changed realtime >> ', center);
@@ -180,28 +191,39 @@ export function OpenLayerMapManagement({
       }),
     });
     mapRef.current && mapInstanceRef.current.setTarget(mapRef.current);
-    markPointHandler(mapInstanceRef.current);
-    drawHandler(mapInstanceRef.current);
-  }, [center, drawHandler, markPointHandler]);
 
-  useEffect(() => {
-    if (mapInstanceRef.current) {
-      if (mode === MODE.MARK_POINT && drawVectorLayer.current) {
-        mapInstanceRef.current.removeLayer(drawVectorLayer.current);
-      }
-      if (mode === MODE.DRAW && markPointLayer.current) {
-        vectorSourceMarkerRef.current.clear();
-        mapInstanceRef.current.removeLayer(markPointLayer.current);
-      }
+    if (mode === MODE.MARK_POINT) {
+      markPointHandler(mapInstanceRef.current, mode);
     }
-
-    return () => {
-      mapInstanceRef.current?.setTarget(undefined);
-    };
-  }, [markPointHandler, drawHandler, center, mode]);
+    if (mode === MODE.DRAW) {
+      drawHandler(mapInstanceRef.current, mode);
+    }
+  }, []);
+  //
 
   const handleChangeMode = (_e: React.MouseEvent, value: string) => {
+    mapInstanceRef.current?.removeEventListener('click', handleMapOnClick)
     value && setMode(value);
+    vectorSourceMarkerRef.current.clear();
+    vectorSourceDrawRef.current.clear();
+
+    drawInteractionRef.current && mapInstanceRef.current.removeInteraction(drawInteractionRef.current)
+    drawVectorLayer?.current && mapInstanceRef.current.removeLayer(drawVectorLayer.current);
+    markPointLayer?.current && mapInstanceRef.current.removeLayer(markPointLayer.current);
+
+    drawVectorLayer.current = null
+    drawInteractionRef.current = null
+    markPointLayer.current = null
+
+
+    if (value === MODE.MARK_POINT) {
+      console.log("Value is mark point ", value)
+      markPointHandler(mapInstanceRef.current, value);
+    }
+    if (value === MODE.DRAW) {
+      console.log("Value is draw ", value)
+      drawHandler(mapInstanceRef.current, value);
+    }
   };
 
   return (
