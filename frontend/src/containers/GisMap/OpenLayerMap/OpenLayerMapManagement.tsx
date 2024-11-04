@@ -189,7 +189,7 @@ export function OpenLayerMapManagement({
       if (mode === MODE.MARK_POINT && drawVectorLayer.current) {
         mapInstanceRef.current.removeLayer(drawVectorLayer.current);
       }
-      if (mode === MODE.DRAW && markPointLayer) {
+      if (mode === MODE.DRAW && markPointLayer.current) {
         vectorSourceMarkerRef.current.clear();
         mapInstanceRef.current.removeLayer(markPointLayer.current);
       }
