@@ -41,17 +41,21 @@ const MODE = {
 };
 
 export function OpenLayerMapManagement({
-                                         width,
-                                         height,
-                                         onUpdateLatLong,
-                                         center,
-                                       }: OpenLayerMapProps) {
+  width,
+  height,
+  onUpdateLatLong,
+  center,
+}: OpenLayerMapProps) {
   const [mode, setMode] = React.useState(MODE.MARK_POINT);
 
   const mapRef = useRef<HTMLDivElement | null | undefined>(null);
   const mapInstanceRef = useRef<Map | null>(null);
-  const setBevCoordinate = useSetRecoilState(bevCoordinateState);
+  const drawVectorLayer = useRef<VectorLayer | null>(null);
+  const markPointLayer = useRef<VectorLayer | null>(null);
 
+  console.log("Center realtime >> ", center)
+
+  const setBevCoordinate = useSetRecoilState(bevCoordinateState);
 
   const vectorSourceRef = useRef(new VectorSource());
 
@@ -59,7 +63,7 @@ export function OpenLayerMapManagement({
     if (!map) return;
     if (isEmpty(center)) return;
     if (mode !== MODE.MARK_POINT) return null;
-    const centerLayer = new VectorLayer({
+    markPointLayer.current = new VectorLayer({
       source: vectorSourceRef.current,
       style: new Style({
         image: new Circle({
@@ -69,14 +73,14 @@ export function OpenLayerMapManagement({
         }),
       }),
     });
-    map.addLayer(centerLayer);
+    map.addLayer(markPointLayer.current);
 
     // Create a feature for the center point and add it to the source
     const centerPoint = new Feature({
       geometry: new Point(fromLonLat(center)),
     });
     vectorSourceRef.current.addFeature(centerPoint);
-    map.on('click', function(event) {
+    map.on('click', function (event) {
       if (mode !== MODE.MARK_POINT) return;
       const coordinates = event.coordinate; // Get clicked coordinates
       const lonLat = toLonLat(coordinates); // Transform coordinates to EPSG:4326
@@ -92,18 +96,16 @@ export function OpenLayerMapManagement({
       vectorSourceRef.current.clear();
       vectorSourceRef.current.addFeature(newPoint);
     });
-
-    return centerLayer;
   };
 
   const drawHandler = (map: Map) => {
     if (mode !== MODE.DRAW) return null;
     // Create a vector layer to hold the drawn features
     const drawVectorSource = new VectorSource();
-    const drawVectorLayer = new VectorLayer({
+    drawVectorLayer.current = new VectorLayer({
       source: drawVectorSource,
     });
-    map.addLayer(drawVectorLayer);
+    map.addLayer(drawVectorLayer.current);
 
     // Create a draw interaction
     const drawInteraction = new Draw({
@@ -116,7 +118,7 @@ export function OpenLayerMapManagement({
     map.addInteraction(drawInteraction);
 
     // Optional: handle the draw event to do something with the drawn feature
-    drawInteraction.on('drawend', function(event) {
+    drawInteraction.on('drawend', function (event) {
       // Clear previous features
       // drawVectorSource.clear();
       const feature = event.feature;
@@ -144,19 +146,18 @@ export function OpenLayerMapManagement({
           bottomLeft: {
             lat: bottomLeft[1],
             long: bottomLeft[0],
-          }
-        })
+          },
+        });
       }
     });
-
-    return drawVectorLayer;
   };
 
-
   useEffect(() => {
-    console.log("Rerender")
     mapInstanceRef.current = new Map({
-      interactions: defaultInteractions({ mouseWheelZoom: false, doubleClickZoom: false }), // Disable zoom interactions
+      interactions: defaultInteractions({
+        mouseWheelZoom: false,
+        doubleClickZoom: false,
+      }), // Disable zoom interactions
       layers: [
         new TileLayer({
           source: new OSM(),
@@ -168,17 +169,20 @@ export function OpenLayerMapManagement({
       }),
     });
     mapRef.current && mapInstanceRef.current.setTarget(mapRef.current);
-    const markerLayer = markPointHandler(mapInstanceRef.current);
-    const drawVectorLayer = drawHandler(mapInstanceRef.current);
+    markPointHandler(mapInstanceRef.current);
+    drawHandler(mapInstanceRef.current);
+  }, [center, drawHandler, markPointHandler]);
 
-    if (mode === MODE.MARK_POINT && drawVectorLayer) {
-      mapInstanceRef.current.removeLayer(drawVectorLayer);
+  useEffect(() => {
+    if (mapInstanceRef.current) {
+      if (mode === MODE.MARK_POINT && drawVectorLayer.current) {
+        mapInstanceRef.current.removeLayer(drawVectorLayer.current);
+      }
+      if (mode === MODE.DRAW && markPointLayer) {
+        vectorSourceRef.current.clear();
+        mapInstanceRef.current.removeLayer(markPointLayer.current);
+      }
     }
-    if (mode === MODE.DRAW && markerLayer) {
-      vectorSourceRef.current.clear();
-      mapInstanceRef.current.removeLayer(markerLayer);
-    }
-
 
     return () => {
       mapInstanceRef.current?.setTarget(undefined);
