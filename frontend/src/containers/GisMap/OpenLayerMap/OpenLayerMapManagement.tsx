@@ -18,10 +18,11 @@ import { ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { defaults as defaultInteractions } from 'ol/interaction';
 import { createBox } from 'ol/interaction/Draw';
 import { useSetRecoilState } from 'recoil';
-import { CenterProps } from '../types';
-import { bevCoordinateState } from '../../../app-recoil/atoms/map';
-import { Circle, Polygon } from 'ol/geom';
+import { Polygon } from 'ol/geom';
+import {Circle} from 'ol/style'
 import { Coordinate } from 'ol/coordinate';
+import { bevCoordinateState } from '../../../app-recoil/atoms/map';
+import { CenterProps } from '../types';
 
 // Import OpenLayers CSS
 
@@ -98,7 +99,7 @@ export function OpenLayerMapManagement({
       });
       return null;
     },
-    [mode, setBevCoordinate],
+    [center, mode, onUpdateLatLong],
   );
 
   const drawHandler = useCallback(
