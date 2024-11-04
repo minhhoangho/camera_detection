@@ -18,9 +18,9 @@ import { Draw } from 'ol/interaction';
 import { ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { defaults as defaultInteractions } from 'ol/interaction';
 import { createBox } from 'ol/interaction/Draw';
-import { CenterProps } from '../types';
 import { useSetRecoilState } from 'recoil';
-import { bevCoordinateState, mapFocusState } from '../../../app-recoil/atoms/map';
+import { CenterProps } from '../types';
+import { bevCoordinateState } from '../../../app-recoil/atoms/map';
 
 // Import OpenLayers CSS
 
@@ -55,7 +55,7 @@ export function OpenLayerMapManagement({
 
   const vectorSourceRef = useRef(new VectorSource());
 
-  const addMarkerPoint = (map: Map, center: CenterProps) => {
+  const markPointHandler = (map: Map) => {
     if (!map) return;
     if (isEmpty(center)) return;
     if (mode !== MODE.MARK_POINT) return null;
@@ -168,8 +168,7 @@ export function OpenLayerMapManagement({
       }),
     });
     mapRef.current && mapInstanceRef.current.setTarget(mapRef.current);
-    addMarkerPoint(mapInstanceRef.current, center);
-    const markerLayer = addMarkerPoint(mapInstanceRef.current, center);
+    const markerLayer = markPointHandler(mapInstanceRef.current);
     const drawVectorLayer = drawHandler(mapInstanceRef.current);
 
     if (mode === MODE.MARK_POINT && drawVectorLayer) {
@@ -184,7 +183,7 @@ export function OpenLayerMapManagement({
     return () => {
       mapInstanceRef.current?.setTarget(undefined);
     };
-  }, [addMarkerPoint, center, drawHandler, mode]);
+  }, [markPointHandler, drawHandler, center, mode]);
 
   const handleChangeMode = (_e: React.MouseEvent, value: string) => {
     value && setMode(value);
