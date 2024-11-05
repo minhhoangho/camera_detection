@@ -7,7 +7,7 @@ import { API_BASE_URL, SOCKET_BASE_URL } from '../../../constants';
 import { ViewPointCameraData, ViewPointData } from '../models';
 // import { DETECTION_CLASS_NAME } from '../../../constants/detection';
 // import { socketClient } from '../../../utils/socket';
-import { useWebsocket } from '../../../shared/hooks/use-websocket';
+import { useWebsocket, WebsocketMessagePayload } from '../../../shared/hooks/use-websocket';
 
 type RealtimeCameraProps = {
   viewPoint?: ViewPointData;
@@ -27,25 +27,31 @@ export function RealtimeCamera({
   const [total, setTotal] = useState(0);
   const [isConnected, message, _] = useWebsocket(`${SOCKET_BASE_URL}/ws/`);
 
+  const handleCountObjects = (data: Record<string, any>) => {
+    const objectCount: Record<string, number> =
+      data?.object_count_map;
+    const cameraId = data?.camera_id;
+    if (Number(cameraId) === viewPointCamera.id) {
+      // setObjects(objectCount);
+      if (typeof objectCount === 'object') {
+        const _total = Object.values(objectCount).reduce(
+          (a: number, b: number) => a + b,
+          0,
+        );
+        setTotal(_total);
+      }
+    }
+  }
+
   useEffect(() => {
     if (isConnected) {
       console.log('Connected to WebSocket');
     }
 
     if (message) {
-      const messageJson = JSON.parse(message);
-      const objectCount: Record<string, number> =
-        messageJson?.data?.object_count_map;
-      const cameraId = messageJson?.data?.camera_id;
-      if (Number(cameraId) === viewPointCamera.id) {
-        // setObjects(objectCount);
-        if (typeof objectCount === 'object') {
-          const _total = Object.values(objectCount).reduce(
-            (a: number, b: number) => a + b,
-            0,
-          );
-          setTotal(_total);
-        }
+      const messageJson: WebsocketMessagePayload = JSON.parse(message);
+      if (messageJson.type === 'send_event') {
+        handleCountObjects(messageJson.data)
       }
     }
   }, [isConnected, message]);

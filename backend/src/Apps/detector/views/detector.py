@@ -19,6 +19,8 @@ from src.Apps.base.utils.type_utils import TypeUtils
 from src.Apps.detector.services.detection_util import Yolov8Detector, ObjectDetectionResult
 import time
 
+from src.Apps.detector.services.detector_service import DetectorService
+from src.Apps.gis_map.dataclass.bev_metadata import BevImageMetaData, ImageCoordinate
 from src.Apps.gis_map.models import GisViewPointCamera, GisViewPoint
 
 detector = Yolov8Detector(os.path.join(settings.BASE_DIR, "../models", "yolov8s.pt"))
@@ -70,7 +72,7 @@ class DetectorViewSet(viewsets.ViewSet):
         request_id = str(uuid.uuid4())
         unique_id = f"{request_id}_{cam_id}"
 
-        camera_viewpoint = await GisViewPointCamera.objects.filter(id=cam_id).afirst()
+        camera_viewpoint: GisViewPointCamera = await GisViewPointCamera.objects.filter(id=cam_id).afirst()
         view_point = await GisViewPoint.objects.filter(id=camera_viewpoint.view_point_id).afirst()
         video_url = camera_viewpoint.camera_uri
         homography_matrix = camera_viewpoint.homography_matrix
@@ -102,10 +104,22 @@ class DetectorViewSet(viewsets.ViewSet):
                 # check for frame if Nonetype
                 if frame is None:
                     break
-
+                vehicle_points = []
                 if mapping_bev:
                     frame, results = detector.get_prediction_and_bev_image(frame=frame, bev_image=bev_image,
                                                                            homography_matrix=homography_matrix)
+                    bev_meta = camera_viewpoint.bev_image_metadata
+                    bev_meta = json.loads(bev_meta)
+                    # vehicle_points = DetectorService.generate_point_vehicles(bev_meta, homography_matrix, results)
+                    # await self.send_points(
+                    #     channel_layer=channel_layer,
+                    #     points=vehicle_points,
+                    #     camera_id=cam_id,
+                    #     camera_uri=video_url,
+                    #     view_point_id=view_point.id,
+                    #     timestamp=int(time.time()),
+                    #     unique_id=unique_id
+                    # )
                 else:
                     frame, results = detector.get_prediction_sahi(frame=frame)
 
@@ -147,3 +161,21 @@ class DetectorViewSet(viewsets.ViewSet):
                 }
             }
         )
+
+
+    async def send_points(self, channel_layer, points: list[tuple[float, float]], **kwargs):
+        await channel_layer.group_send(
+            'vehicle_count_group',
+            {
+                'type': 'send_points',
+                'data': {
+                    'unique_id': kwargs.get('unique_id'),
+                    'camera_id': kwargs.get('camera_id'),
+                    'camera_uri': kwargs.get('camera_uri'),
+                    'view_point_id': kwargs.get('view_point_id'),
+                    'timestamp': kwargs.get('timestamp'),
+                    'vehicle_points': points
+                }
+            }
+        )
+

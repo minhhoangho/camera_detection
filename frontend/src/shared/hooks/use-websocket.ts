@@ -1,5 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 
+export type WebsocketMessagePayload = {
+  data: any
+  type: string
+}
+
 export const useWebsocket = (url: string) => {
   const [isReady, setIsReady] = useState(false)
   const [val, setVal] = useState(null)
@@ -13,6 +18,8 @@ export const useWebsocket = (url: string) => {
     socket.onclose = () => setIsReady(false)
     socket.onmessage = (event) => setVal(event.data)
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     ws.current = socket
 
     return () => {

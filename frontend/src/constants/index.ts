@@ -4,6 +4,6 @@ export * from './validation';
 export * from './pagination';
 export * from './date-time-format';
 export * from './timezone';
-export * from './types';
+export * from './common';
 export * from './locale';
 export * from './default';

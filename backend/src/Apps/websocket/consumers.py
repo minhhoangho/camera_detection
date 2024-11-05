@@ -37,3 +37,9 @@ class SocketConsumer(AsyncWebsocketConsumer):
             Firestore.save_data("analytic", data)
 
 
+    async def send_points(self, event):
+        data = event.get("data", {})
+        await self.send(text_data=json.dumps({
+            "type": "send_points",
+            "data": data
+        }))

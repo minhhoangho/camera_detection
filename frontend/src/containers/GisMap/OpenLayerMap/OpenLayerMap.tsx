@@ -20,6 +20,11 @@ import { CenterProps } from '../types';
 import { ViewPointData } from '../models';
 import { mapFocusState } from '../../../app-recoil/atoms/map';
 import { useRecoilValue } from 'recoil';
+import { useWebsocket, WebsocketMessagePayload } from '../../../shared/hooks/use-websocket';
+import { SOCKET_BASE_URL } from '../../../constants';
+import { Circle } from 'ol/style';
+import Fill from 'ol/style/Fill';
+import Stroke from 'ol/style/Stroke';
 // Import OpenLayers CSS
 
 // const DEFAULT_GEO = [12047000, 1812900]; // (long, lat) Da nang location
@@ -45,6 +50,65 @@ export function OpenLayerMap({
   const mapRef = useRef<Map | null>(null);
   const [hoverPoint, setHoverPoint] = useState<ViewPointData | null>(null);
   const mapFocus = useRecoilValue(mapFocusState);
+  const [isConnected, message, _] = useWebsocket(`${SOCKET_BASE_URL}/ws/`);
+
+
+  const handleDrawPoints = (points: Array<any>)=> {
+    // remove existing point layer
+    // console.log("mapRef?.current.getLayers() ", mapRef?.current.getLayers())
+    mapRef?.current.getLayers().forEach((layer:VectorLayer) => {
+      if (layer.getClassName() == 'point-layer') {
+          console.log("Point layer found")
+        
+        mapRef?.current.removeLayer(layer);
+      }
+      // if (layer.get('className_') === 'point-layer') {
+      //   console.log("Point layer found")
+      //   // layer.clear()
+      //   mapRef?.current.removeLayer(layer);
+      // }
+    });
+
+    const pointVectorSource = new VectorSource();
+
+    points.forEach((point) => {
+      const {lat, long} = point
+      const pointFeature = new Feature({
+        geometry: new Point(fromLonLat([long, lat])),
+      });
+
+      pointVectorSource.addFeature(pointFeature);
+      // mapRef.current.addFeature(pointFeature);
+    })
+
+    mapRef.current?.addLayer(new VectorLayer({
+      className: 'point-layer',
+      source: pointVectorSource,
+      style: new Style({
+        image: new Circle({
+          radius: 7,
+          fill: new Fill({color: 'red'}),
+        }),
+      }),
+    }));
+
+    // Draw points
+
+
+  }
+  useEffect(() => {
+    if (isConnected) {
+      console.log('[OpenLayerMap] Connected to WebSocket');
+    }
+
+    if (message) {
+      const messageJson: WebsocketMessagePayload = JSON.parse(message);
+      if (messageJson.type === 'send_points') {
+
+        handleDrawPoints(messageJson.data.vehicle_points)
+      }
+    }
+  }, [isConnected, message]);
 
   useEffect(() => {
     mapRef.current = new Map({

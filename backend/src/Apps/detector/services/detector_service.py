@@ -8,7 +8,7 @@ from vidgear.gears import CamGear
 import time
 
 from src.Apps.detector.dataclass.object_detection_result import ObjectDetectionResult
-from src.Apps.gis_map.dataclass.bev_metadata import BevImageMetaData
+from src.Apps.gis_map.dataclass.bev_metadata import BevImageMetaData, Coordinate
 from src.Apps.utils.aws_client.s3_storage import S3Storage
 
 
@@ -63,14 +63,20 @@ class DetectorService:
 
     @classmethod
     def generate_point_vehicles(cls,
-                                bev_meta: BevImageMetaData,
+                                bev_meta: dict,
                                 homography_matrix: List[List[float]],
-                                results: list[ObjectDetectionResult]) -> List[tuple[float, float]]:
+                                results: list[ObjectDetectionResult]) -> List[dict]:
         homography_matrix = np.array(homography_matrix, dtype=np.float32)
         ltwh_list = [box.to_xywh() for box in results]
-        image_width = bev_meta.width
-        image_height = bev_meta.height
-        center_long, center_lat = bev_meta.center_long_lat
+        # print("List point ltwh_list:", ltwh_list)
+        # print("List point ltwh_list:", bev_meta)
+        image_width = bev_meta.get("width")
+        image_height = bev_meta.get("height")
+        image_coordinates = bev_meta.get("image_coordinates", {})
+        top_left: Coordinate = Coordinate(**image_coordinates.get("top_left", {}))
+        top_right: Coordinate = Coordinate(**image_coordinates.get("top_right", {}))
+        bottom_left: Coordinate = Coordinate(**image_coordinates.get("bottom_left", {}))
+        bottom_right: Coordinate = Coordinate(**image_coordinates.get("bottom_right", {}))
         list_point_coordinates = []
         for box in ltwh_list:
             x, y, w, h = box
@@ -78,14 +84,25 @@ class DetectorService:
                 continue
             x_center = float(x + w / 2)
             y_center = float(y + h / 2)
-            wrl = np.array(homography_matrix).dot(np.array([[x_center], [y_center], [1]]))
+            wrl = np.array(homography_matrix, dtype=np.float32).dot(
+                np.array([[x_center], [y_center], [1]], dtype=np.float32))
             wrl = wrl / wrl[2]  # Normalize ratio
             x_bev, y_bev = wrl[0], wrl[1]
+
             # Calculate the real-world coordinates
+            x_ratio = x_bev / image_width
+            y_ratio = y_bev / image_height
+            top_lat = top_left.lat + (top_right.lat - top_left.lat) * x_ratio
+            top_long = top_left.long + (top_right.long - top_left.long) * x_ratio
+            bottom_lat = bottom_left.lat + (bottom_right.lat - bottom_left.lat) * x_ratio
+            bottom_long = bottom_left.long + (bottom_right.long - bottom_left.long) * x_ratio
+            lat = top_lat + (bottom_lat - top_lat) * y_ratio
+            long = top_long + (bottom_long - top_long) * y_ratio
 
-
-
-            list_point_coordinates.append((x_bev, y_bev))
+            list_point_coordinates.append({
+                "lat": float(lat),
+                "long": float(long)
+            })
         return list_point_coordinates
 
     @classmethod
