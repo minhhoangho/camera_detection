@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { useQuery } from 'react-query';
 import Button from '@mui/material/Button';
@@ -10,7 +10,7 @@ import { toast } from '../../../components/Toast';
 import { MapTiler } from '../../GisMap/MapTiler/MapTiler';
 import { CenterProps } from '../../GisMap/types';
 import { OpenLayerMap } from '../../GisMap/OpenLayerMap';
-
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 const DEFAULT_GEO: CenterProps = [108.21631446431337, 16.07401627168764]; // (long, lat) Da nang location
 
 type MapProps = {
@@ -25,7 +25,7 @@ export function HomeMap(props: MapProps) {
   // const center = DEFAULT_GEO;
   const [useMapTile, setUseMapTile] = useState(false);
   const [center, setCenter] = useState<CenterProps>(DEFAULT_GEO);
-  // const [selectedSearchLocation, _] = useRecoilState(selectedLocationState);
+  const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString());
 
   const { data: listResponse } = useQuery<ListViewPointPaginateResponse>({
     queryKey: ['getListViewPointPaginate'],
@@ -41,6 +41,14 @@ export function HomeMap(props: MapProps) {
       toast('error', 'Error f...');
     },
   });
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(new Date().toLocaleTimeString());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const renderMap = () => {
     if (useMapTile) {
@@ -66,6 +74,10 @@ export function HomeMap(props: MapProps) {
   return (
     <div className={styles['home-map_container']}>
       {renderMap()}
+      <div className={styles['show-time']}>
+        <AccessTimeIcon/>
+        <span className="ml-2">{currentTime}</span>
+      </div>
       <div className={styles['switch-mode']}>
         <Button variant="contained" onClick={() => setUseMapTile(!useMapTile)}>
           Switch

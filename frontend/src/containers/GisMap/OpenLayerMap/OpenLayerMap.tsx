@@ -59,7 +59,7 @@ export function OpenLayerMap({
     mapRef?.current.getLayers().forEach((layer:VectorLayer) => {
       if (layer.getClassName() == 'point-layer') {
           console.log("Point layer found")
-        
+
         mapRef?.current.removeLayer(layer);
       }
       // if (layer.get('className_') === 'point-layer') {

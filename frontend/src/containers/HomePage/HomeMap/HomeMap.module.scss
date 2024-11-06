@@ -6,10 +6,10 @@
 }
 
 .page-loading {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .switch-mode {
@@ -17,4 +17,18 @@
   right: 50px;
   top: 50px;
   z-index: 50000;
+}
+
+.show-time {
+  display: flex;
+  font-weight: 500;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 20px;
+  background: #fffaff;
+  padding: 10px 15px;
+  border-radius: 5px;
+  z-index: 50000;
+  cursor: pointer;
 }
