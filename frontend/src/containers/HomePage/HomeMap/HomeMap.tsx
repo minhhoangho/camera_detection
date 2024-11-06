@@ -25,7 +25,7 @@ export function HomeMap(props: MapProps) {
   // const center = DEFAULT_GEO;
   const [useMapTile, setUseMapTile] = useState(false);
   const [center, setCenter] = useState<CenterProps>(DEFAULT_GEO);
-  const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString());
+  const [currentTime, setCurrentTime] = useState(null);
 
   const { data: listResponse } = useQuery<ListViewPointPaginateResponse>({
     queryKey: ['getListViewPointPaginate'],
@@ -75,8 +75,8 @@ export function HomeMap(props: MapProps) {
     <div className={styles['home-map_container']}>
       {renderMap()}
       <div className={styles['show-time']}>
-        <AccessTimeIcon/>
-        <span className="ml-2">{currentTime}</span>
+          <AccessTimeIcon/>
+          <span className="ml-2">{currentTime}</span>
       </div>
       <div className={styles['switch-mode']}>
         <Button variant="contained" onClick={() => setUseMapTile(!useMapTile)}>

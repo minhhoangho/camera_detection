@@ -57,9 +57,7 @@ export function OpenLayerMap({
     // remove existing point layer
     // console.log("mapRef?.current.getLayers() ", mapRef?.current.getLayers())
     mapRef?.current.getLayers().forEach((layer:VectorLayer) => {
-      if (layer.getClassName() == 'point-layer') {
-          console.log("Point layer found")
-
+      if (layer.getClassName() === 'point-layer') {
         mapRef?.current.removeLayer(layer);
       }
       // if (layer.get('className_') === 'point-layer') {
@@ -104,7 +102,6 @@ export function OpenLayerMap({
     if (message) {
       const messageJson: WebsocketMessagePayload = JSON.parse(message);
       if (messageJson.type === 'send_points') {
-
         handleDrawPoints(messageJson.data.vehicle_points)
       }
     }
