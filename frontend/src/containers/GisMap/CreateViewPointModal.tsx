@@ -27,12 +27,16 @@ export function CreateViewPointModal({ onClose, isOpen }: ModalProps) {
   const validationSchema = yup.object({
     name: yup.string().trim().required('Name is required'),
     description: yup.string().trim().default(''),
+    warningThreshold: yup.number().default(10),
     lat: yup.number().required('Latitude is required'),
     long: yup.number().required('Longitude is required'),
   });
 
   const { control, handleSubmit, setValue } = useForm({
     resolver: yupResolver(validationSchema),
+    defaultValues: {
+      warningThreshold: 10,
+    }
   });
 
   const { mutate: createViewpointMutate } = useMutation({
@@ -116,7 +120,6 @@ export function CreateViewPointModal({ onClose, isOpen }: ModalProps) {
                   placeholder="Mô tả"
                   label="Mô tả"
                 />
-
                 <FormInput
                   control={control}
                   name="lat"
@@ -127,7 +130,6 @@ export function CreateViewPointModal({ onClose, isOpen }: ModalProps) {
                   labelClassName=""
                   isRequired
                 />
-
                 <FormInput
                   control={control}
                   name="long"
@@ -135,6 +137,16 @@ export function CreateViewPointModal({ onClose, isOpen }: ModalProps) {
                   inputElementClassName="form-control mr-sm-2"
                   placeholder="Kinh độ"
                   label="Kinh độ"
+                  labelClassName=""
+                  isRequired
+                />
+                <FormInput
+                  control={control}
+                  name="warningThreshold"
+                  type="number"
+                  inputElementClassName="form-control mr-sm-2"
+                  placeholder="Số lượng xe"
+                  label="Ngưỡng cảnh báo"
                   labelClassName=""
                   isRequired
                 />

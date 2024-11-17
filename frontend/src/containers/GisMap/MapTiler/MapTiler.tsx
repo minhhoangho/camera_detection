@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import * as maptilersdk from '@maptiler/sdk';
 import '@maptiler/sdk/dist/maptiler-sdk.css';
 import { Feature } from 'geojson-vt';
@@ -25,16 +25,58 @@ export function MapTiler({ geoData, center, zoom }: Props) {
   const map = useRef<maptilersdk.Map | null>(null);
   const [hoverPoint, setHoverPoint] = useState<ViewPointData | null>(null);
 
+  const handleControlRotate = useCallback((map: Map) => {
+    const deltaDistance = 100;
+    const deltaDegrees = 25;
+    const easing = (t: number)  =>{
+      return t * (2 - t);
+    }
+    map.getCanvas().addEventListener(
+      'keydown',
+      function (e) {
+        e.preventDefault();
+        if (e.which === 38) {
+          // up
+          map.panBy([0, -deltaDistance], {
+            easing: easing
+          });
+        } else if (e.which === 40) {
+          // down
+          map.panBy([0, deltaDistance], {
+            easing: easing
+          });
+        } else if (e.which === 37) {
+          console.log("map.getBearing() - deltaDegrees, ", map.getBearing() - deltaDegrees,)
+          // left
+          map.easeTo({
+            bearing: map.getBearing() - deltaDegrees,
+            easing: easing
+          });
+        } else if (e.which === 39) {
+          // right
+          map.easeTo({
+            bearing: map.getBearing() + deltaDegrees,
+            easing: easing
+          });
+        }
+      },
+      true
+    );
+  }, [])
+
   useEffect(() => {
     if (!mapContainer) return;
     map.current = new maptilersdk.Map({
       container: mapContainer.current,
-      style: maptilersdk.MapStyle.STREETS,
+      // style: maptilersdk.MapStyle.STREETS,
+      style: maptilersdk.MapStyle.TOPO,
       center: center,
       zoom: zoom,
+      pitch: 60,
     });
 
     map.current.on('load', async () => {
+      map.current.getCanvas().focus();
       const image = await map.current.loadImage(
         '/static/icons/marker/location_marker.png',
       );
@@ -96,7 +138,6 @@ export function MapTiler({ geoData, center, zoom }: Props) {
         setHoverPoint(null)
       });
 
-
       map.current.on('click', 'places',(e) => {
         map.current.getCanvas().style.cursor = 'pointer';
         const data: ViewPointData | null = e?.features[0].properties as ViewPointData;
@@ -126,6 +167,10 @@ export function MapTiler({ geoData, center, zoom }: Props) {
         }
 
       })
+
+
+      handleControlRotate(map.current)
+
     });
   }, [center, geoData, zoom]);
 

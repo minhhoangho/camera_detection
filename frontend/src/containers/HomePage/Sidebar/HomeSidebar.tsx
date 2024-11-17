@@ -18,6 +18,7 @@ import CardActionArea from '@mui/material/CardActionArea';
 import CardContent from '@mui/material/CardContent';
 import SearchIcon from '@mui/icons-material/Search';
 import _isEmpty from 'lodash/isEmpty';
+import { useSetRecoilState } from 'recoil';
 import { Scrollbar } from 'src/components/Scrollbar';
 import Spinner from 'src/components/Spinner';
 import { Iconify } from 'src/components/Iconify';
@@ -32,7 +33,6 @@ import { DEFAULT_PAGINATION_PARAMS } from '../../../constants';
 import { listViewPointsPaginate } from '../../../api/view-point';
 import { PathName } from '../../../constants/routes';
 import { mapFocusState } from '../../../app-recoil/atoms/map';
-import { useSetRecoilState } from 'recoil';
 
 type Props = {
   onClose: () => void;
@@ -219,7 +219,7 @@ export function HomeSidebar({ open, onClose }: Props): React.ReactElement {
   return (
     <Box
       sx={{
-        minWidth: { lg: 280 },
+        minWidth: { lg: 300 },
         position: 'absolute',
       }}
     >
@@ -231,7 +231,7 @@ export function HomeSidebar({ open, onClose }: Props): React.ReactElement {
         }}
         PaperProps={{
           sx: {
-            minWidth: 280,
+            minWidth: 300,
             maxWidth: '50vw'
           },
         }}

@@ -94,6 +94,10 @@ class DetectorViewSet(viewsets.ViewSet):
         # Calculate the delay between frames
         delay = 1 / frame_rate
         channel_layer = get_channel_layer()
+        count = 0
+        fps = 30
+        # if count == fps, start detection
+        results = []
         try:
             while True:
 
@@ -105,23 +109,38 @@ class DetectorViewSet(viewsets.ViewSet):
                 if frame is None:
                     break
                 vehicle_points = []
-                if mapping_bev:
-                    frame, results = detector.get_prediction_and_bev_image(frame=frame, bev_image=bev_image,
-                                                                           homography_matrix=homography_matrix)
-                    bev_meta = camera_viewpoint.bev_image_metadata
-                    bev_meta = json.loads(bev_meta)
-                    # vehicle_points = DetectorService.generate_point_vehicles(bev_meta, homography_matrix, results)
-                    # await self.send_points(
-                    #     channel_layer=channel_layer,
-                    #     points=vehicle_points,
-                    #     camera_id=cam_id,
-                    #     camera_uri=video_url,
-                    #     view_point_id=view_point.id,
-                    #     timestamp=int(time.time()),
-                    #     unique_id=unique_id
-                    # )
+                # if count == fps, start detection
+                if True:
+                    if mapping_bev:
+                        frame, results = detector.get_prediction_and_bev_image(frame=frame, bev_image=bev_image,
+                                                                               homography_matrix=homography_matrix)
+                        bev_meta = camera_viewpoint.bev_image_metadata
+                        bev_meta = json.loads(bev_meta)
+                        # vehicle_points = DetectorService.generate_point_vehicles(bev_meta, homography_matrix, results)
+                        # await self.send_points(
+                        #     channel_layer=channel_layer,
+                        #     points=vehicle_points,
+                        #     camera_id=cam_id,
+                        #     camera_uri=video_url,
+                        #     view_point_id=view_point.id,
+                        #     timestamp=int(time.time()),
+                        #     unique_id=unique_id
+                        # )
+                    else:
+                        frame, results = detector.get_prediction_sahi(frame=frame)
                 else:
-                    frame, results = detector.get_prediction_sahi(frame=frame)
+                    if mapping_bev:
+                        bev_image = DetectorService.map_to_bev_image(
+                            bev_image,
+                            homography_matrix,
+                            results
+                        )
+                        # Concat frame and bev_image vertically, note that we need to update width of bev_image to match frame
+                        bev_image = cv2.resize(bev_image, (frame.shape[1], frame.shape[0]))
+                        # And padding between frame and bev_image, the padding is white color
+                        padding = np.ones((30, frame.shape[1], 3), dtype=np.uint8) * 255
+                        frame = np.concatenate((frame, padding, bev_image), axis=0)
+                count +=1
 
                 ret, buffer = cv2.imencode('.jpg', frame)
                 frame = buffer.tobytes()

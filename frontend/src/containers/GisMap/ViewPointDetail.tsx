@@ -42,9 +42,13 @@ export function ViewPointDetail() {
     description: yup.string().trim().default(''),
     lat: yup.number().required('Latitude is required'),
     long: yup.number().required('Longitude is required'),
+    warningThreshold: yup.number().default(10),
   });
   const { control, handleSubmit, setValue } = useForm({
     resolver: yupResolver(validationSchema),
+    defaultValues: {
+      warningThreshold: 10,
+    }
   });
   // const [long, lat] = useWatch({control, name: ['long', 'lat']});
 
@@ -194,6 +198,15 @@ export function ViewPointDetail() {
                         inputElementClassName="form-control mr-sm-2 resize-none"
                         placeholder="Mô tả"
                         label="Mô tả"
+                        labelClassName="mt-2"
+                      />
+                      <FormInput
+                        control={control}
+                        name="warningThreshold"
+                        type="number"
+                        inputElementClassName="form-control mr-sm-2 resize-none"
+                        placeholder="Nhập số lượng xe"
+                        label="Ngưỡng cảnh báo"
                         labelClassName="mt-2"
                       />
                       <div className="flex justify-between gap-3">

@@ -69,6 +69,7 @@ export function Benchmark() {
     }
   };
 
+  console.log("results >> ", results)
   const renderUploadArea = () => {
     return (
       <div>
@@ -153,9 +154,9 @@ export function Benchmark() {
             <Grid container>
               {results.map((result, index) => (
                 <Grid xs={4} key={index}>
-                  <Card>
+                  <Card className="mx-2 my-3">
                     <CardContent>
-                      <Typography variant="h6">{result.modelType}</Typography>
+                      <Typography variant="h6">{result.model_type}</Typography>
                       <Typography variant="body1">
                         Total object: {result.output.total}
                       </Typography>

@@ -10,6 +10,7 @@ class GisViewPoint(UserInteractionModel, AutoTimeStampedModel):
     lat = models.FloatField()
     long = models.FloatField()
     thumbnail = models.CharField(max_length=1024, null=True, default="")
+    warning_threshold = models.IntegerField(default=0)
 
     class Meta:
         db_table = "gis_view_points"

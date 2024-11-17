@@ -20,6 +20,7 @@ type MapProps = {
 
 export function HomeMap(props: MapProps) {
   const { width, height } = props;
+  console.log("width height", width, height);
   // const mapRef = useRef<Map | null>(null);
   // const [center, setCenter] = useState(DEFAULT_GEO);
   // const center = DEFAULT_GEO;

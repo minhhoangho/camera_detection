@@ -7,7 +7,13 @@ import { API_BASE_URL, SOCKET_BASE_URL } from '../../../constants';
 import { ViewPointCameraData, ViewPointData } from '../models';
 // import { DETECTION_CLASS_NAME } from '../../../constants/detection';
 // import { socketClient } from '../../../utils/socket';
-import { useWebsocket, WebsocketMessagePayload } from '../../../shared/hooks/use-websocket';
+import {
+  useWebsocket,
+  WebsocketMessagePayload,
+} from '../../../shared/hooks/use-websocket';
+import { useQuery } from 'react-query';
+import { getDetailViewPoint } from '../../../api/view-point';
+import { toast } from '../../../components/Toast';
 
 type RealtimeCameraProps = {
   viewPoint?: ViewPointData;
@@ -26,10 +32,18 @@ export function RealtimeCamera({
   //   useState<Record<string, number>>(DETECTION_CLASS_NAME);
   const [total, setTotal] = useState(0);
   const [isConnected, message, _] = useWebsocket(`${SOCKET_BASE_URL}/ws/`);
+  const { data: dataDetail } = useQuery({
+    queryKey: ['getViewPointDetail', viewPointCamera.viewPointId],
+    queryFn: () => {
+      return getDetailViewPoint(viewPointCamera.viewPointId);
+    },
+    onError: () => toast('error', 'Error'),
+    enabled: !!viewPointCamera.viewPointId,
+    // cacheTime: 0,
+  });
 
   const handleCountObjects = (data: Record<string, any>) => {
-    const objectCount: Record<string, number> =
-      data?.object_count_map;
+    const objectCount: Record<string, number> = data?.object_count_map;
     const cameraId = data?.camera_id;
     if (Number(cameraId) === viewPointCamera.id) {
       // setObjects(objectCount);
@@ -41,7 +55,7 @@ export function RealtimeCamera({
         setTotal(_total);
       }
     }
-  }
+  };
 
   useEffect(() => {
     if (isConnected) {
@@ -51,10 +65,45 @@ export function RealtimeCamera({
     if (message) {
       const messageJson: WebsocketMessagePayload = JSON.parse(message);
       if (messageJson.type === 'send_event') {
-        handleCountObjects(messageJson.data)
+        handleCountObjects(messageJson.data);
       }
     }
   }, [isConnected, message]);
+
+  const renderWarning = () => {
+    if (!dataDetail) {
+      return null;
+    }
+    console.log('dataDetail warningThreshold', dataDetail.warningThreshold);
+    console.log('dataDetail > total', total);
+    if (dataDetail.warningThreshold < total) {
+      return (
+        <p
+          style={{
+            backgroundColor: 'green',
+            padding: '5px',
+            color: 'white',
+            borderRadius: '5px',
+            width: 'fit-content',
+          }}
+        >
+          Bình thường
+        </p>)
+    }
+    return (
+      <p
+        style={{
+          backgroundColor: 'red',
+          padding: '5px',
+          color: 'white',
+          borderRadius: '5px',
+          width: 'fit-content',
+        }}
+      >
+        Có dấu hiệu đông đúc
+      </p>
+    );
+  };
 
   return (
     <Box>
@@ -77,6 +126,7 @@ export function RealtimeCamera({
         <Box sx={{ p: 2 }}>
           <div>
             <p>Tổng phương tiện: {total}</p>
+            {renderWarning()}
           </div>
           <div>
             {showCamImgTag && (

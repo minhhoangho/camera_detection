@@ -41,7 +41,7 @@ class Yolov8Detector:
         return frame, list_item
 
     def get_prediction_sahi(self, frame: np.ndarray) -> Tuple[np.ndarray, List[ObjectDetectionResult]]:
-        result: PredictionResult = get_prediction(frame, self.detection_model)
+        result: PredictionResult = get_prediction(frame, self.detection_model, [3,3])
         object_prediction_list = result.object_prediction_list
         list_item = []
         for _box in object_prediction_list:

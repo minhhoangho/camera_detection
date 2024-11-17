@@ -7,10 +7,26 @@ from ultralytics import YOLO
 import os
 from ultralytics.engine.results import Results
 
+from src.Apps.detector.services.detection_util import Yolov8Detector
+
+VEHICLE_CLASSES = [
+    {"id": 2, "name": "bicycle"},
+    {"id": 3, "name": "car"},
+    {"id": 4, "name": "motorcycle"},
+    {"id": 5, "name": "airplane"},
+    {"id": 6, "name": "bus"},
+    {"id": 7, "name": "train"},
+    {"id": 8, "name": "truck"},
+    {"id": 9, "name": "boat"},
+]
+
+VEHICLE_CLASS_IDS = [v.get("id") for v in VEHICLE_CLASSES]
 
 
 def init_model() -> YOLO:
-    model = YOLO(os.path.join("../../models", "yolov8m.pt"))
+    # model = YOLO(os.path.join("../../models", "yolov8s.pt"))
+    # model = YOLO(os.path.join("../../models", "yolov8s.pt"))
+    model = YOLO("yolo11s.pt")
     return model
 
 def predict_obj(model: YOLO,frame):
@@ -18,6 +34,13 @@ def predict_obj(model: YOLO,frame):
     class_dict = results[0].names
 
     for _box in results[0].boxes:
+        # Only detect vehicles
+        # print class id and class name
+        cls_id = _box.cls[0].item()
+        cls_name = class_dict[cls_id]
+        if int(cls_id) +1 not in VEHICLE_CLASS_IDS:
+            continue
+        print("Class ID: ", cls_id, "Class Name: ", cls_name)
         res = handle_box(_box, class_dict)
         draw_bounding_box(frame, res)
 
@@ -83,10 +106,26 @@ def tracking_video(video_id):
     cv2.destroyAllWindows()
 
 
+def detect_single_image(img_path):
+    model = init_model()
+    img = cv2.imread(img_path)
+    frame, results = predict_obj(model=model, frame=img)
+    cv2.imshow("Image", frame)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
 if __name__ == '__main__':
-    VIDEO_ID = "_HcPxEE8OFE"
-    tracking_video(video_id=VIDEO_ID)
+    # VIDEO_ID = "_HcPxEE8OFE"
+    # tracking_video(video_id=VIDEO_ID)
+    img_path = "/Users/hominhhoang/Documents/Work/01_Software-development/01_Github_minhhoangho/camera_detection/research/images/frame_26.jpg"
+    detect_single_image(img_path=img_path)
+
+    # detector = Yolov8Detector("/Users/hominhhoang/Documents/Work/01_Software-development/01_Github_minhhoangho/camera_detection/models/yolov8m.pt")
+    # img = cv2.imread(img_path)
+    # frame, results = detector.get_prediction_sahi(img)
+    # cv2.imshow("Image", frame)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
 
 
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/

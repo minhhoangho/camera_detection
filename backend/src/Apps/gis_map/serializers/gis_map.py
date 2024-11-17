@@ -23,6 +23,9 @@ class CUViewPointSerializer(serializers.Serializer):
     lat = serializers.FloatField(required=True)
     long = serializers.FloatField(required=True)
     map_view = MapViewPointSerializer(required=True)
+    warning_threshold = serializers.IntegerField(required=False, default=0)
+
+
 
 class CameraViewPointSerializer(serializers.ModelSerializer):
     class Meta:

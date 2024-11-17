@@ -7,6 +7,7 @@ export type ViewPointData = {
     long: number
     name: string;
     thumbnail?: string;
+    warningThreshold?: string;
     description: string;
     createdAt: string;
     updatedAt: string;
@@ -14,6 +15,7 @@ export type ViewPointData = {
 
 export type ViewPointCameraData = {
     id: number;
+    viewPointId?: number;
     cameraSource: number;
     cameraUri: string;
     capturedImage?: string;

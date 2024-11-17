@@ -7,7 +7,7 @@ export type ResultImage = {
 
 
 export type PredictionResult = {
-  modelType: string
+  model_type: string
   output: ResultImage
   time: number
 }

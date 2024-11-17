@@ -31,14 +31,14 @@ export function Header({ onOpenNav }: Props) {
       <Toolbar
         sx={{
           height: 1,
-          px: { lg: 5 },
+          px: { xs: 5 },
         }}
       >
-        {lgUp && (
+        {
           <IconButton onClick={onOpenNav} sx={{ mr: 1 }}>
             <MenuIcon />
           </IconButton>
-        )}
+        }
         <Box sx={{ flexGrow: 1 }}>
           <Box sx={{ flexGrow: 1 }}>
             <SearchBox />

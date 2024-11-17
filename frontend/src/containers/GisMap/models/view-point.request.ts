@@ -11,6 +11,7 @@ export type CreateViewPointPayloadRequest = {
   description: string;
   lat: number;
   long: number;
+  warningThreshold?: number;
   mapView: MapViewData;
 };
 
@@ -20,6 +21,7 @@ export type EditViewPointPayloadRequest = {
   description: string;
   lat: number;
   long: number;
+  warningThreshold?: number;
   mapView: MapViewData;
 };
 
