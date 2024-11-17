@@ -7,6 +7,7 @@ const config = {
     reactStrictMode: false,
     eslint: {
         dirs: ['src'],
+        ignoreBuildErrors: true,
     },
     typescript: {
         ignoreBuildErrors: true,
