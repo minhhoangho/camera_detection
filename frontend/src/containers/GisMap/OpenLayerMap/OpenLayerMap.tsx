@@ -95,6 +95,7 @@ export function OpenLayerMap({
   }
   useEffect(() => {
     if (isConnected) {
+      // eslint-disable-next-line no-console
       console.log('[OpenLayerMap] Connected to WebSocket');
     }
 
