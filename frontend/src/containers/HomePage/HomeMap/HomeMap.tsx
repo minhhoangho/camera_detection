@@ -37,9 +37,11 @@ export function HomeMap(props: MapProps) {
           limit: DEFAULT_PAGINATION_PARAMS.limit + 100,
         },
       }),
+    cacheTime: 0,
     onError: () => {
       toast('error', 'Error f...');
     },
+    retry: false,
   });
 
   useEffect(() => {
