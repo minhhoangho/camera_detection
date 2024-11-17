@@ -3,6 +3,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import * as React from 'react';
 import Typography from '@mui/material/Typography';
 import { useEffect, useState } from 'react';
+import { useQuery } from 'react-query';
 import { API_BASE_URL, SOCKET_BASE_URL } from '../../../constants';
 import { ViewPointCameraData, ViewPointData } from '../models';
 // import { DETECTION_CLASS_NAME } from '../../../constants/detection';
@@ -11,7 +12,6 @@ import {
   useWebsocket,
   WebsocketMessagePayload,
 } from '../../../shared/hooks/use-websocket';
-import { useQuery } from 'react-query';
 import { getDetailViewPoint } from '../../../api/view-point';
 import { toast } from '../../../components/Toast';
 
@@ -74,12 +74,9 @@ export function RealtimeCamera({
     if (!dataDetail) {
       return null;
     }
-    console.log('dataDetail warningThreshold', dataDetail.warningThreshold);
-    console.log('dataDetail > total', total);
     if (dataDetail.warningThreshold < total) {
       return (
-        <p
-          style={{
+        <p style={{
             backgroundColor: 'green',
             padding: '5px',
             color: 'white',
@@ -91,8 +88,7 @@ export function RealtimeCamera({
         </p>)
     }
     return (
-      <p
-        style={{
+      <p style={{
           backgroundColor: 'red',
           padding: '5px',
           color: 'white',

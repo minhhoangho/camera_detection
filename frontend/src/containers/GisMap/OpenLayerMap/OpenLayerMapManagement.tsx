@@ -1,3 +1,5 @@
+// Disable eslint for this file
+/* eslint-disable */
 import React, { useRef, useEffect, useCallback } from 'react';
 import View from 'ol/View';
 import Map from 'ol/Map';

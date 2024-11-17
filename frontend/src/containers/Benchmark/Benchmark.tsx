@@ -10,9 +10,9 @@ import {
 import Button from '@mui/material/Button';
 import { BaseLayout, PrivateLayout } from 'src/layouts';
 import { postBenchmark } from 'src/api/benchmark';
-import { toast } from '../../components/Toast';
 import styles from './Benchmark.module.scss';
 import { PredictionResult } from './models/benchmark.response';
+import { toast } from '../../components/Toast';
 
 const modelList = [
   {

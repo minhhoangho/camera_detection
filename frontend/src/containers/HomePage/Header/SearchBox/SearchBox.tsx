@@ -11,9 +11,9 @@ import { useTheme } from '@mui/material/styles';
 import _isEmpty from 'lodash/isEmpty';
 import _debounce from 'lodash/debounce';
 import { Iconify } from 'src/components/Iconify';
-import { useSelectLocation } from '../../hooks/use-select-location';
-import { GeoProperty, selectedLocationState } from '../../recoil/locationState';
-import { useRecoilState } from 'recoil';
+// import { useSelectLocation } from '../../hooks/use-select-location';
+import { GeoProperty } from '../../recoil/locationState';
+// import { useRecoilState } from 'recoil';
 
 const SEARCH_API_ENDPOINT = 'https://api.geoapify.com/v1/geocode/autocomplete';
 const GEOAPIFY_API_KEY = 'c03ef2b9bca04d8ba477409f929517f9';
@@ -24,7 +24,7 @@ export function SearchBox() {
   const theme = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<GeoProperty[]>([]);
-  const [_, setSelectedLocation] = useRecoilState(selectedLocationState);
+  // const [_, setSelectedLocation] = useRecoilState(selectedLocationState);
 
   const handleSearchLocationByText = async (text: string) => {
     const res = await fetch(

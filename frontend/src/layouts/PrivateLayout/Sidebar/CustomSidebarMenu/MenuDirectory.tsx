@@ -10,9 +10,9 @@ import AnalyticsIcon from '@mui/icons-material/Analytics';
 import _get from 'lodash/get';
 import _map from 'lodash/map';
 import _isEmpty from 'lodash/isEmpty';
+import { PathName } from 'src/constants/routes';
 import { MenuItemInterface, MenuItemMapInterface } from './types';
 import { MENU_KEY, MENU_LABEL } from './constants';
-import { PathName } from 'src/constants/routes';
 export const MenuDirectory = [
   {
     key: MENU_KEY.OVERVIEW,

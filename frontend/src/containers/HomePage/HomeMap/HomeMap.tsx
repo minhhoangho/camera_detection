@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import { useQuery } from 'react-query';
 import Button from '@mui/material/Button';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import styles from './HomeMap.module.scss';
 import { ListViewPointPaginateResponse } from '../../GisMap/models';
 import { listViewPointsPaginate } from '../../../api/view-point';
@@ -10,7 +11,6 @@ import { toast } from '../../../components/Toast';
 import { MapTiler } from '../../GisMap/MapTiler/MapTiler';
 import { CenterProps } from '../../GisMap/types';
 import { OpenLayerMap } from '../../GisMap/OpenLayerMap';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
 const DEFAULT_GEO: CenterProps = [108.21631446431337, 16.07401627168764]; // (long, lat) Da nang location
 
 type MapProps = {
@@ -20,7 +20,6 @@ type MapProps = {
 
 export function HomeMap(props: MapProps) {
   const { width, height } = props;
-  console.log("width height", width, height);
   // const mapRef = useRef<Map | null>(null);
   // const [center, setCenter] = useState(DEFAULT_GEO);
   // const center = DEFAULT_GEO;

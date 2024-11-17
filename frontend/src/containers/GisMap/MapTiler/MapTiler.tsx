@@ -2,14 +2,14 @@ import React, { useRef, useEffect, useState, useCallback } from 'react';
 import * as maptilersdk from '@maptiler/sdk';
 import '@maptiler/sdk/dist/maptiler-sdk.css';
 import { Feature } from 'geojson-vt';
-import { GeoJsonProperties, Point } from 'geojson';
-import styles from './MapTiler.module.scss';
-import { CenterProps } from '../types';
-import { ViewPointData } from '../models';
+import { Point } from 'geojson';
 import { Box, Card, Skeleton, Typography } from '@mui/material';
 import CardActionArea from '@mui/material/CardActionArea';
 import Image from 'next/image';
 import CardContent from '@mui/material/CardContent';
+import styles from './MapTiler.module.scss';
+import { ViewPointData } from '../models';
+import { CenterProps } from '../types';
 
 const MAP_TILER_API_KEY = 'h5Yr1c619LcnIrnipH10';
 maptilersdk.config.apiKey = MAP_TILER_API_KEY;

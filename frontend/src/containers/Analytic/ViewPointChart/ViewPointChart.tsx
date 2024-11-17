@@ -1,11 +1,11 @@
 
-import styles from './ViewPointChart.module.scss'
+import { Container, Grid } from '@mui/material';
+// import styles from './ViewPointChart.module.scss'
 import { useQuery } from 'react-query';
-import { getAnalyticData } from '../../../api/analytic';
+// import { getAnalyticData } from '../../../api/analytic';
 import { toast } from '../../../components/Toast';
 import { getDetailViewPoint } from '../../../api/view-point';
-import { ViewPointData } from '../../GisMap/models';
-import { Container, Grid } from '@mui/material';
+// import { ViewPointData } from '../../GisMap/models';
 import { BaseLayout, PrivateLayout } from '../../../layouts';
 import { useChart } from '../../../components/Chart/use-chart';
 import Chart from '../../../components/Chart/Chart';
