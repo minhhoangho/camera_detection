@@ -2,18 +2,17 @@ import { Box, Card } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import * as React from 'react';
 import Typography from '@mui/material/Typography';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import { API_BASE_URL, SOCKET_BASE_URL } from '../../../constants';
 import { ViewPointCameraData, ViewPointData } from '../models';
-// import { DETECTION_CLASS_NAME } from '../../../constants/detection';
-// import { socketClient } from '../../../utils/socket';
 import {
   useWebsocket,
   WebsocketMessagePayload,
 } from '../../../shared/hooks/use-websocket';
 import { getDetailViewPoint } from '../../../api/view-point';
 import { toast } from '../../../components/Toast';
+import { useDebounce } from 'src/shared/hooks/use-debounce';
 
 type RealtimeCameraProps = {
   viewPoint?: ViewPointData;
@@ -71,36 +70,46 @@ export function RealtimeCamera({
     }
   }, [isConnected, message]);
 
-  const renderWarning = () => {
-    if (!dataDetail) {
+  const isWarning = useDebounce(
+    dataDetail && total && dataDetail.warningThreshold < total,
+    500,
+  );
+  console.log("isWarning", isWarning);
+
+  const renderWarning = useCallback(() => {
+    if (!dataDetail || !total) {
       return null;
     }
-    if (dataDetail.warningThreshold < total) {
+    if (isWarning) {
       return (
-        <p style={{
-            backgroundColor: 'green',
+        <p
+          style={{
+            backgroundColor: 'yellow',
             padding: '5px',
-            color: 'white',
+            color: 'black',
             borderRadius: '5px',
             width: 'fit-content',
           }}
         >
-          Bình thường
-        </p>)
+          <span>Có dấu hiệu đông đúc</span>
+        </p>
+      );
     }
+
     return (
-      <p style={{
-          backgroundColor: 'red',
+      <p
+        style={{
+          backgroundColor: 'green',
           padding: '5px',
           color: 'white',
           borderRadius: '5px',
           width: 'fit-content',
         }}
       >
-        Có dấu hiệu đông đúc
+        Bình thường
       </p>
     );
-  };
+  }, [dataDetail, total, isWarning]);
 
   return (
     <Box>

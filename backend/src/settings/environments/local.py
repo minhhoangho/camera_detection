@@ -20,6 +20,5 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3001",
     "https://camera-detection.vercel.app",
     "https://city-camera.vercel.app",
-    "https://*.vercel.app",
     "https://accurately-crack-chamois.ngrok-free.app"
 ]
