@@ -44,13 +44,13 @@ export function HomeMap(props: MapProps) {
     retry: false,
   });
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTime(new Date().toLocaleTimeString());
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setCurrentTime(new Date().toLocaleTimeString());
+  //   }, 1000);
+  //
+  //   return () => clearInterval(interval);
+  // }, []);
 
   const renderMap = () => {
     if (useMapTile) {
@@ -76,10 +76,10 @@ export function HomeMap(props: MapProps) {
   return (
     <div className={styles['home-map_container']}>
       {renderMap()}
-      <div className={styles['show-time']}>
-          <AccessTimeIcon/>
-          <span className="ml-2">{currentTime}</span>
-      </div>
+      {/*<div className={styles['show-time']}>*/}
+      {/*    <AccessTimeIcon/>*/}
+      {/*    <span className="ml-2">{currentTime}</span>*/}
+      {/*</div>*/}
       <div className={styles['switch-mode']}>
         <Button variant="contained" onClick={() => setUseMapTile(!useMapTile)}>
           Switch
