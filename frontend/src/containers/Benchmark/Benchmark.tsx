@@ -44,17 +44,17 @@ const modelList = [
 export function Benchmark() {
   const [image, setImage] = useState<File | null>(null);
   const [results, setResults] = useState<PredictionResult[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [_, setIsLoading] = useState<boolean>(false);
   const handleImageUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    if (event.target.files && event.target.files[0]) {
+    if (event?.target.files?.[0]) {
       setImage(event.target.files[0]);
       setIsLoading(true);
       await Promise.all(
         modelList.map(async (modelItem) => {
           const formData = new FormData();
-          formData.append('image', event.target.files[0]);
+          formData.append('image', event?.target.files?.[0]);
           postBenchmark(modelItem.key, formData)
             .then((res) => {
               const resJson: PredictionResult = res.data;

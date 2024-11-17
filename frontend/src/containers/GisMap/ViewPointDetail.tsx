@@ -17,7 +17,6 @@ import {
   updateViewPoint,
 } from 'src/api/view-point';
 import { BaseLayout, PrivateLayout } from 'src/layouts';
-import { getImageCoordinates } from 'src/utils/gis-map';
 import { RealtimeCamera } from './components/RealtimeCamera';
 import { OpenLayerMapManagement } from './OpenLayerMap';
 import { ViewPointCameraList } from './components/ViewPointCameraList';

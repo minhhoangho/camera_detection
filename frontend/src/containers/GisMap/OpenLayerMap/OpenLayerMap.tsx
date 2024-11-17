@@ -15,16 +15,15 @@ import { Box, Card, Skeleton, Typography } from '@mui/material';
 import CardActionArea from '@mui/material/CardActionArea';
 import Image from 'next/image';
 import CardContent from '@mui/material/CardContent';
+import { useRecoilValue } from 'recoil';
+import { Circle } from 'ol/style';
+import Fill from 'ol/style/Fill';
 import styles from './OpenLayerMap.module.scss';
 import { CenterProps } from '../types';
 import { ViewPointData } from '../models';
 import { mapFocusState } from '../../../app-recoil/atoms/map';
-import { useRecoilValue } from 'recoil';
 import { useWebsocket, WebsocketMessagePayload } from '../../../shared/hooks/use-websocket';
 import { SOCKET_BASE_URL } from '../../../constants';
-import { Circle } from 'ol/style';
-import Fill from 'ol/style/Fill';
-import Stroke from 'ol/style/Stroke';
 // Import OpenLayers CSS
 
 // const DEFAULT_GEO = [12047000, 1812900]; // (long, lat) Da nang location

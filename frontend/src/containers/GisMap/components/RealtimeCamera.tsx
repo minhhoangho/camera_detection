@@ -44,7 +44,7 @@ export function RealtimeCamera({
 
   const handleCountObjects = (data: Record<string, any>) => {
     const objectCount: Record<string, number> = data?.object_count_map;
-    const cameraId = data?.camera_id;
+    const cameraId = data?.['camera_id'];
     if (Number(cameraId) === viewPointCamera.id) {
       // setObjects(objectCount);
       if (typeof objectCount === 'object') {
@@ -59,6 +59,7 @@ export function RealtimeCamera({
 
   useEffect(() => {
     if (isConnected) {
+      // eslint-disable-next-line no-console
       console.log('Connected to WebSocket');
     }
 

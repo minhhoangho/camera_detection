@@ -46,6 +46,7 @@ export function MapTiler({ geoData, center, zoom }: Props) {
             easing: easing
           });
         } else if (e.which === 37) {
+          // eslint-disable-next-line no-console
           console.log("map.getBearing() - deltaDegrees, ", map.getBearing() - deltaDegrees,)
           // left
           map.easeTo({
