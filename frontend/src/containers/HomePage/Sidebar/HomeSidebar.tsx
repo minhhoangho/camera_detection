@@ -208,6 +208,7 @@ export function HomeSidebar({ open, onClose }: Props): React.ReactElement {
           <PublicCameraSidebar
             onClose={() => setActiveViewPoint(null)}
             open={!!activeViewPoint}
+            activeViewPoint={activeViewPoint}
             viewPointId={activeViewPoint?.id ?? 0}
           />
         </div>

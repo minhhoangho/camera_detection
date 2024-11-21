@@ -4,6 +4,7 @@ import * as React from 'react';
 import Typography from '@mui/material/Typography';
 import { useCallback, useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
+import { useDebounce } from 'src/shared/hooks/use-debounce';
 import { API_BASE_URL, SOCKET_BASE_URL } from '../../../constants';
 import { ViewPointCameraData, ViewPointData } from '../models';
 import {
@@ -12,7 +13,6 @@ import {
 } from '../../../shared/hooks/use-websocket';
 import { getDetailViewPoint } from '../../../api/view-point';
 import { toast } from '../../../components/Toast';
-import { useDebounce } from 'src/shared/hooks/use-debounce';
 
 type RealtimeCameraProps = {
   viewPoint?: ViewPointData;

@@ -15,7 +15,7 @@ import { getListViewPointCameras } from 'src/api/view-point';
 import styles from './PublicCameraSidebar.module.scss';
 import {
   ListViewPointCameraPaginateResponse,
-  ViewPointCameraData,
+  ViewPointCameraData, ViewPointData,
 } from '../../../GisMap/models';
 import { RealtimeCamera } from '../../../GisMap/components/RealtimeCamera';
 import { Iconify } from '../../../../components/Iconify';
@@ -23,6 +23,7 @@ import { Iconify } from '../../../../components/Iconify';
 type Props = {
   onClose: () => void;
   open: boolean;
+  activeViewPoint: ViewPointData;
   viewPointId: number;
 };
 
@@ -30,6 +31,7 @@ export function PublicCameraSidebar({
   open,
   onClose,
   viewPointId,
+                                      activeViewPoint,
 }: Props): React.ReactElement {
   const [listCameraViewPoints, setListCameraViewPoints] = React.useState<
     ViewPointCameraData[]
@@ -139,7 +141,16 @@ export function PublicCameraSidebar({
               )}
             </Box>
           </div>
-          <div>{renderActiveCamera()}</div>
+          <div>
+            <div>
+              <Typography variant="h6" className="text-center">
+                {activeViewPoint?.name}
+              </Typography>
+            </div>
+            <div>
+              {renderActiveCamera()}
+            </div>
+          </div>
           {!activeCamera?.homographyMatrix && (
             <div className="px-4 w-full">
               <img
