@@ -24,7 +24,7 @@ export function RealtimeCamera({
   viewPointCamera,
   setShowRealtimeCamera,
 }: RealtimeCameraProps) {
-  const title = 'Realtime Camera';
+  const title = 'Camera';
   const uuid = React.useRef(new Date().getTime());
   const [showCamImgTag, setShowCamImgTag] = React.useState(true);
   // const [objects, setObjects] =

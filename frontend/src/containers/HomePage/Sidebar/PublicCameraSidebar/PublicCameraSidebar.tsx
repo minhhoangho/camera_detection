@@ -142,7 +142,7 @@ export function PublicCameraSidebar({
             </Box>
           </div>
           <div>
-            <div>
+            <div className="my-3">
               <Typography variant="h6" className="text-center">
                 {activeViewPoint?.name}
               </Typography>
