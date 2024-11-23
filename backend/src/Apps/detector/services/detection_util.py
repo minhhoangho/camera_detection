@@ -7,7 +7,7 @@ from ultralytics import YOLO
 from ultralytics.engine.results import Results
 from sahi import AutoDetectionModel
 from sahi.prediction import PredictionResult, ObjectPrediction
-from sahi.predict import get_prediction
+from sahi.predict import get_prediction, get_sliced_prediction
 import time
 
 from src.Apps.detector.constants.coco_class import VEHICLE_CLASS_IDS

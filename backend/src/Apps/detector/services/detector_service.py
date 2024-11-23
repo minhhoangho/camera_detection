@@ -82,8 +82,10 @@ class DetectorService:
             x, y, w, h = box
             if w * h < 10:  # Skip small boxes
                 continue
-            x_center = float(x + w / 2)
-            y_center = float(y + h / 2)
+            # x_center = float(x + w / 2)
+            # y_center = float(y + h / 2)
+            x_center = float(x)
+            y_center = float(y)
             wrl = np.array(homography_matrix, dtype=np.float32).dot(
                 np.array([[x_center], [y_center], [1]], dtype=np.float32))
             wrl = wrl / wrl[2]  # Normalize ratio
@@ -115,8 +117,10 @@ class DetectorService:
             x, y, w, h = box
             if w * h < 10:  # Skip small boxes
                 continue
-            x_center = float(x + w / 2)
-            y_center = float(y + h / 2)
+            # x_center = float(x + w / 2)
+            # y_center = float(y + h / 2)
+            x_center = float(x)
+            y_center = float(y)
             wrl = np.array(homography_matrix).dot(np.array([[x_center], [y_center], [1]]))
             wrl = wrl / wrl[2]  # Normalize ratio
             x_bev, y_bev = wrl[0], wrl[1]

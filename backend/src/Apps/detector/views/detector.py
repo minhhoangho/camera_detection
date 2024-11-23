@@ -23,7 +23,8 @@ from src.Apps.detector.services.detector_service import DetectorService
 from src.Apps.gis_map.dataclass.bev_metadata import BevImageMetaData, ImageCoordinate
 from src.Apps.gis_map.models import GisViewPointCamera, GisViewPoint
 
-detector = Yolov8Detector(os.path.join(settings.BASE_DIR, "../models", "yolov8s.pt"))
+# detector = Yolov8Detector(os.path.join(settings.BASE_DIR, "../models", "yolov8s.pt"))
+detector = Yolov8Detector(os.path.join(settings.BASE_DIR, "../models", "yolov8_best.pt"))
 from src.Apps.base.constants.http import HttpMethod
 from src.Apps.websocket.shared_state import connection_status
 
