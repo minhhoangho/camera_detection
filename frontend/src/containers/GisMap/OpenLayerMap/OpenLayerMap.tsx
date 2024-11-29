@@ -52,20 +52,17 @@ export function OpenLayerMap({
   const mapFocus = useRecoilValue(mapFocusState);
   const [isConnected, message, _] = useWebsocket(`${SOCKET_BASE_URL}/ws/`);
 
-
-  const handleDrawPoints = (points: Array<Record<string, number>>)=> {
-    // remove existing point layer
-    // console.log("mapRef?.current.getLayers() ", mapRef?.current.getLayers())
+  const removePointLayer = () => {
     mapRef?.current.getLayers().forEach((layer:VectorLayer) => {
       if (layer.getClassName() === 'point-layer') {
         mapRef?.current.removeLayer(layer);
       }
-      // if (layer.get('className_') === 'point-layer') {
-      //   console.log("Point layer found")
-      //   // layer.clear()
-      //   mapRef?.current.removeLayer(layer);
-      // }
     });
+  }
+
+  const handleDrawPoints = (points: Array<Record<string, number>>)=> {
+    // remove existing point layer
+    removePointLayer();
 
     const pointVectorSource = new VectorSource();
 
@@ -103,6 +100,7 @@ export function OpenLayerMap({
     if (message) {
       const messageJson: WebsocketMessagePayload = JSON.parse(message);
       if (messageJson.type === 'send_points') {
+        removePointLayer()
         if (_toNumber(mapRef?.current?.getView().getZoom()) >=20) {
           // If zoom level is greater than 20, draw points
           handleDrawPoints(messageJson.data.vehicle_points as Array<Record<string, number>>)

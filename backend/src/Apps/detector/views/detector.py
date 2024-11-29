@@ -29,6 +29,13 @@ from src.Apps.base.constants.http import HttpMethod
 from src.Apps.websocket.shared_state import connection_status
 
 
+import torch
+import math
+# this ensures that the current MacOS version is at least 12.3+
+print("torch.backends.mps.is_available(): ", torch.backends.mps.is_available())
+# this ensures that the current current PyTorch installation was built with MPS activated.
+print("torch.backends.mps.is_built(): ", torch.backends.mps.is_built())
+
 class DetectorViewSet(viewsets.ViewSet):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -94,7 +101,7 @@ class DetectorViewSet(viewsets.ViewSet):
         try:
             cap = CamGear(source=video_url, stream_mode=True, logging=True).start()
         except:
-            error=True
+            error = True
             print("Error in opening camera")
 
         if error:
@@ -160,11 +167,11 @@ class DetectorViewSet(viewsets.ViewSet):
                         # And padding between frame and bev_image, the padding is white color
                         padding = np.ones((30, frame.shape[1], 3), dtype=np.uint8) * 255
                         frame = np.concatenate((frame, padding, bev_image), axis=0)
-                count +=1
+                count += 1
 
                 ret, buffer = cv2.imencode('.jpg', frame)
                 frame = buffer.tobytes()
-                print("Prepare to send data to frontend .....")
+                # print("Prepare to send data to frontend .....")
                 await self.send_event(
                     channel_layer=channel_layer,
                     results=results,
@@ -179,8 +186,9 @@ class DetectorViewSet(viewsets.ViewSet):
                        b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
                 # print("Unique id ", unique_id)
                 await asyncio.sleep(delay)
-                print("Connection status ", connection_status)
+                print("Connection status ", connection_status, "Current session: ", unique_id)
                 if not connection_status.get(unique_id):
+                    print(f"Front end Client ({unique_id})  disconnected.")
                     break
         except:
             cap.stop()
@@ -201,7 +209,6 @@ class DetectorViewSet(viewsets.ViewSet):
             }
         )
 
-
     async def send_points(self, channel_layer, points: list[dict], **kwargs):
         await channel_layer.group_send(
             'vehicle_count_group',
@@ -217,4 +224,3 @@ class DetectorViewSet(viewsets.ViewSet):
                 }
             }
         )
-

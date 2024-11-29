@@ -24,7 +24,8 @@ class Yolov8Detector:
             model_type=model_type,
             model_path=self.ckpt_path,
             confidence_threshold=0.3,
-            device="cpu",
+            # device="cpu",
+            device="mps",
         )
 
         self.class_dict = self.model.names

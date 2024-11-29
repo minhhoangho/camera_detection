@@ -86,7 +86,6 @@ class DetectorService:
         list_point_coordinates = []
         for box in ltwh_list:
             x, y, w, h = box
-            print("Box: ", box)
             if w * h < 5:  # Skip small boxes
                 continue
             # x_center = float(x + w / 2)
