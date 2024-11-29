@@ -77,10 +77,17 @@ class DetectorService:
         top_right: Coordinate = Coordinate(**image_coordinates.get("top_right", {}))
         bottom_left: Coordinate = Coordinate(**image_coordinates.get("bottom_left", {}))
         bottom_right: Coordinate = Coordinate(**image_coordinates.get("bottom_right", {}))
+
+        # top_left = Coordinate(long=108.21593556299666, lat=16.074129957554656)
+        # top_right = Coordinate(long=108.216485415845, lat=16.074129957554656)
+        # bottom_left = Coordinate(long=108.21593556299666, lat=16.073986296035247)
+        # bottom_right = Coordinate(long=108.216485415845, lat=16.073986296035247)
+
         list_point_coordinates = []
         for box in ltwh_list:
             x, y, w, h = box
-            if w * h < 10:  # Skip small boxes
+            print("Box: ", box)
+            if w * h < 5:  # Skip small boxes
                 continue
             # x_center = float(x + w / 2)
             # y_center = float(y + h / 2)
@@ -115,14 +122,13 @@ class DetectorService:
         ltwh_list = [box.to_xywh() for box in results]
         for box in ltwh_list:
             x, y, w, h = box
-            if w * h < 10:  # Skip small boxes
+            if w * h < 5:  # Skip small boxes
                 continue
-            # x_center = float(x + w / 2)
-            # y_center = float(y + h / 2)
             x_center = float(x)
             y_center = float(y)
             wrl = np.array(homography_matrix).dot(np.array([[x_center], [y_center], [1]]))
             wrl = wrl / wrl[2]  # Normalize ratio
             x_bev, y_bev = wrl[0], wrl[1]
+            # cv2.circle(cloned_bev_img, (int(x_bev), int(y_bev)), 5, (0, 255, 0), -1)
             cv2.circle(cloned_bev_img, (int(x_bev), int(y_bev)), 5, (0, 255, 0), -1)
         return cloned_bev_img

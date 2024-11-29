@@ -1,7 +1,10 @@
-from firebase_admin import firestore
-import firebase_admin
 
-store = firestore.client()
+try:
+    from firebase_admin import firestore
+
+    store = firestore.client()
+except Exception as e:
+    print("Error connecting to Firestore: ")
 
 
 class Firestore:

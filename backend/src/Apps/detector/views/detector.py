@@ -89,7 +89,18 @@ class DetectorViewSet(viewsets.ViewSet):
             bev_image = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
         else:
             mapping_bev = False
-        cap = CamGear(source=video_url, stream_mode=True, logging=True).start()  # YouTube Video URL as input
+
+        error = False
+        try:
+            cap = CamGear(source=video_url, stream_mode=True, logging=True).start()
+        except:
+            error=True
+            print("Error in opening camera")
+
+        if error:
+            return
+
+            # YouTube Video URL as input
         # Define the desired frame rate (frames per second)
         frame_rate = 90
         # Calculate the delay between frames
@@ -99,13 +110,21 @@ class DetectorViewSet(viewsets.ViewSet):
         fps = 30
         # if count == fps, start detection
         results = []
+        try_count = 0
         try:
             while True:
 
                 # if not request.is_running():  # Check if the request is still valid
                 #     print("Front end Client disconnected.")
                 #     break
-                frame = cap.read()
+                try:
+                    frame = cap.read()
+                except:
+                    try_count += 1
+                    if try_count > 20:
+                        print("Error in reading frame")
+                        break
+                    continue
                 # check for frame if Nonetype
                 if frame is None:
                     break
@@ -117,16 +136,16 @@ class DetectorViewSet(viewsets.ViewSet):
                                                                                homography_matrix=homography_matrix)
                         bev_meta = camera_viewpoint.bev_image_metadata
                         bev_meta = json.loads(bev_meta)
-                        # vehicle_points = DetectorService.generate_point_vehicles(bev_meta, homography_matrix, results)
-                        # await self.send_points(
-                        #     channel_layer=channel_layer,
-                        #     points=vehicle_points,
-                        #     camera_id=cam_id,
-                        #     camera_uri=video_url,
-                        #     view_point_id=view_point.id,
-                        #     timestamp=int(time.time()),
-                        #     unique_id=unique_id
-                        # )
+                        vehicle_points = DetectorService.generate_point_vehicles(bev_meta, homography_matrix, results)
+                        await self.send_points(
+                            channel_layer=channel_layer,
+                            points=vehicle_points,
+                            camera_id=cam_id,
+                            camera_uri=video_url,
+                            view_point_id=view_point.id,
+                            timestamp=int(time.time()),
+                            unique_id=unique_id
+                        )
                     else:
                         frame, results = detector.get_prediction_sahi(frame=frame)
                 else:
@@ -183,7 +202,7 @@ class DetectorViewSet(viewsets.ViewSet):
         )
 
 
-    async def send_points(self, channel_layer, points: list[tuple[float, float]], **kwargs):
+    async def send_points(self, channel_layer, points: list[dict], **kwargs):
         await channel_layer.group_send(
             'vehicle_count_group',
             {

@@ -19,7 +19,7 @@ from django.db.models import Q
 from src.Apps.base.exceptions import AppException, ApiErr
 from src.Apps.base.utils.type_utils import TypeUtils
 from src.Apps.detector.services.detector_service import DetectorService
-from src.Apps.gis_map.dataclass.bev_metadata import BevImageMetaData
+from src.Apps.gis_map.dataclass.bev_metadata import BevImageMetaData, Coordinate
 from src.Apps.gis_map.models import GisViewPoint, GisViewPointCamera, GisMapView
 from src.Apps.utils.firebase_client.firestore import Firestore
 
@@ -144,6 +144,11 @@ class GisMapService:
         test_homomatrix = [[-0.157284657, -3.31660226, 851.87688],
                            [0.131452704, -0.487076251, -478.520093],
                            [-0.00112704092, -0.00881721794, 1.0]]
+        #
+        test_homomatrix = [[0.226527891, -7.05884174, 1218.24332],
+                           [0.210797597, -0.212675668, -888.333093],
+                           [-0.00115990195, -0.0137257698, 1.0]]
+
         homography_matrix = json.dumps(test_homomatrix)
         metadata: dict = cls.calculate_bev_metadata(pk=pk, image_coordinates=image_coordinates).__dict__
         GisViewPointCamera.objects.filter(id=pk).update(
@@ -163,4 +168,10 @@ class GisMapService:
         bev_image = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
         height, width, _ = bev_image.shape
         center = [view_point.long, view_point.lat]
+        # image_coordinates = {
+        #     "top_left": Coordinate(long=108.21593556299666, lat=16.074129957554656).__dict__,
+        #     "top_right": Coordinate(long=108.216485415845, lat=16.074129957554656).__dict__,
+        #     "bottom_left": Coordinate(long=108.21593556299666, lat=16.073986296035247).__dict__,
+        #     "bottom_right": Coordinate(long=108.216485415845, lat=16.073986296035247).__dict__
+        # }
         return BevImageMetaData(width=width, height=height, center_long_lat=center, image_coordinates=image_coordinates)

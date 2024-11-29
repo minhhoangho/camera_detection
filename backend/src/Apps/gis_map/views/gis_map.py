@@ -184,5 +184,5 @@ class GisMapViewSet(PaginationMixin):
 
     @action(methods=[HttpMethod.GET], url_path=r"analytic", detail=False)
     def analytic_all_location(self, request: Request):
-        data = AnalyticService.analytic_all_location()
-        return Response(data=dict(analytic_data=data), status=HTTPStatus.OK)
+        # data = AnalyticService.analytic_all_location()
+        return Response(data=dict(analytic_data=[]), status=HTTPStatus.OK)

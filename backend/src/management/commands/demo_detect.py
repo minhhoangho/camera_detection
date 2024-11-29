@@ -13,7 +13,7 @@ from src.Apps.gis_map.models import GisViewPointCamera, GisViewPoint
 detector = Yolov8Detector(os.path.join(settings.BASE_DIR, "../models", "yolov8s.pt"))
 
 class Command(BaseCommand):
-    help = 'Run demo detect and save file'
+    help = 'Run demo detect and save file: ./manage.py demo_detect'
 
 
     def handle(self, *args, **kwargs):
@@ -40,6 +40,9 @@ class Command(BaseCommand):
         frame = np.array(bytearray(demo_frame.content), dtype=np.uint8)
         frame = cv2.imdecode(frame, cv2.IMREAD_COLOR)
 
+        homography_matrix = np.array([[2.26527891e-01, -7.05884174e+00, 1.21824332e+03],
+               [2.10797597e-01, -2.12675668e-01, -8.88333093e+02],
+               [-1.15990195e-03, -1.37257698e-02, 1.00000000e+00]])
         frame, results = detector.get_prediction_and_bev_image(frame=frame, bev_image=bev_image,
                                                                homography_matrix=homography_matrix)
         bev_meta = camera_viewpoint.bev_image_metadata
@@ -48,19 +51,37 @@ class Command(BaseCommand):
         list_lat_long = [
             (point['lat'], point['long']) for point in vehicle_points
         ]
-        image_coordinates = bev_meta.get("image_coordinates", {})
-        top_left: Coordinate = Coordinate(**image_coordinates.get("top_left", {}))
-        top_right: Coordinate = Coordinate(**image_coordinates.get("top_right", {}))
-        bottom_left: Coordinate = Coordinate(**image_coordinates.get("bottom_left", {}))
-        bottom_right: Coordinate = Coordinate(**image_coordinates.get("bottom_right", {}))
+        # image_coordinates = bev_meta.get("image_coordinates", {})
+        # top_left: Coordinate = Coordinate(**image_coordinates.get("top_left", {}))
+        # top_right: Coordinate = Coordinate(**image_coordinates.get("top_right", {}))
+        # bottom_left: Coordinate = Coordinate(**image_coordinates.get("bottom_left", {}))
+        # bottom_right: Coordinate = Coordinate(**image_coordinates.get("bottom_right", {}))
+        # top_right = 108.216485415845, 16.074159957554656
+        # bottom_right = 108.216485415845,  16.073996296035247
+        # top_lef = 108.21593556299666, 16.074159957554656
+        # bottom_left = 108.21593556299666, 16.073996296035247
+        # rec = [
+        #     (top_left.lat, top_left.long),
+        #     (top_right.lat, top_right.long),
+        #     (bottom_right.lat, bottom_right.long),
+        #     (bottom_left.lat, bottom_left.long)
+        # ]
         rec = [
-            (top_left.lat, top_left.long),
-            (top_right.lat, top_right.long),
-            (bottom_right.lat, bottom_right.long),
-            (bottom_left.lat, bottom_left.long)
+            (16.074159957554656, 108.21593556299666),
+            (16.074159957554656, 108.216485415845),
+            (16.073996296035247, 108.216485415845),
+            (16.073996296035247, 108.21593556299666)
         ]
+        rec = [
+            (16.074159957554656, 108.21593556299666),
+            (16.074159957554656, 108.216485415845),
+            (16.073956296035247, 108.216485415845),
+            (16.073956296035247, 108.21593556299666)
+        ]
+
+        # print("Frame ", frame)
         # Save frame
-        cv2.imwrite('frame.jpg', frame)
+        cv2.imwrite('detect_frame.jpg', frame)
         self.save_map(list_lat_long, rec)
 
 

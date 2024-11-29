@@ -16,15 +16,16 @@ class SocketConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard("vehicle_count_group", self.channel_name)
+        print("Disconnected ", self.channel_name)
         for key, value in connection_status.items():
             if value == self.channel_name:
                 connection_status[key] = False
 
 
     async def send_event(self, event):
-        from src.Apps.utils.firebase_client.firestore import Firestore
+        # from src.Apps.utils.firebase_client.firestore import Firestore
         data = event.get("data", {})
-        print("Set unique id ", data.get("unique_id"))
+        # print("Set unique id ", data.get("unique_id"))
         connection_status[data.get("unique_id")] = self.channel_name
         await self.send(text_data=json.dumps({
             "type": "send_event",
@@ -32,13 +33,14 @@ class SocketConsumer(AsyncWebsocketConsumer):
         }))
 
         # Call firebase and save data:
-        timestamp = data.get("timestamp")
-        if timestamp and int(timestamp) % 5 == 0:
-            Firestore.save_data("analytic", data)
+        # timestamp = data.get("timestamp")
+        # if timestamp and int(timestamp) % 5 == 0:
+        #     Firestore.save_data("analytic", data)
 
 
     async def send_points(self, event):
         data = event.get("data", {})
+        connection_status[data.get("unique_id")] = self.channel_name
         await self.send(text_data=json.dumps({
             "type": "send_points",
             "data": data

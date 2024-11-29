@@ -11,4 +11,8 @@ class ObjectDetectionResult:
 
     def to_xywh(self):
         x1, y1, x2, y2 = self.xyxy
-        return x1, y1, x2 - x1, y2 - y1
+        x_center = (x1 + x2) / 2
+        y_center = (y1 + y2) / 2
+        w = x2 - x1
+        h = y2 - y1
+        return x_center, y_center, w, h

@@ -56,10 +56,11 @@ export function RealtimeCamera({
     }
   };
 
+
   useEffect(() => {
     if (isConnected) {
       // eslint-disable-next-line no-console
-      console.log('Connected to WebSocket');
+      console.info('[RealtimeCamera] Connected to WebSocket');
     }
 
     if (message) {
@@ -74,7 +75,6 @@ export function RealtimeCamera({
     dataDetail && total && dataDetail.warningThreshold < total,
     500,
   );
-  console.log("isWarning", isWarning);
 
   const renderWarning = useCallback(() => {
     if (!dataDetail || !total) {

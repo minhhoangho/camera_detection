@@ -24,6 +24,7 @@ import { ViewPointData } from '../models';
 import { mapFocusState } from '../../../app-recoil/atoms/map';
 import { useWebsocket, WebsocketMessagePayload } from '../../../shared/hooks/use-websocket';
 import { SOCKET_BASE_URL } from '../../../constants';
+import _toNumber from 'lodash/toNumber'
 // Import OpenLayers CSS
 
 // const DEFAULT_GEO = [12047000, 1812900]; // (long, lat) Da nang location
@@ -52,7 +53,7 @@ export function OpenLayerMap({
   const [isConnected, message, _] = useWebsocket(`${SOCKET_BASE_URL}/ws/`);
 
 
-  const handleDrawPoints = (points: Array<any>)=> {
+  const handleDrawPoints = (points: Array<Record<string, number>>)=> {
     // remove existing point layer
     // console.log("mapRef?.current.getLayers() ", mapRef?.current.getLayers())
     mapRef?.current.getLayers().forEach((layer:VectorLayer) => {
@@ -78,6 +79,7 @@ export function OpenLayerMap({
       // mapRef.current.addFeature(pointFeature);
     })
 
+    // Draw points
     mapRef.current?.addLayer(new VectorLayer({
       className: 'point-layer',
       source: pointVectorSource,
@@ -88,21 +90,23 @@ export function OpenLayerMap({
         }),
       }),
     }));
-
-    // Draw points
-
-
   }
+
+
+
   useEffect(() => {
     if (isConnected) {
       // eslint-disable-next-line no-console
-      console.log('[OpenLayerMap] Connected to WebSocket');
+      console.info('[OpenLayerMap] Connected to WebSocket');
     }
 
     if (message) {
       const messageJson: WebsocketMessagePayload = JSON.parse(message);
       if (messageJson.type === 'send_points') {
-        handleDrawPoints(messageJson.data.vehicle_points)
+        if (_toNumber(mapRef?.current?.getView().getZoom()) >=20) {
+          // If zoom level is greater than 20, draw points
+          handleDrawPoints(messageJson.data.vehicle_points as Array<Record<string, number>>)
+        }
       }
     }
   }, [isConnected, message]);
@@ -203,7 +207,7 @@ export function OpenLayerMap({
       }
     });
     return () => {
-      mapRef.current.setTarget(undefined);
+      mapRef?.current?.setTarget(undefined);
     };
   }, [center, geoData, zoom]);
 
