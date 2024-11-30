@@ -2,7 +2,6 @@ import json
 import uuid
 from typing import AsyncGenerator
 
-from channels.layers import get_channel_layer
 import asyncio
 from django.http import StreamingHttpResponse, HttpResponse
 from requests import Request
@@ -50,7 +49,7 @@ class DetectorViewSet(viewsets.ViewSet):
         # response['Accept-Ranges'] = 'bytes'
         # return response
 
-    def handle_raw_video_source(self, video_url: str):
+    async def handle_raw_video_source(self, video_url: str) -> AsyncGenerator[bytes, None]:
         cap = CamGear(source=video_url, stream_mode=True, logging=True).start()  # YouTube Video URL as input
 
         # Define the desired frame rate (frames per second)
@@ -80,7 +79,9 @@ class DetectorViewSet(viewsets.ViewSet):
                 yield (b'--frame\r\n'
                        b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
-                time.sleep(delay)
+                # time.sleep(delay)
+                await asyncio.sleep(delay)
+
         except Exception as e:
             print("[handle_raw_video_source] Error in reading frame ", e)
         finally:
@@ -99,6 +100,8 @@ class DetectorViewSet(viewsets.ViewSet):
         return response
 
     async def process_video(self, cam_id: int, request) -> AsyncGenerator[bytes, None]:
+        from channels.layers import get_channel_layer
+
         request_id = str(uuid.uuid4())
         unique_id = f"{request_id}_{cam_id}"
 
