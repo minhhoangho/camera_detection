@@ -239,7 +239,7 @@ export function OpenLayerMapManagement({
         aria-label="Platform"
       >
         <ToggleButton value={MODE.DRAW}>Draw</ToggleButton>
-        {/*<ToggleButton value={MODE.MARK_POINT}>Mark location</ToggleButton>*/}
+        <ToggleButton value={MODE.MARK_POINT}>Mark location</ToggleButton>
       </ToggleButtonGroup>
       <div ref={mapRef} style={{ width, height, position: 'relative' }} />
     </div>

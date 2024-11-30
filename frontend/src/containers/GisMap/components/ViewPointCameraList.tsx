@@ -57,6 +57,81 @@ export function ViewPointCameraList({ viewPointId, setShowRealtimeCamera }: View
     // cacheTime: 0,
     enabled: !!viewPointId,
   });
+  const columns: GridColDef[] = [
+    {
+      field: VIEW_POINT_CAMERA_MANAGEMENT_KEY.ID,
+      headerName:
+        VIEW_POINT_CAMERA_MANAGEMENT_COLUMNS_LABEL[
+          VIEW_POINT_CAMERA_MANAGEMENT_KEY.ID
+          ],
+      sortable: false,
+      filterable: false,
+      width: 80,
+    },
+    {
+      field: VIEW_POINT_CAMERA_MANAGEMENT_KEY.CAMERA_SOURCE,
+      headerName:
+        VIEW_POINT_CAMERA_MANAGEMENT_COLUMNS_LABEL[
+          VIEW_POINT_CAMERA_MANAGEMENT_KEY.CAMERA_SOURCE
+          ],
+      sortable: false,
+      filterable: false,
+      width: 80,
+      renderCell: (params: GridRenderCellParams<any, any>) => {
+        const sourceEnum: Record<number, React.ReactElement> = {
+          0: (
+            <span className='flex'>
+          <span className='mr-1'>RTSP</span><Iconify icon="icon-park:camera-one" width={20} height={20} />
+        </span>
+          ),
+          1: (
+            <span  className='flex'>
+          <span className='mr-1'>Youtube</span> <Iconify icon="logos:youtube-icon" width={20} height={20} />
+        </span>
+          ),
+        };
+        return <span className="">{sourceEnum[params.row.cameraSource]}</span>;
+      },
+    },
+    {
+      field: VIEW_POINT_CAMERA_MANAGEMENT_KEY.CAMERA_URI,
+      headerName:
+        VIEW_POINT_CAMERA_MANAGEMENT_COLUMNS_LABEL[
+          VIEW_POINT_CAMERA_MANAGEMENT_KEY.CAMERA_URI
+          ],
+      sortable: false,
+      filterable: false,
+      width: 200,
+    },
+    {
+      field: VIEW_POINT_MANAGEMENT_KEY.UPDATED_AT,
+      headerName:
+        VIEW_POINT_MANAGEMENT_COLUMNS_LABEL[
+          VIEW_POINT_MANAGEMENT_KEY.UPDATED_AT
+          ],
+      sortable: false,
+      filterable: false,
+      width: 100,
+      valueFormatter: (params) => {
+        return `${format(
+          new Date(params?.value || Date.now()),
+          'dd/MM/yyyy HH:mm',
+        )}`;
+      },
+    },
+    {
+      field: VIEW_POINT_MANAGEMENT_KEY.ACTION,
+      headerName:
+        VIEW_POINT_MANAGEMENT_COLUMNS_LABEL[VIEW_POINT_MANAGEMENT_KEY.ACTION],
+      sortable: false,
+      filterable: false,
+      width: 100,
+      renderCell: (params: GridRenderCellParams) => {
+        return renderActionButton(params.row as ViewPointCameraData);
+      },
+    },
+  ];
+
 
   const handleNextPage = (query: PaginationQueryParams) => {
     setPaginationParams({ limit: query.limit, offset: query.offset });
@@ -92,80 +167,6 @@ export function ViewPointCameraList({ viewPointId, setShowRealtimeCamera }: View
     );
   };
 
-  const columns: GridColDef[] = [
-    {
-      field: VIEW_POINT_CAMERA_MANAGEMENT_KEY.ID,
-      headerName:
-        VIEW_POINT_CAMERA_MANAGEMENT_COLUMNS_LABEL[
-          VIEW_POINT_CAMERA_MANAGEMENT_KEY.ID
-        ],
-      sortable: false,
-      filterable: false,
-      width: 80,
-    },
-    {
-      field: VIEW_POINT_CAMERA_MANAGEMENT_KEY.CAMERA_SOURCE,
-      headerName:
-        VIEW_POINT_CAMERA_MANAGEMENT_COLUMNS_LABEL[
-          VIEW_POINT_CAMERA_MANAGEMENT_KEY.CAMERA_SOURCE
-        ],
-      sortable: false,
-      filterable: false,
-      width: 80,
-      renderCell: (params: GridRenderCellParams<any, any>) => {
-        const sourceEnum: Record<number, React.ReactElement> = {
-          0: (
-            <span className='flex'>
-          <span className='mr-1'>RTSP</span><Iconify icon="icon-park:camera-one" width={20} height={20} />
-        </span>
-          ),
-          1: (
-            <span  className='flex'>
-          <span className='mr-1'>Youtube</span> <Iconify icon="logos:youtube-icon" width={20} height={20} />
-        </span>
-          ),
-        };
-        return <span className="">{sourceEnum[params.row.cameraSource]}</span>;
-      },
-    },
-    {
-      field: VIEW_POINT_CAMERA_MANAGEMENT_KEY.CAMERA_URI,
-      headerName:
-        VIEW_POINT_CAMERA_MANAGEMENT_COLUMNS_LABEL[
-          VIEW_POINT_CAMERA_MANAGEMENT_KEY.CAMERA_URI
-        ],
-      sortable: false,
-      filterable: false,
-      width: 200,
-    },
-    {
-      field: VIEW_POINT_MANAGEMENT_KEY.UPDATED_AT,
-      headerName:
-        VIEW_POINT_MANAGEMENT_COLUMNS_LABEL[
-          VIEW_POINT_MANAGEMENT_KEY.UPDATED_AT
-        ],
-      sortable: false,
-      filterable: false,
-      width: 100,
-      valueFormatter: (params) => {
-        return `${format(
-          new Date(params?.value || Date.now()),
-          'dd/MM/yyyy HH:mm',
-        )}`;
-      },
-    },
-    {
-      field: VIEW_POINT_MANAGEMENT_KEY.ACTION,
-      headerName:
-        VIEW_POINT_MANAGEMENT_COLUMNS_LABEL[VIEW_POINT_MANAGEMENT_KEY.ACTION],
-      sortable: false,
-      filterable: false,
-      width: 100,
-      renderCell: (params: GridRenderCellParams) => {
-        return renderActionButton(params.row as ViewPointCameraData);
-      },
-    },
-  ];
   const handleCreate = () => {
     setIsOpenUpsert(true);
   };

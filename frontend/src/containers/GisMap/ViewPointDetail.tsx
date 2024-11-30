@@ -26,11 +26,19 @@ import {
   ViewPointCameraData,
   ViewPointData,
 } from './models';
+import { RealtimeCameraRaw } from './components/RealtimeCameraRaw';
 import { bevCoordinateState } from '../../app-recoil/atoms/map';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+
+const RealTimeCameraMode = {
+  NO_SHOW: 'no_show',
+  RAW: 'raw',
+  DETECTION: 'detection',
+}
 
 export function ViewPointDetail() {
   const bevCoordinate = useRecoilValue(bevCoordinateState);
-  const [showRealtimeCamera, setShowRealtimeCamera] = React.useState(false);
+  const [showRealtimeCamera, setShowRealtimeCamera] = React.useState(RealTimeCameraMode.NO_SHOW);
   const [selectedViewPointCamera, setSelectedViewPointCamera] = React.useState(
     {} as ViewPointCameraData,
   );
@@ -120,7 +128,7 @@ export function ViewPointDetail() {
     val: boolean,
     viewPointCamera: ViewPointCameraData,
   ) => {
-    setShowRealtimeCamera(val);
+    setShowRealtimeCamera(RealTimeCameraMode.RAW);
     setSelectedViewPointCamera(viewPointCamera);
   };
 
@@ -133,6 +141,26 @@ export function ViewPointDetail() {
     };
     uploadBevImage(payload);
   };
+
+  const renderRealtimeCamera = () => {
+    if (showRealtimeCamera === RealTimeCameraMode.NO_SHOW) {
+      return null;
+    }
+    if (showRealtimeCamera === RealTimeCameraMode.RAW) {
+      return (
+        <RealtimeCameraRaw
+          viewPoint={dataDetail as ViewPointData}
+          viewPointCamera={selectedViewPointCamera}
+        />
+      );
+    }
+    return (
+      <RealtimeCamera
+        viewPoint={dataDetail as ViewPointData}
+        viewPointCamera={selectedViewPointCamera}
+      />
+    )
+  }
 
   return (
     <BaseLayout>
@@ -151,13 +179,17 @@ export function ViewPointDetail() {
           <h1>{dataDetail?.name ?? ''}</h1>
           <Grid container spacing={3} alignItems="stretch">
             <Grid item xs={6}>
-              {showRealtimeCamera ? (
+              {showRealtimeCamera !== RealTimeCameraMode.NO_SHOW ?  (
                 <>
-                  <RealtimeCamera
-                    viewPoint={dataDetail as ViewPointData}
-                    viewPointCamera={selectedViewPointCamera}
-                    setShowRealtimeCamera={setShowRealtimeCamera}
-                  />
+                  <div>
+                    <ArrowBackIcon
+                      className="cursor-pointer"
+                      onClick={() => {
+                        setShowRealtimeCamera(RealTimeCameraMode.NO_SHOW);
+                      }}
+                    />
+                  </div>
+                  {renderRealtimeCamera()}
                   <Card className="mt-3">
                     <Box sx={{ p: 3 }}>
                       <div>Ảnh</div>

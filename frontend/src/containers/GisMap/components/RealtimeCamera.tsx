@@ -17,16 +17,15 @@ import { toast } from '../../../components/Toast';
 type RealtimeCameraProps = {
   viewPoint?: ViewPointData;
   viewPointCamera: ViewPointCameraData;
-  setShowRealtimeCamera?: (val: boolean) => void;
+  // setShowRealtimeCamera?: (val: boolean) => void;
 };
+
 
 export function RealtimeCamera({
   viewPointCamera,
-  setShowRealtimeCamera,
 }: RealtimeCameraProps) {
   const title = 'Camera';
   const uuid = React.useRef(new Date().getTime());
-  const [showCamImgTag, setShowCamImgTag] = React.useState(true);
   // const [objects, setObjects] =
   //   useState<Record<string, number>>(DETECTION_CLASS_NAME);
   const [total, setTotal] = useState(0);
@@ -113,17 +112,6 @@ export function RealtimeCamera({
 
   return (
     <Box>
-      <div>
-        {setShowRealtimeCamera && (
-          <ArrowBackIcon
-            className="cursor-pointer"
-            onClick={() => {
-              setShowRealtimeCamera(false);
-              setShowCamImgTag(false);
-            }}
-          />
-        )}
-      </div>
       <Card>
         <div className="px-5 py-1">
           <Typography variant="h6">{title}</Typography>
@@ -135,12 +123,10 @@ export function RealtimeCamera({
             {renderWarning()}
           </div>
           <div>
-            {showCamImgTag && (
-              <img
-                src={`${API_BASE_URL}/detector/video/realtime?type=${viewPointCamera.cameraSource}&uri=${viewPointCamera.cameraUri}&cam_id=${viewPointCamera.id}&uuid=${uuid.current}`}
-                alt="video"
-              />
-            )}
+            <img
+              src={`${API_BASE_URL}/detector/video/realtime?type=${viewPointCamera.cameraSource}&uri=${viewPointCamera.cameraUri}&cam_id=${viewPointCamera.id}&uuid=${uuid.current}`}
+              alt="video"
+            />
           </div>
         </Box>
       </Card>

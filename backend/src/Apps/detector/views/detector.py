@@ -4,7 +4,7 @@ from typing import AsyncGenerator
 
 from channels.layers import get_channel_layer
 import asyncio
-from django.http import StreamingHttpResponse
+from django.http import StreamingHttpResponse, HttpResponse
 from requests import Request
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -43,27 +43,49 @@ class DetectorViewSet(viewsets.ViewSet):
     @action(methods=[HttpMethod.GET], url_path="video/realtime/raw", detail=False)
     def view_raw_realtime(self, request: Request, *args, **kwargs):
         video_url = TypeUtils.safe_str(request.query_params.get("uri"))
-        return StreamingHttpResponse(self.handle_frames(video_url, view_raw=True),
+        return StreamingHttpResponse(self.handle_raw_video_source(video_url),
                                      content_type="multipart/x-mixed-replace; boundary=frame")
+        #
+        # response['Connection'] = 'keep-alive'
+        # response['Accept-Ranges'] = 'bytes'
+        # return response
 
-    def handle_frames(self, video_url: str, view_raw=False):
+    def handle_raw_video_source(self, video_url: str):
         cap = CamGear(source=video_url, stream_mode=True, logging=True).start()  # YouTube Video URL as input
 
         # Define the desired frame rate (frames per second)
-        frame_rate = 90
+        frame_rate = 60
         # Calculate the delay between frames
         delay = 1 / frame_rate
-        while True:
-            frame = cap.read()
-            if frame is None:
-                break
-            if not view_raw:
-                frame, results = detector.get_prediction_sahi(frame=frame)
-            ret, buffer = cv2.imencode('.jpg', frame)
-            frame = buffer.tobytes()
-            yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-            time.sleep(delay)
+        try:
+            while True:
+                try_count = 0
+                try:
+                    frame = cap.read()
+                except:
+                    try_count += 1
+                    if try_count > 20:
+                        print("Error in reading frame")
+                        break
+                    continue
+                if frame is None:
+                    print("Error in reading frame")
+                    break
+                frame = np.array(frame)
+                ret, buffer = cv2.imencode('.jpg', frame)
+                if not ret:
+                    print("Error in encoding frame to JPEG")
+                    continue
+                frame = buffer.tobytes()
+                yield (b'--frame\r\n'
+                       b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+                time.sleep(delay)
+        except Exception as e:
+            print("[handle_raw_video_source] Error in reading frame ", e)
+        finally:
+            print("Stop camera")
+            cap.stop()
 
     # @gzip.gzip_page
     @action(methods=[HttpMethod.GET], url_path="video/realtime", detail=False)
@@ -184,14 +206,20 @@ class DetectorViewSet(viewsets.ViewSet):
 
                 yield (b'--frame\r\n'
                        b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-                # print("Unique id ", unique_id)
                 await asyncio.sleep(delay)
                 print("Connection status ", connection_status, "Current session: ", unique_id)
                 if not connection_status.get(unique_id):
                     print(f"Front end Client ({unique_id})  disconnected.")
                     break
-        except:
+        except Exception as e:
+            print("[process_video] Error in reading frame ", e)
             cap.stop()
+
+
+
+
+
+
 
     async def send_event(self, channel_layer, results: list[ObjectDetectionResult], **kwargs):
         await channel_layer.group_send(
