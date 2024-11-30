@@ -176,8 +176,19 @@ class GisMapViewSet(PaginationMixin):
             raise AppException(error=ValidationErr.INVALID, params=["bev_image"])
         GisMapService.save_bev_view_image(pk=cam_id,
                                           bev_image=bev_url,
+                                          )
+        return Response(status=HTTPStatus.OK)
+
+    @action(methods=[HttpMethod.POST], url_path=r"view-points/(?P<pk>\w+)/camera/(?P<cam_id>\w+)/bev/metadata",
+            detail=False)
+    def save_bev_metadata(self, request: Request, pk, cam_id):
+        cam_id = TypeUtils.safe_int(cam_id)
+        homography_matrix = request.data.get("homography_matrix", "")
+        image_coordinates = request.data.get("image_coordinates", {})
+        if not cam_id:
+            raise AppException(error=ValidationErr.INVALID, params=["cam_id"])
+        GisMapService.save_bev_view_image(pk=cam_id,
                                           homography_matrix=homography_matrix,
-                                          zoom=zoom,
                                           image_coordinates=image_coordinates
                                           )
         return Response(status=HTTPStatus.OK)

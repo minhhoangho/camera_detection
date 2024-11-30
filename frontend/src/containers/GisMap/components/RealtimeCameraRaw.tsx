@@ -2,7 +2,6 @@ import { Box, Card, CardHeader } from '@mui/material';
 import * as React from 'react';
 import { API_BASE_URL } from '../../../constants';
 import { ViewPointCameraData, ViewPointData } from '../models';
-import { ImageWithTimeout } from 'src/components/ImageWithTimeout';
 
 type RealtimeCameraProps = {
   viewPoint: ViewPointData;

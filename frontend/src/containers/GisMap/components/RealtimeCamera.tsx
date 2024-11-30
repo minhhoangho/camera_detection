@@ -1,8 +1,7 @@
 import { Box, Card } from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import * as React from 'react';
-import Typography from '@mui/material/Typography';
 import { useCallback, useEffect, useState } from 'react';
+import Typography from '@mui/material/Typography';
 import { useQuery } from 'react-query';
 import { useDebounce } from 'src/shared/hooks/use-debounce';
 import { API_BASE_URL, SOCKET_BASE_URL } from '../../../constants';
@@ -20,10 +19,7 @@ type RealtimeCameraProps = {
   // setShowRealtimeCamera?: (val: boolean) => void;
 };
 
-
-export function RealtimeCamera({
-  viewPointCamera,
-}: RealtimeCameraProps) {
+export function RealtimeCamera({ viewPointCamera }: RealtimeCameraProps) {
   const title = 'Camera';
   const uuid = React.useRef(new Date().getTime());
   // const [objects, setObjects] =
@@ -54,7 +50,6 @@ export function RealtimeCamera({
       }
     }
   };
-
 
   useEffect(() => {
     if (isConnected) {

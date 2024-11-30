@@ -37,3 +37,9 @@ export const VIEW_POINT_CAMERA_MANAGEMENT_COLUMNS_LABEL = {
     [VIEW_POINT_CAMERA_MANAGEMENT_KEY.CREATED_AT]: 'Thời gian tạo',
     [VIEW_POINT_CAMERA_MANAGEMENT_KEY.ACTION]: 'Thao tác',
 };
+
+export const RealTimeCameraMode = {
+    NO_SHOW: 'no_show',
+    RAW: 'raw',
+    DETECTION: 'detection',
+};

@@ -39,7 +39,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     <div className={classNames('relative w-full ', className)}>
       {label && (
         <label
-          className={classNames('block text-sm mb-2', labelClassName)}
+          className={classNames('block text-sm mb-1', labelClassName)}
           htmlFor={name}
         >
           {label} {isRequired && <sup className="text-red-500 text-xs">*</sup>}

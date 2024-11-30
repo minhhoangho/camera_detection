@@ -1,6 +1,6 @@
 import { request } from '../utils/request';
 import {
-  BEVAndHomoPayloadRequest,
+  BEVMetadataPayloadRequest, BEVPayloadRequest,
   CreateViewPointPayloadRequest,
   EditViewPointPayloadRequest,
   ListViewPointCameraPaginateResponse,
@@ -73,18 +73,29 @@ export const upsertNewViewPointCamera = async (
   return request.post(`/gis-maps/view-points/${viewpointId}/camera`, payload);
 };
 
-export const saveBevImageAndHomographyMatrix = async (
+export const saveBevImage = async (
   viewpointId: number,
-  payload: BEVAndHomoPayloadRequest,
+  payload: BEVPayloadRequest,
 ) => {
   const data = {
     bevImage: payload.bevImage,
-    homographyMatrix: payload.homographyMatrix || [],
-    zoom: payload.zoom,
-    imageCoordinates: payload.imageCoordinates
   };
   return request.post(
     `/gis-maps/view-points/${viewpointId}/camera/${payload.id}/bev`,
+    data,
+  );
+};
+
+export const saveBevMetadata = async (
+  viewpointId: number,
+  payload: BEVMetadataPayloadRequest,
+) => {
+  const data = {
+    homographyMatrix: payload.homographyMatrix || [],
+    imageCoordinates: payload.imageCoordinates
+  };
+  return request.post(
+    `/gis-maps/view-points/${viewpointId}/camera/${payload.id}/bev/metadata`,
     data,
   );
 };

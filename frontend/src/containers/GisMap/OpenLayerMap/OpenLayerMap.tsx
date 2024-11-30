@@ -18,13 +18,13 @@ import CardContent from '@mui/material/CardContent';
 import { useRecoilValue } from 'recoil';
 import { Circle } from 'ol/style';
 import Fill from 'ol/style/Fill';
+import _toNumber from 'lodash/toNumber'
 import styles from './OpenLayerMap.module.scss';
 import { CenterProps } from '../types';
 import { ViewPointData } from '../models';
 import { mapFocusState } from '../../../app-recoil/atoms/map';
 import { useWebsocket, WebsocketMessagePayload } from '../../../shared/hooks/use-websocket';
 import { SOCKET_BASE_URL } from '../../../constants';
-import _toNumber from 'lodash/toNumber'
 // Import OpenLayers CSS
 
 // const DEFAULT_GEO = [12047000, 1812900]; // (long, lat) Da nang location

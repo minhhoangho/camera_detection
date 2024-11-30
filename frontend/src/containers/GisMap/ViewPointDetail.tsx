@@ -1,11 +1,11 @@
 import { useRouter } from 'next/router';
 import { useMutation, useQuery } from 'react-query';
-import { Box, Button, Container, Grid, Card } from '@mui/material';
+import { Box, Button, Card, Container, Grid } from '@mui/material';
 import * as React from 'react';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useRecoilValue } from 'recoil';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { toast } from 'src/components/Toast';
 import { FormInput } from 'src/components/Form';
 import { Iconify } from 'src/components/Iconify';
@@ -13,32 +13,28 @@ import { FileUpload } from 'src/components/FileUpload';
 import {
   getDetailViewPoint,
   getViewPointCameraDetail,
-  saveBevImageAndHomographyMatrix,
+  saveBevImage,
   updateViewPoint,
 } from 'src/api/view-point';
 import { BaseLayout, PrivateLayout } from 'src/layouts';
+import { BevMetadata } from './components/BevMetadata';
 import { RealtimeCamera } from './components/RealtimeCamera';
 import { OpenLayerMapManagement } from './OpenLayerMap';
 import { ViewPointCameraList } from './components/ViewPointCameraList';
 import {
-  BEVAndHomoPayloadRequest,
+  BEVPayloadRequest,
   EditViewPointPayloadRequest,
   ViewPointCameraData,
   ViewPointData,
 } from './models';
 import { RealtimeCameraRaw } from './components/RealtimeCameraRaw';
-import { bevCoordinateState } from '../../app-recoil/atoms/map';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-
-const RealTimeCameraMode = {
-  NO_SHOW: 'no_show',
-  RAW: 'raw',
-  DETECTION: 'detection',
-}
+import { RealTimeCameraMode } from './constants';
 
 export function ViewPointDetail() {
-  const bevCoordinate = useRecoilValue(bevCoordinateState);
-  const [showRealtimeCamera, setShowRealtimeCamera] = React.useState(RealTimeCameraMode.NO_SHOW);
+  const [showRealtimeCamera, setShowRealtimeCamera] = React.useState(
+    RealTimeCameraMode.NO_SHOW,
+  );
+  console.log('showRealtimeCamera >> ', showRealtimeCamera);
   const [selectedViewPointCamera, setSelectedViewPointCamera] = React.useState(
     {} as ViewPointCameraData,
   );
@@ -55,7 +51,7 @@ export function ViewPointDetail() {
     resolver: yupResolver(validationSchema),
     defaultValues: {
       warningThreshold: 10,
-    }
+    },
   });
   // const [long, lat] = useWatch({control, name: ['long', 'lat']});
 
@@ -92,8 +88,8 @@ export function ViewPointDetail() {
   });
 
   const { mutate: uploadBevImage } = useMutation({
-    mutationFn: (data: BEVAndHomoPayloadRequest): any =>
-      saveBevImageAndHomographyMatrix(viewPointId, data),
+    mutationFn: (data: BEVPayloadRequest): any =>
+      saveBevImage(viewPointId, data),
     onSuccess: () => {
       toast('success', 'Uploaded Bev image');
       getViewPointCameraDetail(viewPointId, selectedViewPointCamera.id).then(
@@ -128,20 +124,22 @@ export function ViewPointDetail() {
     val: boolean,
     viewPointCamera: ViewPointCameraData,
   ) => {
-    setShowRealtimeCamera(RealTimeCameraMode.RAW);
-    setSelectedViewPointCamera(viewPointCamera);
+    if (val) {
+      setShowRealtimeCamera(RealTimeCameraMode.RAW);
+      setSelectedViewPointCamera(viewPointCamera);
+    } else {
+      setShowRealtimeCamera(RealTimeCameraMode.NO_SHOW);
+      setSelectedViewPointCamera(null);
+    }
   };
 
   const handleSaveBEVImage = (fileUrl: string) => {
-    const payload: BEVAndHomoPayloadRequest = {
+    const payload: BEVPayloadRequest = {
       id: selectedViewPointCamera.id,
       bevImage: fileUrl,
-      zoom: 19,
-      imageCoordinates: bevCoordinate
     };
     uploadBevImage(payload);
   };
-
   const renderRealtimeCamera = () => {
     if (showRealtimeCamera === RealTimeCameraMode.NO_SHOW) {
       return null;
@@ -159,8 +157,50 @@ export function ViewPointDetail() {
         viewPoint={dataDetail as ViewPointData}
         viewPointCamera={selectedViewPointCamera}
       />
-    )
-  }
+    );
+  };
+
+  const renderCaptureImageAndBev = () => {
+    return (
+      <Grid container>
+        <Grid item>
+          <Card className="mt-3">
+            <Box sx={{ px: 3, py: 2 }}>
+              <div>
+                <h3>Ảnh</h3>
+              </div>
+              <img
+                src={selectedViewPointCamera.capturedImage ?? ''}
+                alt={selectedViewPointCamera.capturedImage ?? 'none'}
+              ></img>
+            </Box>
+            <Box sx={{ px: 3, py: 2 }}>
+              <div className="mt-2">
+                <div>
+                  <h3>Ảnh BEV</h3>
+                </div>
+                <div className="flex">
+                  {selectedViewPointCamera?.bevImage ? (
+                    <div>
+                      <img
+                        src={selectedViewPointCamera.bevImage}
+                        alt="bev-image"
+                        className="mr-2"
+                      />
+                    </div>
+                  ) : null}
+                  <FileUpload uploadFileCallback={handleSaveBEVImage} />
+                </div>
+              </div>
+            </Box>
+          </Card>
+        </Grid>
+        <Grid item>
+          <BevMetadata viewPointCamera={selectedViewPointCamera} />
+        </Grid>
+      </Grid>
+    );
+  };
 
   return (
     <BaseLayout>
@@ -179,7 +219,7 @@ export function ViewPointDetail() {
           <h1>{dataDetail?.name ?? ''}</h1>
           <Grid container spacing={3} alignItems="stretch">
             <Grid item xs={6}>
-              {showRealtimeCamera !== RealTimeCameraMode.NO_SHOW ?  (
+              {showRealtimeCamera !== RealTimeCameraMode.NO_SHOW ? (
                 <>
                   <div>
                     <ArrowBackIcon
@@ -190,15 +230,6 @@ export function ViewPointDetail() {
                     />
                   </div>
                   {renderRealtimeCamera()}
-                  <Card className="mt-3">
-                    <Box sx={{ p: 3 }}>
-                      <div>Ảnh</div>
-                      <img
-                        src={selectedViewPointCamera.capturedImage ?? ''}
-                        alt={selectedViewPointCamera.capturedImage ?? 'none'}
-                      ></img>
-                    </Box>
-                  </Card>
                 </>
               ) : (
                 <>
@@ -281,24 +312,10 @@ export function ViewPointDetail() {
                   center={[dataDetail?.long ?? 0, dataDetail?.lat ?? 0]}
                 />
               )}
-
-              {showRealtimeCamera && (
-                <div className="mt-4">
-                  <div>
-                    <span>Ảnh BEV</span>
-                  </div>
-                  <div className="flex">
-                    {selectedViewPointCamera?.bevImage ? (
-                      <img
-                        src={selectedViewPointCamera.bevImage}
-                        alt="bev-image"
-                        className="mr-2 max-w-xl"
-                      />
-                    ) : null}
-                    <FileUpload uploadFileCallback={handleSaveBEVImage} />
-                  </div>
-                </div>
-              )}
+            </Grid>
+            <Grid item xs={12}>
+              {showRealtimeCamera != RealTimeCameraMode.NO_SHOW &&
+                renderCaptureImageAndBev()}
             </Grid>
           </Grid>
         </Container>

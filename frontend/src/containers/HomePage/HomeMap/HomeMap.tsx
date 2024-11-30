@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import { useQuery } from 'react-query';
 import Button from '@mui/material/Button';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import styles from './HomeMap.module.scss';
 import { ListViewPointPaginateResponse } from '../../GisMap/models';
 import { listViewPointsPaginate } from '../../../api/view-point';

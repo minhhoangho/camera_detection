@@ -37,10 +37,13 @@ export type UpsertCameraSourcePayloadRequest = {
   cameraUri: string;
 };
 
-export type BEVAndHomoPayloadRequest = {
+export type BEVPayloadRequest = {
   id: number;
   bevImage: string;
-  zoom: number;
+};
+
+export type BEVMetadataPayloadRequest = {
+  id: number;
   homographyMatrix?: any;
   imageCoordinates?: any;
 };

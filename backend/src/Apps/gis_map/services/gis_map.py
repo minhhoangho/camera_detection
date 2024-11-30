@@ -137,10 +137,28 @@ class GisMapService:
     def save_bev_view_image(cls,
                             pk: int,
                             bev_image: str,
-                            homography_matrix: List[List[float]],
-                            zoom: float,
-                            image_coordinates: dict
                             ):
+        # test_homomatrix = [[-0.157284657, -3.31660226, 851.87688],
+        #                    [0.131452704, -0.487076251, -478.520093],
+        #                    [-0.00112704092, -0.00881721794, 1.0]]
+        # #
+        # test_homomatrix = [[0.226527891, -7.05884174, 1218.24332],
+        #                    [0.210797597, -0.212675668, -888.333093],
+        #                    [-0.00115990195, -0.0137257698, 1.0]]
+
+        # homography_matrix = json.dumps(test_homomatrix)
+        # metadata: dict = cls.calculate_bev_metadata(pk=pk, image_coordinates=image_coordinates).__dict__
+        GisViewPointCamera.objects.filter(id=pk).update(
+            bev_image=bev_image
+        )
+        return True
+
+    @classmethod
+    def save_bev_metadata(cls,
+                          pk: int,
+                          homography_matrix: List[List[float]],
+                          image_coordinates: dict
+                          ):
         test_homomatrix = [[-0.157284657, -3.31660226, 851.87688],
                            [0.131452704, -0.487076251, -478.520093],
                            [-0.00112704092, -0.00881721794, 1.0]]
@@ -152,7 +170,7 @@ class GisMapService:
         homography_matrix = json.dumps(test_homomatrix)
         metadata: dict = cls.calculate_bev_metadata(pk=pk, image_coordinates=image_coordinates).__dict__
         GisViewPointCamera.objects.filter(id=pk).update(
-            bev_image=bev_image, homography_matrix=homography_matrix, bev_image_metadata=json.dumps(metadata)
+            homography_matrix=homography_matrix, bev_image_metadata=json.dumps(metadata)
         )
         return True
 

@@ -20,6 +20,7 @@ export type ViewPointCameraData = {
     cameraUri: string;
     capturedImage?: string;
     bevImage?: string;
+    bevImageMetadata?: string;
     homographyMatrix?: any;
     createdAt: string;
     updatedAt: string;
