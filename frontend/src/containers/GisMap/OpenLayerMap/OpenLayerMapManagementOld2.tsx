@@ -40,15 +40,16 @@ type OpenLayerMapProps = {
 };
 
 const MODE = {
+  DRAW: 'draw',
   MARK_POINT: 'mark_point',
 };
 
 export function OpenLayerMapManagement({
-  width,
-  height,
-  onUpdateLatLong,
-  center,
-}: OpenLayerMapProps) {
+                                         width,
+                                         height,
+                                         onUpdateLatLong,
+                                         center,
+                                       }: OpenLayerMapProps) {
   const [mode, setMode] = React.useState(MODE.MARK_POINT);
 
   const mapRef = useRef<HTMLDivElement | null | undefined>(null);
@@ -110,6 +111,7 @@ export function OpenLayerMapManagement({
 
   const drawHandler = useCallback(
     (map: Map, _mode) => {
+      if (_mode !== MODE.DRAW) return null;
       console.log("Inner drawHandler ", _mode)
       // Create a vector layer to hold the drawn features
       drawVectorLayer.current = new VectorLayer({
@@ -195,6 +197,9 @@ export function OpenLayerMapManagement({
     if (mode === MODE.MARK_POINT) {
       markPointHandler(mapInstanceRef.current, mode);
     }
+    if (mode === MODE.DRAW) {
+      drawHandler(mapInstanceRef.current, mode);
+    }
   }, []);
   //
 
@@ -217,6 +222,10 @@ export function OpenLayerMapManagement({
       console.log("Value is mark point ", value)
       markPointHandler(mapInstanceRef.current, value);
     }
+    if (value === MODE.DRAW) {
+      console.log("Value is draw ", value)
+      drawHandler(mapInstanceRef.current, value);
+    }
   };
 
   return (
@@ -229,7 +238,8 @@ export function OpenLayerMapManagement({
         onChange={handleChangeMode}
         aria-label="Platform"
       >
-        <ToggleButton value={MODE.MARK_POINT}>Mark location</ToggleButton>
+        <ToggleButton value={MODE.DRAW}>Draw</ToggleButton>
+        {/*<ToggleButton value={MODE.MARK_POINT}>Mark location</ToggleButton>*/}
       </ToggleButtonGroup>
       <div ref={mapRef} style={{ width, height, position: 'relative' }} />
     </div>

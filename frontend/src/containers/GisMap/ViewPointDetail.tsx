@@ -195,7 +195,7 @@ export function ViewPointDetail() {
           </Card>
         </Grid>
         <Grid item>
-          <BevMetadata viewPointCamera={selectedViewPointCamera} />
+          <BevMetadata viewPointCamera={selectedViewPointCamera} viewPoint={dataDetail as ViewPointData}/>
         </Grid>
       </Grid>
     );
