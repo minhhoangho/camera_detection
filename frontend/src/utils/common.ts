@@ -18,20 +18,21 @@ const getHostnameFromRegex = (url: string) => {
   // run against regex
   const matches = url.match(/^https?:\/\/([^/?#]+)(?:[/?#]|$)/i);
   // extract hostname (will be null if no match is found)
-  return (matches?.[1]) ?? '';
+  return matches?.[1] ?? '';
 };
 
 function isLocalhost() {
-  return window.location.hostname === 'localhost' ||
+  return (
+    window.location.hostname === 'localhost' ||
     window.location.hostname === '127.0.0.1' ||
-    window.location.hostname === '::1'; // For IPv6
+    window.location.hostname === '::1'
+  ); // For IPv6
 }
+
 export function getCurrentDomain() {
   if (isLocalhost()) return window.location.hostname;
 
-  const parts = getHostnameFromRegex(FE_URL)
-    .replace(/:\d*/g, '')
-    .split('.');
+  const parts = getHostnameFromRegex(FE_URL).replace(/:\d*/g, '').split('.');
 
   parts.shift();
   return parts.join('.');
@@ -50,11 +51,9 @@ export function momentServerTimezone(...args: any[]) {
   return momentLang;
 }
 
-
 export function renderInitialVisibleMonth(date: string) {
   return date ? moment(date) : momentLanguage();
 }
-
 
 export function momentLanguage(...args: any[]) {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -68,25 +67,28 @@ export function momentLanguage(...args: any[]) {
 }
 
 export function getDefaultLanguage(): string {
-  return UserStorage.getCurrentInfo()['lang'] as string ?? '';
+  return (UserStorage.getCurrentInfo()['lang'] as string) ?? '';
 }
 
 export function getUserTimezone(): string {
   const currentUser = UserStorage.getCurrentInfo();
-  return (currentUser && currentUser['timezone'] as string) || '';
+  return (currentUser && (currentUser['timezone'] as string)) || '';
 }
 
 export const UserStorage = {
   getCurrentInfo() {
     const user = global.sessionStorage?.getItem(StorageKey.CurrentUser);
-    return user ? JSON.parse(user) as Record<string, any> : {};
+    return user ? (JSON.parse(user) as Record<string, any>) : {};
   },
 };
 
 export const navigateTo = (url: string) => (window.location.href = url);
 
-
-export const getMemberFullName = (firstName = '', lastName = '', middleName = '') => [firstName, middleName, lastName].join(' ');
+export const getMemberFullName = (
+  firstName = '',
+  lastName = '',
+  middleName = '',
+) => [firstName, middleName, lastName].join(' ');
 
 export const downloadText = (fileName: string, data: BlobPart) => {
   const element = document.createElement('a');
@@ -108,10 +110,14 @@ export const mapEmailToKey = (email: string) => email.replaceAll('.', '*');
 export const mapKeyToEmail = (email: string) => email.replaceAll('*', '.');
 
 export const canvasToFile = (canvas: HTMLCanvasElement, name: string) =>
-  new Promise(resolve => {
+  new Promise((resolve) => {
     canvas.toBlob((blob: Blob | null): void => {
-      blob = blob ?? new Blob()
-      const file = new File([blob], name ? `${name}.png` : `image-${nanoid()}.png`, { type: blob.type });
+      blob = blob ?? new Blob();
+      const file = new File(
+        [blob],
+        name ? `${name}.png` : `image-${nanoid()}.png`,
+        { type: blob.type },
+      );
       resolve({
         file,
         url: window.URL.createObjectURL(blob),
@@ -134,26 +140,29 @@ export const mergeBy = (array: any[], values: any[], key: string): any[] => {
   }
 
   return [
-    ...values.concat([...array])
-      .reduce((m, o) => m.set(o[key], Object.assign(m.get(o[key]) || {}, o)), new Map())
+    ...values
+      .concat([...array])
+      .reduce(
+        (m, o) => m.set(o[key], Object.assign(m.get(o[key]) || {}, o)),
+        new Map(),
+      )
       .values(),
   ];
 };
 
-
 export const getSuggestEmail = (str: string) => {
   const words: string[] = normalizeString(str).split(' ');
-  return `${words.shift() ?? ""}${words
-    .map(word => word?.[0])
-    .filter(character => !!character)
+  return `${words.shift() ?? ''}${words
+    .map((word) => word?.[0])
+    .filter((character) => !!character)
     .join('')}`;
 };
 
 export const getStringFirstCharacters = (str: string) =>
   normalizeString(str)
     .split(' ')
-    .map(word => word?.[0])
-    .filter(character => !!character)
+    .map((word) => word?.[0])
+    .filter((character) => !!character)
     .join('');
 
 export const normalizeString = (str: string) =>
@@ -165,7 +174,6 @@ export const normalizeString = (str: string) =>
     .replace(/Đ/g, 'D')
     .toLowerCase()
     .replaceAll('  ', ' ');
-
 
 export function getTextWidth(text: string, font: string) {
   const canvas = document.createElement('canvas');
@@ -180,7 +188,6 @@ export function getTextWidth(text: string, font: string) {
   return width;
 }
 
-
 export const formatResourceTimeRange = (weeks: number) => {
   const year = Math.floor(weeks / 48);
   const month = Math.floor((weeks - year * 48) / 4);
@@ -192,12 +199,22 @@ export const formatResourceTimeRange = (weeks: number) => {
   };
 };
 
-export const prettifyErrorCode = (errorCode: string) => take(errorCode.split('-'), 2).join('-');
-
+export const prettifyErrorCode = (errorCode: string) =>
+  take(errorCode.split('-'), 2).join('-');
 
 export const getElementPosition = (element: Element) => {
-  const { top, bottom, left, right } = element?.getBoundingClientRect() || { top: 0, bottom: 0, left: 0, right: 0 };
-  return { top, bottom: window.innerHeight - bottom, left, right: window.innerWidth - right };
+  const { top, bottom, left, right } = element?.getBoundingClientRect() || {
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+  };
+  return {
+    top,
+    bottom: window.innerHeight - bottom,
+    left,
+    right: window.innerWidth - right,
+  };
 };
 
 export const getPreviousWeekStartDate = (current: moment.Moment) => {
@@ -214,20 +231,23 @@ export const getNextWeekStartDate = (current: moment.Moment) => {
   const day = +current.format('DD');
   if ([7, 14].includes(day)) return current.add(7, 'days');
   if ([21].includes(day))
-    return current
-      .add(1, 'month')
-      .set('date', 1)
-      .subtract(1, 'days');
+    return current.add(1, 'month').set('date', 1).subtract(1, 'days');
   return current.add(1, 'month').set('date', 7);
 };
 
-export const shiftDateByNumWeek = (current: string | moment.Moment, numWeek: number) => {
+export const shiftDateByNumWeek = (
+  current: string | moment.Moment,
+  numWeek: number,
+) => {
   let result = moment(current);
   for (let i = 0; i < numWeek; i++) result = getNextWeekStartDate(result);
   return result.toISOString();
 };
 
-export const unshiftDateByNumWeek = (current: string | moment.Moment, numWeek: number) => {
+export const unshiftDateByNumWeek = (
+  current: string | moment.Moment,
+  numWeek: number,
+) => {
   let result = moment(current);
   for (let i = 0; i < numWeek; i++) result = getPreviousWeekStartDate(result);
   return result.toISOString();
@@ -235,11 +255,19 @@ export const unshiftDateByNumWeek = (current: string | moment.Moment, numWeek: n
 
 export const getStartDateOfWeek = (date: string | moment.Moment) => {
   const startOfDay = momentServerTimezone(date).startOf('day');
-  const weekIndex: number = Math.floor((Math.min(startOfDay.date(), 28) - 1) / 7 + 1);
-  return momentServerTimezone(startOfDay).set('date', START_DATE_OF_WEEKS[weekIndex - 1] ?? 0);
+  const weekIndex: number = Math.floor(
+    (Math.min(startOfDay.date(), 28) - 1) / 7 + 1,
+  );
+  return momentServerTimezone(startOfDay).set(
+    'date',
+    START_DATE_OF_WEEKS[weekIndex - 1] ?? 0,
+  );
 };
 
-export const getTotalWeeks = (from: moment.Moment, to: moment.Moment): number => {
+export const getTotalWeeks = (
+  from: moment.Moment,
+  to: moment.Moment,
+): number => {
   if (moment(from).isAfter(moment(to))) {
     return 2 - getTotalWeeks(to, from);
   }
@@ -255,7 +283,10 @@ export const getTotalWeeks = (from: moment.Moment, to: moment.Moment): number =>
   );
 };
 
-export const compareDate = (value1: string | moment.Moment, value2: string | moment.Moment) => {
+export const compareDate = (
+  value1: string | moment.Moment,
+  value2: string | moment.Moment,
+) => {
   const date1 = moment(value1);
   const date2 = moment(value2);
   if (date1.isBefore(date2)) return -1;
@@ -265,20 +296,19 @@ export const compareDate = (value1: string | moment.Moment, value2: string | mom
 
 export const emitter = new EventEmitter();
 
-
 export const commonPaginationInfo = (
   paginate: {
-    total: number,
-    offset: number,
+    total: number;
+    offset: number;
   },
   limit: number,
 ): string => `${paginate.total} items 
   ${paginate.offset + 1}~
   ${
-  paginate.offset + limit > paginate.total
-    ? paginate.total
-    : paginate.offset + limit
-} total`;
+    paginate.offset + limit > paginate.total
+      ? paginate.total
+      : paginate.offset + limit
+  } total`;
 
 export const lengthJanpanese = (str: string): number => {
   let r = 0;
@@ -320,7 +350,7 @@ export const isHalfWidth = (str: string): boolean => {
   if (r !== str.length) return false;
   return true;
 };
-export const convertObjectToBase64 = (obj: Record<string, any> ): string => {
+export const convertObjectToBase64 = (obj: Record<string, any>): string => {
   const json = JSON.stringify(obj);
   return encodeURIComponent(json);
 };
@@ -328,7 +358,7 @@ export const convertObjectToBase64 = (obj: Record<string, any> ): string => {
 export const convertBase64ToObject = (
   str: string,
   callback?: () => null,
-): Record<string, any>  => {
+): Record<string, any> => {
   try {
     const json = decodeURIComponent(str);
     return JSON.parse(json);
@@ -342,7 +372,7 @@ export const convertBase64ToObject = (
 
 export const getNewUrlQuery = (
   baseQuery: string | string[],
-  mappingObject: Record<string, any> ,
+  mappingObject: Record<string, any>,
 ): string => {
   const oldQuery = baseQuery
     ? convertBase64ToObject(baseQuery as string)
@@ -368,4 +398,10 @@ export const handleScrollToBottom = (
 
 export const getPercent = (num: number): string => `${round(num * 100, 2)}%`;
 
-
+export function isEmptyMatrix(matrix: Array<Array<any>>): boolean {
+  return (
+    _.isEmpty(matrix) ||
+    matrix.length === 0 ||
+    _.every(matrix, (row) => _.isEmpty(row))
+  );
+}

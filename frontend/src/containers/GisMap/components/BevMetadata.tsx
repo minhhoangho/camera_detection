@@ -5,10 +5,12 @@ import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import _snakeCase from 'lodash/snakeCase';
+import _isEmpty from 'lodash/isEmpty';
 import { FormInput } from '../../../components/Form';
 import { BEVMetadataPayloadRequest, ViewPointCameraData } from '../models';
 import { saveBevMetadata } from '../../../api/view-point';
 import { toast } from '../../../components/Toast';
+import { isEmptyMatrix } from '../../../utils';
 
 export function BevMetadata({
   viewPointCamera,
@@ -22,11 +24,13 @@ export function BevMetadata({
     return null;
   };
   const validationSchema = yup.object({
-    homographyMatrix: yup.array()
+    homographyMatrix: yup
+      .array()
       .of(
-        yup.array()
+        yup
+          .array()
           .of(yup.number().required('This field is required'))
-          .length(3, 'Each row must have exactly 3 elements')
+          .length(3, 'Each row must have exactly 3 elements'),
       )
       .length(3, 'There must be exactly 3 rows'),
 
@@ -56,10 +60,52 @@ export function BevMetadata({
       image_coordinates: formatMetadata()?.image_coordinates,
     },
   });
-  const handleSubmitForm = (data) => {
-    console.log("handleSubmitForm ", data)
-  };
 
+  const handleSubmitForm = ({
+    homographyMatrix,
+    image_coordinates,
+  }: {
+    homographyMatrix: any;
+    image_coordinates: any;
+  }) => {
+    console.info('handleSubmitForm ', homographyMatrix, image_coordinates);
+    const isEmptyPayload = () => {
+      const isEmptyCoordinates = (coordinates: any) => {
+        if (_isEmpty(coordinates)) {
+          return true;
+        }
+        const isEmptyLatLong = ({
+          lat,
+          long,
+        }: {
+          lat: number;
+          long: number;
+        }) => {
+          return !lat && !long;
+        };
+        const top_left = coordinates.top_left || {};
+        const top_right = coordinates.top_right || {};
+        const bottom_left = coordinates.bottom_left || {};
+        const bottom_right = coordinates.bottom_right || {};
+        return (
+          isEmptyLatLong(top_left) ??
+          isEmptyLatLong(top_right) ??
+          isEmptyLatLong(bottom_left) ??
+          isEmptyLatLong(bottom_right)
+        );
+      };
+      return (
+        isEmptyMatrix(homographyMatrix) || isEmptyCoordinates(image_coordinates)
+      );
+    };
+    if (isEmptyPayload()) {
+      console.error("Payload is empty");
+      // toast('error', 'Vui lòng nhập đầy đủ thông tin');
+      return;
+    }
+
+
+  };
 
   const { mutate: saveBevInfo } = useMutation({
     mutationFn: (data: BEVMetadataPayloadRequest): any =>
@@ -110,7 +156,7 @@ export function BevMetadata({
   const renderCoordinateBoxInput = () => {
     return (
       <Box className="mt-3">
-        <Box sx={{ px: 3, py: 2 }} >
+        <Box sx={{ px: 3, py: 2 }}>
           <div>
             <h3>Rectangle Coordinates</h3>
           </div>
@@ -162,22 +208,21 @@ export function BevMetadata({
             </Grid>
             <Grid item xs={6}>
               {renderHomoMatrixBoxInput()}
-                <div className="flex justify-end mx-5">
-                  <form onSubmit={handleSubmit(handleSubmitForm)}>
-                    <Button
-                      variant="contained"
-                      className="btn wd-140 btn-sm btn-primary"
-                      type="submit"
-                    >
-                      Lưu
-                    </Button>
-                  </form>
-                </div>
+              <div className="flex justify-end mx-5">
+                <form onSubmit={handleSubmit(handleSubmitForm)}>
+                  <Button
+                    variant="contained"
+                    className="btn wd-140 btn-sm btn-primary"
+                    type="submit"
+                  >
+                    Lưu
+                  </Button>
+                </form>
+              </div>
             </Grid>
           </Grid>
         </Card>
       </Grid>
-
     </Grid>
   );
 }

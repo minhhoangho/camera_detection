@@ -34,7 +34,6 @@ export function ViewPointDetail() {
   const [showRealtimeCamera, setShowRealtimeCamera] = React.useState(
     RealTimeCameraMode.NO_SHOW,
   );
-  console.log('showRealtimeCamera >> ', showRealtimeCamera);
   const [selectedViewPointCamera, setSelectedViewPointCamera] = React.useState(
     {} as ViewPointCameraData,
   );
@@ -314,7 +313,7 @@ export function ViewPointDetail() {
               )}
             </Grid>
             <Grid item xs={12}>
-              {showRealtimeCamera != RealTimeCameraMode.NO_SHOW &&
+              {showRealtimeCamera !== RealTimeCameraMode.NO_SHOW &&
                 renderCaptureImageAndBev()}
             </Grid>
           </Grid>
