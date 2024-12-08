@@ -55,7 +55,7 @@ export function Benchmark() {
         modelList.map(async (modelItem) => {
           const formData = new FormData();
           formData.append('image', event?.target.files?.[0]);
-          postBenchmark(modelItem.key, formData)
+          await postBenchmark(modelItem.key, formData)
             .then((res) => {
               const resJson: PredictionResult = res.data;
               setResults((prevResults) => [...prevResults, resJson]);
@@ -69,7 +69,6 @@ export function Benchmark() {
     }
   };
 
-  console.log("results >> ", results)
   const renderUploadArea = () => {
     return (
       <div>

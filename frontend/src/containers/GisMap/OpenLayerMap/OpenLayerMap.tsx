@@ -50,7 +50,7 @@ export function OpenLayerMap({
   const mapRef = useRef<Map | null>(null);
   const [hoverPoint, setHoverPoint] = useState<ViewPointData | null>(null);
   const mapFocus = useRecoilValue(mapFocusState);
-  const [isConnected, message, _] = useWebsocket(`${SOCKET_BASE_URL}/ws/`);
+  const [isConnected, message, _, disconnect] = useWebsocket(`${SOCKET_BASE_URL}/ws/`);
 
   const removePointLayer = () => {
     mapRef?.current.getLayers().forEach((layer:VectorLayer) => {
@@ -205,6 +205,7 @@ export function OpenLayerMap({
       }
     });
     return () => {
+      console.info("[Openlayer map] Unmounted")
       mapRef?.current?.setTarget(undefined);
     };
   }, [center, geoData, zoom]);
