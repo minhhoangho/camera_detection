@@ -25,7 +25,7 @@ export function RealtimeCamera({ viewPointCamera }: RealtimeCameraProps) {
   // const [objects, setObjects] =
   //   useState<Record<string, number>>(DETECTION_CLASS_NAME);
   const [total, setTotal] = useState(0);
-  const [isConnected, message, _, _] = useWebsocket(`${SOCKET_BASE_URL}/ws/`);
+  const [isConnected, message, _, _dis] = useWebsocket(`${SOCKET_BASE_URL}/ws/`);
   const { data: dataDetail } = useQuery({
     queryKey: ['getViewPointDetail', viewPointCamera.viewPointId],
     queryFn: () => {

@@ -14,6 +14,8 @@ from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
 from django.core.asgi import get_asgi_application
 from src.Apps.websocket.urls import websocket_urlpatterns
+from whitenoise import WhiteNoise
+from src.settings.components import BASE_DIR
 
 
 application = ProtocolTypeRouter({

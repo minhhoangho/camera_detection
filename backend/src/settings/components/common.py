@@ -49,10 +49,10 @@ INSTALLED_APPS: Tuple[str, ...] = (
     "health_check.cache",
     "health_check.contrib.migrations",
     "adrf",
+    "drf_yasg",
     "rest_framework",
     # libs
     "django_q",
-    "drf_yasg",
     # "health_check.storage",
     # "health_check.contrib.celery",              # requires celery
     # "health_check.contrib.celery_ping",         # requires celery
@@ -67,6 +67,7 @@ MIDDLEWARE: Tuple[str, ...] = (
     "csp.middleware.CSPMiddleware",
     # Django:
     "django.middleware.security.SecurityMiddleware",
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # To serve static files
     # django-permissions-policy
     "django_permissions_policy.PermissionsPolicyMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -108,11 +109,18 @@ TIME_ZONE = "UTC"
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR.joinpath('staticfiles')
 
 STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 )
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
+
 
 # Templates
 # https://docs.djangoproject.com/en/4.0/ref/templates/api
@@ -192,7 +200,8 @@ SWAGGER_SETTINGS = {
         'Basic': {
             'type': 'basic'
         }
-    }
+    },
+    'USE_SESSION_AUTH': False,  # Disable session authentication
 }
 MEDIAFILES_LOCATION = "media"
 
