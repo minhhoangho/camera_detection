@@ -54,11 +54,29 @@ To install and run this project locally, follow these steps:
 #### SSH to EC2 instance to initiate port forwarding
 
 ```angular2html
-ssh -i port_forwarding/ssh/remote_port_forwarding.pem ec2-user@13.212.167.46
+SSH to server
+ssh -i port_forwarding/ssh/remote_port_forwarding.pem  ec2-user@13.212.167.46
+
+
+
+
+## check log:
+cat /var/log/nginx/error.log -t
+
+##  check port using
+sudo lsof -n -i :8080
+sudo netstat -tuln | grep 8080
+
 ```
 
 ```angular2html
-ssh -v -i port_forwarding/ssh/remote_port_forwarding.pem -R 8080:localhost:8085 ec2-user@13.212.167.46 
-ssh -v -i port_forwarding/ssh/remote_port_forwarding.pem -o ServerAliveInterval=60 -R 8080:localhost:8085 ec2-user@13.212.167.46 
+ssh -i port_forwarding/ssh/remote_port_forwarding.pem -NR 8090:localhost:8085 ec2-user@13.212.167.46 -vvv
 
 ```
+
+```angular2html
+Check connection
+access: http://13.212.167.46:8080/docs
+```
+
+
