@@ -3,7 +3,6 @@ import { formatDistanceToNow, set, sub } from 'date-fns';
 import { faker } from '@faker-js/faker';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
-import Badge from '@mui/material/Badge';
 import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
 import Divider from '@mui/material/Divider';
@@ -112,9 +111,7 @@ export function NotificationPopover() {
   return (
     <>
       <IconButton color={anchorEl ? 'primary' : 'default'} onClick={handleOpen}>
-        <Badge badgeContent={totalUnRead} color='error'>
           <NotificationsIcon />
-        </Badge>
       </IconButton>
 
       <Popover

@@ -24,7 +24,7 @@ export function HomeMap(props: MapProps) {
   // const center = DEFAULT_GEO;
   const [useMapTile, setUseMapTile] = useState(false);
   const [center, setCenter] = useState<CenterProps>(DEFAULT_GEO);
-  const [currentTime, setCurrentTime] = useState(null);
+  // const [currentTime, setCurrentTime] = useState(null);
 
   const { data: listResponse } = useQuery<ListViewPointPaginateResponse>({
     queryKey: ['getListViewPointPaginate'],
