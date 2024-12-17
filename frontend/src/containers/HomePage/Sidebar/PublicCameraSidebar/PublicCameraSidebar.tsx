@@ -151,7 +151,7 @@ export function PublicCameraSidebar({
               {renderActiveCamera()}
             </div>
           </div>
-          {!activeCamera?.homographyMatrix && (
+          {!activeCamera?.homographyMatrix && activeCamera?.bevImage && (
             <div className="px-4 w-full">
               <img
                 src={activeCamera?.bevImage}
